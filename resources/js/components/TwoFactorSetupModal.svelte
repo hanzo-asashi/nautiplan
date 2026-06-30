@@ -250,7 +250,7 @@
                 {/if}
             {:else}
                 <Form
-                    {...confirm.form()}
+                    {...(confirm as any).form()}
                     resetOnError
                     onFinish={() => (code = '')}
                     onSuccess={() => (isOpen = false)}

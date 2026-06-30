@@ -30,7 +30,7 @@
 <AppHead title="Reset password" />
 
 <Form
-    {...update.form()}
+    {...(update as any).form()}
     transform={(data) => ({ ...data, token, email })}
     resetOnSuccess={['password', 'password_confirmation']}
 >

@@ -50,7 +50,7 @@
     />
 
     <Form
-        {...SecurityController.update.form()}
+        {...(SecurityController.update as any).form()}
         class="space-y-6"
         options={{ preserveScroll: true }}
         resetOnSuccess

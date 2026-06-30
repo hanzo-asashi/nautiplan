@@ -41,7 +41,7 @@
 <PasskeyVerify />
 
 <Form
-    {...store.form()}
+    {...(store as any).form()}
     resetOnSuccess={['password']}
     class="flex flex-col gap-6"
 >

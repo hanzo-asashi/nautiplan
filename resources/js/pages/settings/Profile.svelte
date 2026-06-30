@@ -39,7 +39,7 @@
     />
 
     <Form
-        {...ProfileController.update.form()}
+        {...(ProfileController.update as any).form()}
         class="space-y-6"
         options={{ preserveScroll: true }}
     >

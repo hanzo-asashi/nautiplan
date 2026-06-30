@@ -52,7 +52,7 @@
 <div class="space-y-6">
     {#if !showRecoveryInput}
         <Form
-            {...store.form()}
+            {...(store as any).form()}
             class="space-y-4"
             resetOnError
             onError={() => (code = '')}
@@ -95,7 +95,7 @@
             {/snippet}
         </Form>
     {:else}
-        <Form {...store.form()} class="space-y-4" resetOnError>
+        <Form {...(store as any).form()} class="space-y-4" resetOnError>
             {#snippet children({ errors, processing, clearErrors })}
                 <Input
                     name="recovery_code"

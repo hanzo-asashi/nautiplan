@@ -33,7 +33,7 @@
 {/if}
 
 <div class="space-y-6">
-    <Form {...email.form()}>
+    <Form {...(email as any).form()}>
         {#snippet children({ errors, processing })}
             <div class="grid gap-2">
                 <Label for="email">Email address</Label>

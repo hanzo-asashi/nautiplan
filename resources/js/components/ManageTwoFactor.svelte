@@ -50,7 +50,7 @@
                         </Button>
                     {:else}
                         <Form
-                            {...enable.form()}
+                            {...(enable as any).form()}
                             onSuccess={() => (showSetupModal = true)}
                         >
                             {#snippet children({ processing })}
@@ -71,7 +71,7 @@
                 </p>
 
                 <div class="relative inline">
-                    <Form {...disable.form()}>
+                    <Form {...(disable as any).form()}>
                         {#snippet children({ processing })}
                             <Button
                                 variant="destructive"
