@@ -1,7 +1,7 @@
-import type { LinkComponentBaseProps } from '@inertiajs/core';
 import { clsx } from 'clsx';
-import type { ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import type { LinkComponentBaseProps } from '@inertiajs/core';
+import type { ClassValue } from 'clsx';
 
 export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));

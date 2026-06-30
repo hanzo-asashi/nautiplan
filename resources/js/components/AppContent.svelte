@@ -1,8 +1,8 @@
 <script lang="ts">
-    import type { Snippet } from 'svelte';
     import { SidebarInset } from '@/components/ui/sidebar';
     import { cn } from '@/lib/utils';
     import type { AppVariant } from '@/types';
+    import type { Snippet } from 'svelte';
 
     let {
         variant = 'sidebar',

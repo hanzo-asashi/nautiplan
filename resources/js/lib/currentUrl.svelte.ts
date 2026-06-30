@@ -1,6 +1,6 @@
-import type { LinkComponentBaseProps } from '@inertiajs/core';
 import { page } from '@inertiajs/svelte';
 import { toUrl } from '@/lib/utils';
+import type { LinkComponentBaseProps } from '@inertiajs/core';
 
 export type CurrentUrlState = {
     readonly currentUrl: string;

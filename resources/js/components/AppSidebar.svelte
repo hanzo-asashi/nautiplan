@@ -10,7 +10,6 @@
     import LayoutGrid from 'lucide-svelte/icons/layout-grid';
     import Target from 'lucide-svelte/icons/target';
     import Users from 'lucide-svelte/icons/users';
-    import type { Snippet } from 'svelte';
 
     import AppLogo from '@/components/AppLogo.svelte';
     import NavFooter from '@/components/NavFooter.svelte';
@@ -37,6 +36,7 @@
     import { index as unitIndex } from '@/routes/units';
     import { index as userIndex } from '@/routes/users';
     import type { NavItem } from '@/types';
+    import type { Snippet } from 'svelte';
 
     let {
         children,

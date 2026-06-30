@@ -1,6 +1,5 @@
 <script lang="ts">
     import { Link } from '@inertiajs/svelte';
-    import type { Snippet } from 'svelte';
     import AppLogoIcon from '@/components/AppLogoIcon.svelte';
     import {
         Card,
@@ -10,6 +9,7 @@
         CardTitle,
     } from '@/components/ui/card';
     import { home } from '@/routes';
+    import type { Snippet } from 'svelte';
 
     let {
         title = '',

@@ -1,6 +1,5 @@
 <script lang="ts">
     import { Link } from '@inertiajs/svelte';
-    import type { Snippet } from 'svelte';
     import Heading from '@/components/Heading.svelte';
     import { Button } from '@/components/ui/button';
     import { Separator } from '@/components/ui/separator';
@@ -10,6 +9,7 @@
     import { edit as editProfile } from '@/routes/profile';
     import { edit as editSecurity } from '@/routes/security';
     import type { NavItem } from '@/types';
+    import type { Snippet } from 'svelte';
 
     let {
         children,
