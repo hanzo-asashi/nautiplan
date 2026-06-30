@@ -101,9 +101,23 @@
                     <SheetContent side="left" class="w-[300px] p-6">
                         <SheetTitle class="sr-only">Navigation menu</SheetTitle>
                         <SheetHeader class="flex justify-start text-left">
-                            <AppLogoIcon
-                                class="size-6 fill-current text-black dark:text-white"
-                            />
+                            <div class="flex items-center gap-2">
+                                <div
+                                    class="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-white shadow-sm shadow-primary/25"
+                                >
+                                    <AppLogoIcon class="size-5 text-white" />
+                                </div>
+                                <div class="grid text-left text-xs">
+                                    <span
+                                        class="font-extrabold tracking-tight text-foreground leading-none"
+                                        >NautiPlan</span
+                                    >
+                                    <span
+                                        class="text-[9px] text-muted-foreground font-semibold leading-tight mt-0.5"
+                                        >Poltekpel Barombong</span
+                                    >
+                                </div>
+                            </div>
                         </SheetHeader>
                         <div
                             class="flex h-full flex-1 flex-col justify-between space-y-4 pt-6 pb-10"

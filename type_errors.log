@@ -1,0 +1,1140 @@
+
+> types:check
+> svelte-check --tsconfig ./tsconfig.json
+
+Loading svelte-check in workspace: d:\Playground\nautiplan
+Getting Svelte diagnostics...
+
+d:\Playground\nautiplan\[32mresources\js\pages\activities\Create.svelte[39m:50:21
+[33mWarn[39m: This reference only captures the initial value of `programs`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        description: '',
+        program_id: [35m[36mprograms.length > 0 ? programs[0].id : '',
+        renja_id: '' as any,[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\activities\Create.svelte[39m:50:43
+[33mWarn[39m: This reference only captures the initial value of `programs`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        description: '',
+        program_id: programs.length > 0 ? [35m[36mprograms[0].id : '',
+        renja_id: '' as any,[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\activities\Create.svelte[39m:52:18
+[33mWarn[39m: This reference only captures the initial value of `units`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        renja_id: '' as any,
+        unit_id: [35m[36munits.length > 0 ? units[0].id : '',
+        fiscal_year_id: fiscalYears.length > 0 ? fiscalYears[0].id : '',[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\activities\Create.svelte[39m:52:37
+[33mWarn[39m: This reference only captures the initial value of `units`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        renja_id: '' as any,
+        unit_id: units.length > 0 ? [35m[36munits[0].id : '',
+        fiscal_year_id: fiscalYears.length > 0 ? fiscalYears[0].id : '',[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\activities\Create.svelte[39m:53:25
+[33mWarn[39m: This reference only captures the initial value of `fiscalYears`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        unit_id: units.length > 0 ? units[0].id : '',
+        fiscal_year_id: [35m[36mfiscalYears.length > 0 ? fiscalYears[0].id : '',
+        responsible_user_id: '' as any,[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\activities\Create.svelte[39m:53:50
+[33mWarn[39m: This reference only captures the initial value of `fiscalYears`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        unit_id: units.length > 0 ? units[0].id : '',
+        fiscal_year_id: fiscalYears.length > 0 ? [35m[36mfiscalYears[0].id : '',
+        responsible_user_id: '' as any,[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\activities\Create.svelte[39m:418:37
+[33mWarn[39m: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+[36m                                <div class="space-y-1 sm:col-span-2">
+                                    [35m<label
+                                        class="text-xs font-semibold text-foreground"
+                                        >Nama Tahapan</label
+                                    [36m>
+                                    <input[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\activities\Create.svelte[39m:431:37
+[33mWarn[39m: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+[36m                                <div class="space-y-1">
+                                    [35m<label
+                                        class="text-xs font-semibold text-foreground"
+                                        >Pelaksana Tugas</label
+                                    [36m>
+                                    <select[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\activities\Create.svelte[39m:450:37
+[33mWarn[39m: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+[36m                                <div class="space-y-1 sm:col-span-3">
+                                    [35m<label
+                                        class="text-xs font-semibold text-foreground"
+                                        >Deskripsi Tugas</label
+                                    [36m>
+                                    <input[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\activities\Create.svelte[39m:462:37
+[33mWarn[39m: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+[36m                                <div class="space-y-1">
+                                    [35m<label
+                                        class="text-xs font-semibold text-foreground"
+                                        >Status</label
+                                    [36m>
+                                    <select[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\activities\Create.svelte[39m:484:37
+[33mWarn[39m: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+[36m                                <div class="space-y-1">
+                                    [35m<label
+                                        class="text-xs font-semibold text-foreground"
+                                        >Tgl Mulai</label
+                                    [36m>
+                                    <input[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\activities\Create.svelte[39m:495:37
+[33mWarn[39m: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+[36m                                <div class="space-y-1">
+                                    [35m<label
+                                        class="text-xs font-semibold text-foreground"
+                                        >Progress (%)</label
+                                    [36m>
+                                    <input[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\activities\Edit.svelte[39m:76:15
+[33mWarn[39m: This reference only captures the initial value of `activity`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m    const form = useForm({
+        code: [35m[36mactivity.code,
+        name: activity.name,[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\activities\Edit.svelte[39m:77:15
+[33mWarn[39m: This reference only captures the initial value of `activity`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        code: activity.code,
+        name: [35m[36mactivity.name,
+        description: activity.description || '',[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\activities\Edit.svelte[39m:78:22
+[33mWarn[39m: This reference only captures the initial value of `activity`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        name: activity.name,
+        description: [35m[36mactivity.description || '',
+        program_id: activity.program_id,[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\activities\Edit.svelte[39m:79:21
+[33mWarn[39m: This reference only captures the initial value of `activity`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        description: activity.description || '',
+        program_id: [35m[36mactivity.program_id,
+        renja_id: (activity.renja_id === null ? '' : activity.renja_id) as any,[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\activities\Edit.svelte[39m:80:20
+[33mWarn[39m: This reference only captures the initial value of `activity`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        program_id: activity.program_id,
+        renja_id: ([35m[36mactivity.renja_id === null ? '' : activity.renja_id) as any,
+        unit_id: activity.unit_id,[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\activities\Edit.svelte[39m:80:54
+[33mWarn[39m: This reference only captures the initial value of `activity`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        program_id: activity.program_id,
+        renja_id: (activity.renja_id === null ? '' : [35m[36mactivity.renja_id) as any,
+        unit_id: activity.unit_id,[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\activities\Edit.svelte[39m:81:18
+[33mWarn[39m: This reference only captures the initial value of `activity`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        renja_id: (activity.renja_id === null ? '' : activity.renja_id) as any,
+        unit_id: [35m[36mactivity.unit_id,
+        fiscal_year_id: activity.fiscal_year_id,[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\activities\Edit.svelte[39m:82:25
+[33mWarn[39m: This reference only captures the initial value of `activity`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        unit_id: activity.unit_id,
+        fiscal_year_id: [35m[36mactivity.fiscal_year_id,
+        responsible_user_id:[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\activities\Edit.svelte[39m:84:14
+[33mWarn[39m: This reference only captures the initial value of `activity`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        responsible_user_id:
+            ([35m[36mactivity.responsible_user_id === null
+                ? ''[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\activities\Edit.svelte[39m:86:19
+[33mWarn[39m: This reference only captures the initial value of `activity`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m                ? ''
+                : [35m[36mactivity.responsible_user_id) as any,
+        status: activity.status,[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\activities\Edit.svelte[39m:87:17
+[33mWarn[39m: This reference only captures the initial value of `activity`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m                : activity.responsible_user_id) as any,
+        status: [35m[36mactivity.status,
+        priority: activity.priority,[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\activities\Edit.svelte[39m:88:19
+[33mWarn[39m: This reference only captures the initial value of `activity`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        status: activity.status,
+        priority: [35m[36mactivity.priority,
+        start_date: activity.start_date || '',[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\activities\Edit.svelte[39m:89:21
+[33mWarn[39m: This reference only captures the initial value of `activity`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        priority: activity.priority,
+        start_date: [35m[36mactivity.start_date || '',
+        end_date: activity.end_date || '',[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\activities\Edit.svelte[39m:90:19
+[33mWarn[39m: This reference only captures the initial value of `activity`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        start_date: activity.start_date || '',
+        end_date: [35m[36mactivity.end_date || '',
+        progress_percentage: activity.progress_percentage || 0,[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\activities\Edit.svelte[39m:91:30
+[33mWarn[39m: This reference only captures the initial value of `activity`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        end_date: activity.end_date || '',
+        progress_percentage: [35m[36mactivity.progress_percentage || 0,
+        location: activity.location || '',[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\activities\Edit.svelte[39m:92:19
+[33mWarn[39m: This reference only captures the initial value of `activity`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        progress_percentage: activity.progress_percentage || 0,
+        location: [35m[36mactivity.location || '',
+        sub_activities: activity.sub_activities[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\activities\Edit.svelte[39m:93:25
+[33mWarn[39m: This reference only captures the initial value of `activity`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        location: activity.location || '',
+        sub_activities: [35m[36mactivity.sub_activities
+            ? activity.sub_activities.map((sub) => ({[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\activities\Edit.svelte[39m:94:15
+[33mWarn[39m: This reference only captures the initial value of `activity`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        sub_activities: activity.sub_activities
+            ? [35m[36mactivity.sub_activities.map((sub) => ({
+                  ...sub,[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\activities\Edit.svelte[39m:461:37
+[33mWarn[39m: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+[36m                                <div class="space-y-1 sm:col-span-2">
+                                    [35m<label
+                                        class="text-xs font-semibold text-foreground"
+                                        >Nama Tahapan</label
+                                    [36m>
+                                    <input[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\activities\Edit.svelte[39m:473:37
+[33mWarn[39m: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+[36m                                <div class="space-y-1">
+                                    [35m<label
+                                        class="text-xs font-semibold text-foreground"
+                                        >Pelaksana Tugas</label
+                                    [36m>
+                                    <select[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\activities\Edit.svelte[39m:492:37
+[33mWarn[39m: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+[36m                                <div class="space-y-1 sm:col-span-3">
+                                    [35m<label
+                                        class="text-xs font-semibold text-foreground"
+                                        >Deskripsi Tugas</label
+                                    [36m>
+                                    <input[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\activities\Edit.svelte[39m:503:37
+[33mWarn[39m: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+[36m                                <div class="space-y-1">
+                                    [35m<label
+                                        class="text-xs font-semibold text-foreground"
+                                        >Status</label
+                                    [36m>
+                                    <select[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\activities\Edit.svelte[39m:525:37
+[33mWarn[39m: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+[36m                                <div class="space-y-1">
+                                    [35m<label
+                                        class="text-xs font-semibold text-foreground"
+                                        >Tgl Mulai</label
+                                    [36m>
+                                    <input[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\activities\Edit.svelte[39m:536:37
+[33mWarn[39m: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+[36m                                <div class="space-y-1">
+                                    [35m<label
+                                        class="text-xs font-semibold text-foreground"
+                                        >Progress (%)</label
+                                    [36m>
+                                    <input[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\activities\Index.svelte[39m:69:30
+[33mWarn[39m: This reference only captures the initial value of `filters`. Did you mean to reference it inside a derived instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m
+    let searchQuery = $state([35m[36mfilters.search || '');
+    let unitId = $state(filters.unit_id || '');[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\activities\Index.svelte[39m:70:25
+[33mWarn[39m: This reference only captures the initial value of `filters`. Did you mean to reference it inside a derived instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m    let searchQuery = $state(filters.search || '');
+    let unitId = $state([35m[36mfilters.unit_id || '');
+    let fiscalYearId = $state(filters.fiscal_year_id || '');[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\activities\Index.svelte[39m:71:31
+[33mWarn[39m: This reference only captures the initial value of `filters`. Did you mean to reference it inside a derived instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m    let unitId = $state(filters.unit_id || '');
+    let fiscalYearId = $state([35m[36mfilters.fiscal_year_id || '');
+    let status = $state(filters.status || '');[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\activities\Index.svelte[39m:72:25
+[33mWarn[39m: This reference only captures the initial value of `filters`. Did you mean to reference it inside a derived instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m    let fiscalYearId = $state(filters.fiscal_year_id || '');
+    let status = $state([35m[36mfilters.status || '');
+    let confirmDeleteOpen = $state(false);[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\audit-logs\Index.svelte[39m:70:25
+[33mWarn[39m: This reference only captures the initial value of `filters`. Did you mean to reference it inside a derived instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m    // Filter states
+    let search = $state([35m[36mfilters.search || '');
+    let selectedUser = $state(filters.user_id || '');[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\audit-logs\Index.svelte[39m:71:31
+[33mWarn[39m: This reference only captures the initial value of `filters`. Did you mean to reference it inside a derived instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m    let search = $state(filters.search || '');
+    let selectedUser = $state([35m[36mfilters.user_id || '');
+    let selectedEvent = $state(filters.event || '');[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\audit-logs\Index.svelte[39m:72:32
+[33mWarn[39m: This reference only captures the initial value of `filters`. Did you mean to reference it inside a derived instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m    let selectedUser = $state(filters.user_id || '');
+    let selectedEvent = $state([35m[36mfilters.event || '');[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\budgets\Index.svelte[39m:101:25
+[33mWarn[39m: This reference only captures the initial value of `filters`. Did you mean to reference it inside a derived instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m
+    let unitId = $state([35m[36mfilters.unit_id || '');
+    let fiscalYearId = $state(filters.fiscal_year_id || '');[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\budgets\Index.svelte[39m:102:31
+[33mWarn[39m: This reference only captures the initial value of `filters`. Did you mean to reference it inside a derived instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m    let unitId = $state(filters.unit_id || '');
+    let fiscalYearId = $state([35m[36mfilters.fiscal_year_id || '');
+    let category = $state(filters.category || '');[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\budgets\Index.svelte[39m:103:27
+[33mWarn[39m: This reference only captures the initial value of `filters`. Did you mean to reference it inside a derived instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m    let fiscalYearId = $state(filters.fiscal_year_id || '');
+    let category = $state([35m[36mfilters.category || '');[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\budgets\Index.svelte[39m:497:21
+[33mWarn[39m: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+[36m                <div class="space-y-1">
+                    [35m<label class="text-xs font-semibold"
+                        >Jumlah Realisasi (IDR)</label
+                    [36m>
+                    <input[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\budgets\Index.svelte[39m:509:21
+[33mWarn[39m: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+[36m                <div class="space-y-1">
+                    [35m<label class="text-xs font-semibold"
+                        >Tanggal Realisasi</label
+                    [36m>
+                    <input[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\budgets\Index.svelte[39m:520:21
+[33mWarn[39m: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+[36m                <div class="space-y-1">
+                    [35m<label class="text-xs font-semibold"
+                        >Nomor Bukti Kuitansi / Receipt</label
+                    [36m>
+                    <input[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\budgets\Index.svelte[39m:531:21
+[33mWarn[39m: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+[36m                <div class="space-y-1">
+                    [35m<label class="text-xs font-semibold"
+                        >Deskripsi Belanja</label
+                    [36m>
+                    <input[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\fiscal-years\Edit.svelte[39m:45:15
+[33mWarn[39m: This reference only captures the initial value of `fiscalYear`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m    const form = useForm({
+        year: [35m[36mfiscalYear.year,
+        start_date: fiscalYear.start_date,[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\fiscal-years\Edit.svelte[39m:46:21
+[33mWarn[39m: This reference only captures the initial value of `fiscalYear`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        year: fiscalYear.year,
+        start_date: [35m[36mfiscalYear.start_date,
+        end_date: fiscalYear.end_date,[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\fiscal-years\Edit.svelte[39m:47:19
+[33mWarn[39m: This reference only captures the initial value of `fiscalYear`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        start_date: fiscalYear.start_date,
+        end_date: [35m[36mfiscalYear.end_date,
+        is_active: fiscalYear.is_active,[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\fiscal-years\Edit.svelte[39m:48:20
+[33mWarn[39m: This reference only captures the initial value of `fiscalYear`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        end_date: fiscalYear.end_date,
+        is_active: [35m[36mfiscalYear.is_active,
+        is_locked: fiscalYear.is_locked,[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\fiscal-years\Edit.svelte[39m:49:20
+[33mWarn[39m: This reference only captures the initial value of `fiscalYear`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        is_active: fiscalYear.is_active,
+        is_locked: [35m[36mfiscalYear.is_locked,
+    });[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\programs\Create.svelte[39m:47:18
+[33mWarn[39m: This reference only captures the initial value of `units`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        renstra_id: '' as any,
+        unit_id: [35m[36munits.length > 0 ? units[0].id : '',
+        fiscal_year_id: fiscalYears.length > 0 ? fiscalYears[0].id : '',[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\programs\Create.svelte[39m:47:37
+[33mWarn[39m: This reference only captures the initial value of `units`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        renstra_id: '' as any,
+        unit_id: units.length > 0 ? [35m[36munits[0].id : '',
+        fiscal_year_id: fiscalYears.length > 0 ? fiscalYears[0].id : '',[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\programs\Create.svelte[39m:48:25
+[33mWarn[39m: This reference only captures the initial value of `fiscalYears`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        unit_id: units.length > 0 ? units[0].id : '',
+        fiscal_year_id: [35m[36mfiscalYears.length > 0 ? fiscalYears[0].id : '',
+        objective: '',[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\programs\Create.svelte[39m:48:50
+[33mWarn[39m: This reference only captures the initial value of `fiscalYears`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        unit_id: units.length > 0 ? units[0].id : '',
+        fiscal_year_id: fiscalYears.length > 0 ? [35m[36mfiscalYears[0].id : '',
+        objective: '',[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\programs\Create.svelte[39m:367:37
+[33mWarn[39m: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+[36m                                <div class="space-y-1">
+                                    [35m<label
+                                        class="text-xs font-semibold text-foreground"
+                                        >Kode Indikator</label
+                                    [36m>
+                                    <input[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\programs\Create.svelte[39m:380:37
+[33mWarn[39m: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+[36m                                <div class="space-y-1 sm:col-span-2">
+                                    [35m<label
+                                        class="text-xs font-semibold text-foreground"
+                                        >Nama Indikator</label
+                                    [36m>
+                                    <input[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\programs\Create.svelte[39m:393:37
+[33mWarn[39m: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+[36m                                <div class="space-y-1">
+                                    [35m<label
+                                        class="text-xs font-semibold text-foreground"
+                                        >Target</label
+                                    [36m>
+                                    <div class="flex gap-1.5">[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\programs\Edit.svelte[39m:68:15
+[33mWarn[39m: This reference only captures the initial value of `program`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m    const form = useForm({
+        code: [35m[36mprogram.code,
+        name: program.name,[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\programs\Edit.svelte[39m:69:15
+[33mWarn[39m: This reference only captures the initial value of `program`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        code: program.code,
+        name: [35m[36mprogram.name,
+        description: program.description || '',[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\programs\Edit.svelte[39m:70:22
+[33mWarn[39m: This reference only captures the initial value of `program`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        name: program.name,
+        description: [35m[36mprogram.description || '',
+        renstra_id: (program.renstra_id === null ? '' : program.renstra_id) as any,[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\programs\Edit.svelte[39m:71:22
+[33mWarn[39m: This reference only captures the initial value of `program`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        description: program.description || '',
+        renstra_id: ([35m[36mprogram.renstra_id === null ? '' : program.renstra_id) as any,
+        unit_id: program.unit_id,[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\programs\Edit.svelte[39m:71:57
+[33mWarn[39m: This reference only captures the initial value of `program`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        description: program.description || '',
+        renstra_id: (program.renstra_id === null ? '' : [35m[36mprogram.renstra_id) as any,
+        unit_id: program.unit_id,[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\programs\Edit.svelte[39m:72:18
+[33mWarn[39m: This reference only captures the initial value of `program`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        renstra_id: (program.renstra_id === null ? '' : program.renstra_id) as any,
+        unit_id: [35m[36mprogram.unit_id,
+        fiscal_year_id: program.fiscal_year_id,[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\programs\Edit.svelte[39m:73:25
+[33mWarn[39m: This reference only captures the initial value of `program`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        unit_id: program.unit_id,
+        fiscal_year_id: [35m[36mprogram.fiscal_year_id,
+        objective: program.objective || '',[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\programs\Edit.svelte[39m:74:20
+[33mWarn[39m: This reference only captures the initial value of `program`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        fiscal_year_id: program.fiscal_year_id,
+        objective: [35m[36mprogram.objective || '',
+        status: program.status,[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\programs\Edit.svelte[39m:75:17
+[33mWarn[39m: This reference only captures the initial value of `program`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        objective: program.objective || '',
+        status: [35m[36mprogram.status,
+        priority: program.priority,[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\programs\Edit.svelte[39m:76:19
+[33mWarn[39m: This reference only captures the initial value of `program`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        status: program.status,
+        priority: [35m[36mprogram.priority,
+        start_date: program.start_date || '',[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\programs\Edit.svelte[39m:77:21
+[33mWarn[39m: This reference only captures the initial value of `program`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        priority: program.priority,
+        start_date: [35m[36mprogram.start_date || '',
+        end_date: program.end_date || '',[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\programs\Edit.svelte[39m:78:19
+[33mWarn[39m: This reference only captures the initial value of `program`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        start_date: program.start_date || '',
+        end_date: [35m[36mprogram.end_date || '',
+        total_budget: program.total_budget,[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\programs\Edit.svelte[39m:79:23
+[33mWarn[39m: This reference only captures the initial value of `program`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        end_date: program.end_date || '',
+        total_budget: [35m[36mprogram.total_budget,
+        indicators: program.indicators[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\programs\Edit.svelte[39m:80:21
+[33mWarn[39m: This reference only captures the initial value of `program`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        total_budget: program.total_budget,
+        indicators: [35m[36mprogram.indicators
+            ? program.indicators.map((ind) => ({ ...ind }))[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\programs\Edit.svelte[39m:81:15
+[33mWarn[39m: This reference only captures the initial value of `program`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        indicators: program.indicators
+            ? [35m[36mprogram.indicators.map((ind) => ({ ...ind }))
+            : [],[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\programs\Edit.svelte[39m:393:37
+[33mWarn[39m: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+[36m                                <div class="space-y-1">
+                                    [35m<label
+                                        class="text-xs font-semibold text-foreground"
+                                        >Kode Indikator</label
+                                    [36m>
+                                    <input[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\programs\Edit.svelte[39m:406:37
+[33mWarn[39m: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+[36m                                <div class="space-y-1 sm:col-span-2">
+                                    [35m<label
+                                        class="text-xs font-semibold text-foreground"
+                                        >Nama Indikator</label
+                                    [36m>
+                                    <input[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\programs\Edit.svelte[39m:419:37
+[33mWarn[39m: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+[36m                                <div class="space-y-1 col-span-1">
+                                    [35m<label
+                                        class="text-xs font-semibold text-foreground"
+                                        >Target & Satuan</label
+                                    [36m>
+                                    <div class="flex gap-1.5">[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\programs\Edit.svelte[39m:442:41
+[33mWarn[39m: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+[36m                                    <div class="space-y-1 col-span-1">
+                                        [35m<label
+                                            class="text-xs font-semibold text-foreground"
+                                            >Realisasi (Aktual)</label
+                                        [36m>
+                                        <input[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\programs\Index.svelte[39m:63:30
+[33mWarn[39m: This reference only captures the initial value of `filters`. Did you mean to reference it inside a derived instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m
+    let searchQuery = $state([35m[36mfilters.search || '');
+    let unitId = $state(filters.unit_id || '');[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\programs\Index.svelte[39m:64:25
+[33mWarn[39m: This reference only captures the initial value of `filters`. Did you mean to reference it inside a derived instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m    let searchQuery = $state(filters.search || '');
+    let unitId = $state([35m[36mfilters.unit_id || '');
+    let fiscalYearId = $state(filters.fiscal_year_id || '');[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\programs\Index.svelte[39m:65:31
+[33mWarn[39m: This reference only captures the initial value of `filters`. Did you mean to reference it inside a derived instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m    let unitId = $state(filters.unit_id || '');
+    let fiscalYearId = $state([35m[36mfilters.fiscal_year_id || '');
+    let confirmDeleteOpen = $state(false);[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\renja\Create.svelte[39m:42:25
+[33mWarn[39m: This reference only captures the initial value of `fiscalYears`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        title: '',
+        fiscal_year_id: [35m[36mfiscalYears.length > 0 ? fiscalYears[0].id : '',
+        renstra_id: '',[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\renja\Create.svelte[39m:42:50
+[33mWarn[39m: This reference only captures the initial value of `fiscalYears`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        title: '',
+        fiscal_year_id: fiscalYears.length > 0 ? [35m[36mfiscalYears[0].id : '',
+        renstra_id: '',[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\renja\Create.svelte[39m:44:18
+[33mWarn[39m: This reference only captures the initial value of `units`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        renstra_id: '',
+        unit_id: [35m[36munits.length > 0 ? units[0].id : '',
+        status: 'draft',[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\renja\Create.svelte[39m:44:37
+[33mWarn[39m: This reference only captures the initial value of `units`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        renstra_id: '',
+        unit_id: units.length > 0 ? [35m[36munits[0].id : '',
+        status: 'draft',[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\renja\Create.svelte[39m:51:9
+[31mError[39m: Type 'string | null' is not assignable to type 'string'.
+  Type 'null' is not assignable to type 'string'. (ts)
+[36m        e.preventDefault();
+        [35mform.renstra_id[36m = form.renstra_id === '' ? null : form.renstra_id;
+        form.post(toUrl(renjaIndex()));[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\renja\Edit.svelte[39m:52:16
+[33mWarn[39m: This reference only captures the initial value of `renja`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m    const form = useForm({
+        title: [35m[36mrenja.title,
+        fiscal_year_id: renja.fiscal_year_id,[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\renja\Edit.svelte[39m:53:25
+[33mWarn[39m: This reference only captures the initial value of `renja`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        title: renja.title,
+        fiscal_year_id: [35m[36mrenja.fiscal_year_id,
+        renstra_id: renja.renstra_id === null ? '' : renja.renstra_id,[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\renja\Edit.svelte[39m:54:21
+[33mWarn[39m: This reference only captures the initial value of `renja`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        fiscal_year_id: renja.fiscal_year_id,
+        renstra_id: [35m[36mrenja.renstra_id === null ? '' : renja.renstra_id,
+        unit_id: renja.unit_id,[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\renja\Edit.svelte[39m:54:54
+[33mWarn[39m: This reference only captures the initial value of `renja`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        fiscal_year_id: renja.fiscal_year_id,
+        renstra_id: renja.renstra_id === null ? '' : [35m[36mrenja.renstra_id,
+        unit_id: renja.unit_id,[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\renja\Edit.svelte[39m:55:18
+[33mWarn[39m: This reference only captures the initial value of `renja`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        renstra_id: renja.renstra_id === null ? '' : renja.renstra_id,
+        unit_id: [35m[36mrenja.unit_id,
+        status: renja.status,[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\renja\Edit.svelte[39m:56:17
+[33mWarn[39m: This reference only captures the initial value of `renja`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        unit_id: renja.unit_id,
+        status: [35m[36mrenja.status,
+        total_budget: renja.total_budget,[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\renja\Edit.svelte[39m:57:23
+[33mWarn[39m: This reference only captures the initial value of `renja`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        status: renja.status,
+        total_budget: [35m[36mrenja.total_budget,
+    });[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\renja\Edit.svelte[39m:62:9
+[31mError[39m: Type 'string | number | null' is not assignable to type 'string | number'.
+  Type 'null' is not assignable to type 'string | number'. (ts)
+[36m        e.preventDefault();
+        [35mform.renstra_id[36m = form.renstra_id === '' ? null : form.renstra_id;
+        form.put(toUrl(update({ renja: renja.id })));[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\renja\Index.svelte[39m:61:30
+[33mWarn[39m: This reference only captures the initial value of `filters`. Did you mean to reference it inside a derived instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m
+    let searchQuery = $state([35m[36mfilters.search || '');
+    let fiscalYearId = $state(filters.fiscal_year_id || '');[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\renja\Index.svelte[39m:62:31
+[33mWarn[39m: This reference only captures the initial value of `filters`. Did you mean to reference it inside a derived instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m    let searchQuery = $state(filters.search || '');
+    let fiscalYearId = $state([35m[36mfilters.fiscal_year_id || '');
+    let unitId = $state(filters.unit_id || '');[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\renja\Index.svelte[39m:63:25
+[33mWarn[39m: This reference only captures the initial value of `filters`. Did you mean to reference it inside a derived instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m    let fiscalYearId = $state(filters.fiscal_year_id || '');
+    let unitId = $state([35m[36mfilters.unit_id || '');
+    let confirmDeleteOpen = $state(false);[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\renstra\Create.svelte[39m:252:25
+[33mWarn[39m: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+[36m                    <div class="flex items-center justify-between">
+                        [35m<label class="text-sm font-semibold text-foreground"
+                            >Misi Instansi</label
+                        [36m>
+                        <button[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\renstra\Create.svelte[39m:339:37
+[33mWarn[39m: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+[36m                                <div class="space-y-1">
+                                    [35m<label
+                                        class="text-xs font-semibold text-foreground"
+                                        >Kode Indikator</label
+                                    [36m>
+                                    <input[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\renstra\Create.svelte[39m:352:37
+[33mWarn[39m: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+[36m                                <div class="space-y-1 sm:col-span-2">
+                                    [35m<label
+                                        class="text-xs font-semibold text-foreground"
+                                        >Nama Indikator</label
+                                    [36m>
+                                    <input[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\renstra\Create.svelte[39m:365:37
+[33mWarn[39m: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+[36m                                <div class="space-y-1">
+                                    [35m<label
+                                        class="text-xs font-semibold text-foreground"
+                                        >Baseline (Awal)</label
+                                    [36m>
+                                    <input[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\renstra\Create.svelte[39m:378:37
+[33mWarn[39m: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+[36m                                <div class="space-y-1">
+                                    [35m<label
+                                        class="text-xs font-semibold text-foreground"
+                                        >Target</label
+                                    [36m>
+                                    <input[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\renstra\Create.svelte[39m:391:37
+[33mWarn[39m: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+[36m                                <div class="space-y-1">
+                                    [35m<label
+                                        class="text-xs font-semibold text-foreground"
+                                        >Satuan Ukur</label
+                                    [36m>
+                                    <input[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\renstra\Edit.svelte[39m:57:16
+[33mWarn[39m: This reference only captures the initial value of `renstra`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m    const form = useForm({
+        title: [35m[36mrenstra.title,
+        description: renstra.description || '',[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\renstra\Edit.svelte[39m:58:22
+[33mWarn[39m: This reference only captures the initial value of `renstra`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        title: renstra.title,
+        description: [35m[36mrenstra.description || '',
+        start_year: renstra.start_year,[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\renstra\Edit.svelte[39m:59:21
+[33mWarn[39m: This reference only captures the initial value of `renstra`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        description: renstra.description || '',
+        start_year: [35m[36mrenstra.start_year,
+        end_year: renstra.end_year,[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\renstra\Edit.svelte[39m:60:19
+[33mWarn[39m: This reference only captures the initial value of `renstra`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        start_year: renstra.start_year,
+        end_year: [35m[36mrenstra.end_year,
+        status: renstra.status,[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\renstra\Edit.svelte[39m:61:17
+[33mWarn[39m: This reference only captures the initial value of `renstra`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        end_year: renstra.end_year,
+        status: [35m[36mrenstra.status,
+        vision: renstra.vision || '',[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\renstra\Edit.svelte[39m:62:17
+[33mWarn[39m: This reference only captures the initial value of `renstra`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        status: renstra.status,
+        vision: [35m[36mrenstra.vision || '',
+        mission:[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\renstra\Edit.svelte[39m:64:13
+[33mWarn[39m: This reference only captures the initial value of `renstra`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        mission:
+            [35m[36mrenstra.mission && renstra.mission.length > 0
+                ? [...renstra.mission][39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\renstra\Edit.svelte[39m:64:32
+[33mWarn[39m: This reference only captures the initial value of `renstra`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        mission:
+            renstra.mission && [35m[36mrenstra.mission.length > 0
+                ? [...renstra.mission][39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\renstra\Edit.svelte[39m:65:23
+[33mWarn[39m: This reference only captures the initial value of `renstra`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m            renstra.mission && renstra.mission.length > 0
+                ? [...[35m[36mrenstra.mission]
+                : [''],[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\renstra\Edit.svelte[39m:67:21
+[33mWarn[39m: This reference only captures the initial value of `renstra`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m                : [''],
+        indicators: [35m[36mrenstra.indicators
+            ? renstra.indicators.map((ind) => ({ ...ind }))[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\renstra\Edit.svelte[39m:68:15
+[33mWarn[39m: This reference only captures the initial value of `renstra`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        indicators: renstra.indicators
+            ? [35m[36mrenstra.indicators.map((ind) => ({ ...ind }))
+            : [],[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\renstra\Edit.svelte[39m:275:25
+[33mWarn[39m: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+[36m                    <div class="flex items-center justify-between">
+                        [35m<label class="text-sm font-semibold text-foreground"
+                            >Misi Instansi</label
+                        [36m>
+                        <button[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\renstra\Edit.svelte[39m:362:37
+[33mWarn[39m: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+[36m                                <div class="space-y-1">
+                                    [35m<label
+                                        class="text-xs font-semibold text-foreground"
+                                        >Kode Indikator</label
+                                    [36m>
+                                    <input[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\renstra\Edit.svelte[39m:375:37
+[33mWarn[39m: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+[36m                                <div class="space-y-1 sm:col-span-2">
+                                    [35m<label
+                                        class="text-xs font-semibold text-foreground"
+                                        >Nama Indikator</label
+                                    [36m>
+                                    <input[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\renstra\Edit.svelte[39m:388:37
+[33mWarn[39m: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+[36m                                <div class="space-y-1">
+                                    [35m<label
+                                        class="text-xs font-semibold text-foreground"
+                                        >Baseline (Awal)</label
+                                    [36m>
+                                    <input[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\renstra\Edit.svelte[39m:401:37
+[33mWarn[39m: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+[36m                                <div class="space-y-1">
+                                    [35m<label
+                                        class="text-xs font-semibold text-foreground"
+                                        >Target</label
+                                    [36m>
+                                    <input[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\renstra\Edit.svelte[39m:414:37
+[33mWarn[39m: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+[36m                                <div class="space-y-1">
+                                    [35m<label
+                                        class="text-xs font-semibold text-foreground"
+                                        >Satuan Ukur</label
+                                    [36m>
+                                    <input[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\renstra\Index.svelte[39m:57:30
+[33mWarn[39m: This reference only captures the initial value of `filters`. Did you mean to reference it inside a derived instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m
+    let searchQuery = $state([35m[36mfilters.search || '');
+    let confirmDeleteOpen = $state(false);[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\units\Edit.svelte[39m:50:15
+[33mWarn[39m: This reference only captures the initial value of `unit`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m    const form = useForm({
+        code: [35m[36munit.code,
+        name: unit.name,[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\units\Edit.svelte[39m:51:15
+[33mWarn[39m: This reference only captures the initial value of `unit`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        code: unit.code,
+        name: [35m[36munit.name,
+        parent_id: (unit.parent_id === null ? '' : unit.parent_id) as any,[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\units\Edit.svelte[39m:52:21
+[33mWarn[39m: This reference only captures the initial value of `unit`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        name: unit.name,
+        parent_id: ([35m[36munit.parent_id === null ? '' : unit.parent_id) as any,
+        head_user_id: (unit.head_user_id === null ? '' : unit.head_user_id) as any,[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\units\Edit.svelte[39m:52:52
+[33mWarn[39m: This reference only captures the initial value of `unit`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        name: unit.name,
+        parent_id: (unit.parent_id === null ? '' : [35m[36munit.parent_id) as any,
+        head_user_id: (unit.head_user_id === null ? '' : unit.head_user_id) as any,[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\units\Edit.svelte[39m:53:24
+[33mWarn[39m: This reference only captures the initial value of `unit`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        parent_id: (unit.parent_id === null ? '' : unit.parent_id) as any,
+        head_user_id: ([35m[36munit.head_user_id === null ? '' : unit.head_user_id) as any,
+        description: unit.description || '',[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\units\Edit.svelte[39m:53:58
+[33mWarn[39m: This reference only captures the initial value of `unit`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        parent_id: (unit.parent_id === null ? '' : unit.parent_id) as any,
+        head_user_id: (unit.head_user_id === null ? '' : [35m[36munit.head_user_id) as any,
+        description: unit.description || '',[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\units\Edit.svelte[39m:54:22
+[33mWarn[39m: This reference only captures the initial value of `unit`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        head_user_id: (unit.head_user_id === null ? '' : unit.head_user_id) as any,
+        description: [35m[36munit.description || '',
+        is_active: unit.is_active,[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\units\Edit.svelte[39m:55:20
+[33mWarn[39m: This reference only captures the initial value of `unit`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        description: unit.description || '',
+        is_active: [35m[36munit.is_active,
+    });[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\units\Index.svelte[39m:55:30
+[33mWarn[39m: This reference only captures the initial value of `filters`. Did you mean to reference it inside a derived instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m
+    let searchQuery = $state([35m[36mfilters.search || '');
+    let confirmDeleteOpen = $state(false);[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\users\Create.svelte[39m:187:13
+[33mWarn[39m: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+[36m        <div class="space-y-2 pt-2">
+            [35m<label class="text-sm font-semibold text-foreground"
+                >Hak Akses (Roles)</label
+            [36m>
+            <div[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\users\Edit.svelte[39m:51:15
+[33mWarn[39m: This reference only captures the initial value of `user`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m    const form = useForm({
+        name: [35m[36muser.name,
+        email: user.email,[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\users\Edit.svelte[39m:52:16
+[33mWarn[39m: This reference only captures the initial value of `user`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        name: user.name,
+        email: [35m[36muser.email,
+        employee_id: user.employee_id || '',[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\users\Edit.svelte[39m:53:22
+[33mWarn[39m: This reference only captures the initial value of `user`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        email: user.email,
+        employee_id: [35m[36muser.employee_id || '',
+        phone: user.phone || '',[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\users\Edit.svelte[39m:54:16
+[33mWarn[39m: This reference only captures the initial value of `user`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        employee_id: user.employee_id || '',
+        phone: [35m[36muser.phone || '',
+        unit_id: (user.unit_id === null ? '' : user.unit_id) as any,[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\users\Edit.svelte[39m:55:19
+[33mWarn[39m: This reference only captures the initial value of `user`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        phone: user.phone || '',
+        unit_id: ([35m[36muser.unit_id === null ? '' : user.unit_id) as any,
+        is_active: user.is_active,[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\users\Edit.svelte[39m:55:48
+[33mWarn[39m: This reference only captures the initial value of `user`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        phone: user.phone || '',
+        unit_id: (user.unit_id === null ? '' : [35m[36muser.unit_id) as any,
+        is_active: user.is_active,[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\users\Edit.svelte[39m:56:20
+[33mWarn[39m: This reference only captures the initial value of `user`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        unit_id: (user.unit_id === null ? '' : user.unit_id) as any,
+        is_active: [35m[36muser.is_active,
+        role_ids: user.roles ? user.roles.map((r) => r.id) : [],[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\users\Edit.svelte[39m:57:19
+[33mWarn[39m: This reference only captures the initial value of `user`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        is_active: user.is_active,
+        role_ids: [35m[36muser.roles ? user.roles.map((r) => r.id) : [],
+        password: '',[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\users\Edit.svelte[39m:57:32
+[33mWarn[39m: This reference only captures the initial value of `user`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m        is_active: user.is_active,
+        role_ids: user.roles ? [35m[36muser.roles.map((r) => r.id) : [],
+        password: '',[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\users\Edit.svelte[39m:197:13
+[33mWarn[39m: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+[36m        <div class="space-y-2 pt-2">
+            [35m<label class="text-sm font-semibold text-foreground"
+                >Hak Akses (Roles)</label
+            [36m>
+            <div[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\users\Index.svelte[39m:65:30
+[33mWarn[39m: This reference only captures the initial value of `filters`. Did you mean to reference it inside a derived instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m
+    let searchQuery = $state([35m[36mfilters.search || '');
+    let unitId = $state(filters.unit_id || '');[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\users\Index.svelte[39m:66:25
+[33mWarn[39m: This reference only captures the initial value of `filters`. Did you mean to reference it inside a derived instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m    let searchQuery = $state(filters.search || '');
+    let unitId = $state([35m[36mfilters.unit_id || '');
+    let roleId = $state(filters.role_id || '');[39m
+
+d:\Playground\nautiplan\[32mresources\js\pages\users\Index.svelte[39m:67:25
+[33mWarn[39m: This reference only captures the initial value of `filters`. Did you mean to reference it inside a derived instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m    let unitId = $state(filters.unit_id || '');
+    let roleId = $state([35m[36mfilters.role_id || '');
+    let confirmDeleteOpen = $state(false);[39m
+
+====================================
+[31msvelte-check found 2 errors and 145 warnings in 20 files
+[39m

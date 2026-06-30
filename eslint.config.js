@@ -33,6 +33,10 @@ export default ts.config(
                 parser: ts.parser,
             },
         },
+        rules: {
+            'svelte/no-at-html-tags': 'off',
+            'svelte/require-each-key': 'off',
+        },
     },
     {
         files: ['**/*.svelte.ts'],

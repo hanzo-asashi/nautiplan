@@ -1,8 +1,6 @@
 {
     "agents": [
-        "junie",
-        "claude_code",
-        "opencode"
+        "antigravity"
     ],
     "cloud": false,
     "guidelines": true,

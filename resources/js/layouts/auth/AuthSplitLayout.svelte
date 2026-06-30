@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Link, page } from '@inertiajs/svelte';
+    import { Link } from '@inertiajs/svelte';
     import type { Snippet } from 'svelte';
     import AppLogoIcon from '@/components/AppLogoIcon.svelte';
     import { home } from '@/routes';
@@ -13,8 +13,6 @@
         description?: string;
         children?: Snippet;
     } = $props();
-
-    const name = $derived(page.props.name);
 </script>
 
 <div
@@ -26,10 +24,23 @@
         <div class="absolute inset-0 bg-zinc-900"></div>
         <Link
             href={home()}
-            class="relative z-20 flex items-center text-lg font-medium"
+            class="relative z-20 flex items-center gap-3 font-medium group transition-all"
         >
-            <AppLogoIcon class="mr-2 size-8 fill-current text-white" />
-            {name}
+            <div
+                class="flex aspect-square size-10 items-center justify-center rounded-lg bg-primary text-white shadow-md shadow-primary/25 transition-transform duration-300 group-hover:scale-105"
+            >
+                <AppLogoIcon class="size-6 text-white" />
+            </div>
+            <div class="flex flex-col text-left">
+                <span
+                    class="font-extrabold tracking-tight text-white text-lg leading-none"
+                    >NautiPlan</span
+                >
+                <span
+                    class="text-[10px] text-white/70 font-semibold leading-tight mt-0.5"
+                    >Poltekpel Barombong</span
+                >
+            </div>
         </Link>
     </div>
     <div class="lg:p-8">

@@ -1,9 +1,17 @@
 <script lang="ts">
-    import { Link } from '@inertiajs/svelte';
-    import BookOpen from 'lucide-svelte/icons/book-open';
-    import FolderGit2 from 'lucide-svelte/icons/folder-git-2';
+    import { Link, page } from '@inertiajs/svelte';
+    import Activity from 'lucide-svelte/icons/activity';
+    import Building from 'lucide-svelte/icons/building';
+    import Calendar from 'lucide-svelte/icons/calendar';
+    import CalendarDays from 'lucide-svelte/icons/calendar-days';
+    import Coins from 'lucide-svelte/icons/coins';
+    import Folder from 'lucide-svelte/icons/folder';
+    import History from 'lucide-svelte/icons/history';
     import LayoutGrid from 'lucide-svelte/icons/layout-grid';
+    import Target from 'lucide-svelte/icons/target';
+    import Users from 'lucide-svelte/icons/users';
     import type { Snippet } from 'svelte';
+
     import AppLogo from '@/components/AppLogo.svelte';
     import NavFooter from '@/components/NavFooter.svelte';
     import NavMain from '@/components/NavMain.svelte';
@@ -19,6 +27,15 @@
     } from '@/components/ui/sidebar';
     import { toUrl } from '@/lib/utils';
     import { dashboard } from '@/routes';
+    import { index as activityIndex } from '@/routes/activities';
+    import { index as auditLogIndex } from '@/routes/audit-logs';
+    import { index as budgetIndex } from '@/routes/budgets';
+    import { index as fiscalYearIndex } from '@/routes/fiscal-years';
+    import { index as programIndex } from '@/routes/programs';
+    import { index as renjaIndex } from '@/routes/renja';
+    import { index as renstraIndex } from '@/routes/renstra';
+    import { index as unitIndex } from '@/routes/units';
+    import { index as userIndex } from '@/routes/users';
     import type { NavItem } from '@/types';
 
     let {
@@ -27,26 +44,74 @@
         children?: Snippet;
     } = $props();
 
-    const mainNavItems: NavItem[] = [
-        {
-            title: 'Dashboard',
-            href: dashboard(),
-            icon: LayoutGrid,
-        },
-    ];
+    const user = $derived(page.props.auth.user as any);
+    const isAdmin = $derived(
+        user?.is_super_admin || user?.roles?.includes('admin'),
+    );
 
-    const footerNavItems: NavItem[] = [
-        {
-            title: 'Repository',
-            href: 'https://github.com/laravel/svelte-starter-kit',
-            icon: FolderGit2,
-        },
-        {
-            title: 'Documentation',
-            href: 'https://laravel.com/docs/starter-kits#svelte',
-            icon: BookOpen,
-        },
-    ];
+    const mainNavItems = $derived.by((): NavItem[] => {
+        const items: NavItem[] = [
+            {
+                title: 'Dashboard',
+                href: dashboard(),
+                icon: LayoutGrid,
+            },
+            {
+                title: 'Renstra (Strategic)',
+                href: renstraIndex(),
+                icon: Target,
+            },
+            {
+                title: 'Renja (Annual)',
+                href: renjaIndex(),
+                icon: Calendar,
+            },
+            {
+                title: 'Programs',
+                href: programIndex(),
+                icon: Folder,
+            },
+            {
+                title: 'Activities',
+                href: activityIndex(),
+                icon: Activity,
+            },
+            {
+                title: 'Budget & Realization',
+                href: budgetIndex(),
+                icon: Coins,
+            },
+            {
+                title: 'Organizational Units',
+                href: unitIndex(),
+                icon: Building,
+            },
+            {
+                title: 'Fiscal Years',
+                href: fiscalYearIndex(),
+                icon: CalendarDays,
+            },
+        ];
+
+        if (isAdmin) {
+            items.push(
+                {
+                    title: 'User Management',
+                    href: userIndex(),
+                    icon: Users,
+                },
+                {
+                    title: 'Audit Logs',
+                    href: auditLogIndex(),
+                    icon: History,
+                },
+            );
+        }
+
+        return items;
+    });
+
+    const footerNavItems: NavItem[] = [];
 </script>
 
 <Sidebar collapsible="icon" variant="inset">

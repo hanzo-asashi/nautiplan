@@ -1,13 +1,5 @@
 <script lang="ts">
     import { Link } from '@inertiajs/svelte';
-    import {
-        Breadcrumb,
-        BreadcrumbItem,
-        BreadcrumbLink,
-        BreadcrumbList,
-        BreadcrumbPage,
-        BreadcrumbSeparator,
-    } from '@/components/ui/breadcrumb';
     import type { BreadcrumbItem as BreadcrumbItemType } from '@/types';
 
     let {
@@ -17,25 +9,29 @@
     } = $props();
 </script>
 
-<Breadcrumb>
-    <BreadcrumbList>
-        {#each breadcrumbs as item, index (item.href)}
-            <BreadcrumbItem>
+<nav
+    aria-label="breadcrumb"
+    class="text-sm font-medium text-zinc-500 dark:text-zinc-400"
+>
+    <ol class="flex flex-wrap items-center gap-2">
+        {#each breadcrumbs as item, index (item.href || index)}
+            <li class="inline-flex items-center gap-2">
                 {#if index === breadcrumbs.length - 1}
-                    <BreadcrumbPage>{item.title}</BreadcrumbPage>
+                    <span class="text-zinc-900 dark:text-zinc-100 font-semibold"
+                        >{item.title}</span
+                    >
                 {:else}
-                    <BreadcrumbLink asChild>
-                        {#snippet children(props)}
-                            <Link href={item.href} class={props.class}>
-                                {item.title}
-                            </Link>
-                        {/snippet}
-                    </BreadcrumbLink>
+                    <Link
+                        href={item.href}
+                        class="hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
+                    >
+                        {item.title}
+                    </Link>
                 {/if}
-            </BreadcrumbItem>
+            </li>
             {#if index !== breadcrumbs.length - 1}
-                <BreadcrumbSeparator />
+                <span class="text-zinc-300 dark:text-zinc-700">/</span>
             {/if}
         {/each}
-    </BreadcrumbList>
-</Breadcrumb>
+    </ol>
+</nav>
