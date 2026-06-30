@@ -1,5 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
 @import 'tailwindcss';
-
 @import 'tw-animate-css';
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
@@ -9,13 +9,16 @@
 
 @theme inline {
     --font-sans:
-        Instrument Sans, ui-sans-serif, system-ui, sans-serif,
+        'Space Grotesk', Instrument Sans, ui-sans-serif, system-ui, sans-serif,
         'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
         'Noto Color Emoji';
 
     --radius-lg: var(--radius);
     --radius-md: calc(var(--radius) - 2px);
     --radius-sm: calc(var(--radius) - 4px);
+    --radius-xl: var(--radius);
+    --radius-2xl: var(--radius);
+    --radius-3xl: var(--radius);
 
     --color-background: var(--background);
     --color-foreground: var(--foreground);
@@ -59,6 +62,7 @@
     --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
     --color-sidebar-border: var(--sidebar-border);
     --color-sidebar-ring: var(--sidebar-ring);
+    --sidebar: var(--sidebar-background);
 }
 
 /*
@@ -83,83 +87,83 @@
     body,
     html {
         --font-sans:
-            'Instrument Sans', ui-sans-serif, system-ui, sans-serif,
-            'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
-            'Noto Color Emoji';
+            'Space Grotesk', 'Instrument Sans', ui-sans-serif, system-ui,
+            sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+            'Segoe UI Symbol', 'Noto Color Emoji';
     }
 }
 
 :root {
-    --background: hsl(220 14.3% 95.9%);
+    --background: hsl(220 14.3% 97%);
     --foreground: hsl(224 71.4% 4.1%);
-    --card: hsl(0 0% 100% / 0.7);
+    --card: hsl(0 0% 100%);
     --card-foreground: hsl(224 71.4% 4.1%);
     --popover: hsl(0 0% 100%);
     --popover-foreground: hsl(224 71.4% 4.1%);
-    --primary: hsl(226 70% 55%);
+    --primary: hsl(221.2 83.2% 53.3%);
     --primary-foreground: hsl(0 0% 98%);
     --secondary: hsl(220 14.3% 90%);
     --secondary-foreground: hsl(224 71.4% 4.1%);
-    --muted: hsl(220 14.3% 95.9%);
-    --muted-foreground: hsl(220 8.9% 46.1%);
-    --accent: hsl(160 60% 45%);
-    --accent-foreground: hsl(0 0% 98%);
+    --muted: hsl(220 14.3% 96%);
+    --muted-foreground: hsl(220 8.9% 46%);
+    --accent: hsl(220 14.3% 96%);
+    --accent-foreground: hsl(224 71.4% 4.1%);
     --destructive: hsl(0 84.2% 60.2%);
     --destructive-foreground: hsl(0 0% 98%);
     --border: hsl(220 13% 91%);
     --input: hsl(220 13% 91%);
-    --ring: hsl(226 70% 55%);
-    --chart-1: hsl(226 70% 55%);
-    --chart-2: hsl(160 60% 45%);
-    --chart-3: hsl(197 37% 24%);
-    --chart-4: hsl(43 74% 66%);
-    --chart-5: hsl(27 87% 67%);
-    --radius: 0.75rem;
-    --sidebar-background: hsl(222.2 47.4% 11.2%);
-    --sidebar-foreground: hsl(210 40% 98%);
-    --sidebar-primary: hsl(226 70% 55%);
-    --sidebar-primary-foreground: hsl(0 0% 100%);
-    --sidebar-accent: hsl(217.2 32.6% 17.5%);
-    --sidebar-accent-foreground: hsl(210 40% 98%);
-    --sidebar-border: hsl(217.2 32.6% 17.5%);
-    --sidebar-ring: hsl(226 70% 55%);
-    --sidebar: hsl(222.2 47.4% 11.2%);
+    --ring: hsl(221.2 83.2% 53.3%);
+    --chart-1: hsl(221.2 83.2% 53.3%);
+    --chart-2: hsl(47.9 95.8% 51.2%);
+    --chart-3: hsl(142.1 76.2% 36.3%);
+    --chart-4: hsl(27.4 92.5% 58.3%);
+    --chart-5: hsl(262.1 83.3% 57.8%);
+    --radius: 0rem;
+    --sidebar-background: hsl(220 14.3% 98%);
+    --sidebar-foreground: hsl(220 5.3% 26.1%);
+    --sidebar-primary: hsl(220 5.9% 10%);
+    --sidebar-primary-foreground: hsl(0 0% 98%);
+    --sidebar-accent: hsl(220 14.3% 96%);
+    --sidebar-accent-foreground: hsl(220 5.9% 10%);
+    --sidebar-border: hsl(220 13% 91%);
+    --sidebar-ring: hsl(221.2 83.2% 53.3%);
+    --sidebar: hsl(220 14.3% 98%);
 }
 
 .dark {
-    --background: hsl(224 71.4% 4.1%);
-    --foreground: hsl(210 20% 98%);
-    --card: hsl(224 71.4% 4.1% / 0.7);
-    --card-foreground: hsl(210 20% 98%);
-    --popover: hsl(224 71.4% 4.1%);
-    --popover-foreground: hsl(210 20% 98%);
-    --primary: hsl(226 70% 55%);
+    --background: hsl(220 15% 3.5%);
+    --foreground: hsl(220 10% 98%);
+    --card: hsl(220 12% 8.5%);
+    --card-foreground: hsl(0 0% 98%);
+    --popover: hsl(220 15% 3.5%);
+    --popover-foreground: hsl(0 0% 98%);
+    --primary: hsl(221.2 83.2% 53.3%);
     --primary-foreground: hsl(0 0% 98%);
-    --secondary: hsl(215 27.9% 16.9%);
-    --secondary-foreground: hsl(210 20% 98%);
-    --muted: hsl(215 27.9% 16.9%);
-    --muted-foreground: hsl(217.9 10.6% 64.9%);
-    --accent: hsl(160 60% 45%);
+    --secondary: hsl(220 11% 15%);
+    --secondary-foreground: hsl(0 0% 98%);
+    --muted: hsl(220 11% 15%);
+    --muted-foreground: hsl(220 10% 65%);
+    --accent: hsl(220 11% 15%);
     --accent-foreground: hsl(0 0% 98%);
     --destructive: hsl(0 62.8% 30.6%);
-    --destructive-foreground: hsl(210 20% 98%);
-    --border: hsl(215 27.9% 16.9%);
-    --input: hsl(215 27.9% 16.9%);
-    --ring: hsl(226 70% 55%);
-    --chart-1: hsl(226 70% 55%);
-    --chart-2: hsl(160 60% 45%);
-    --chart-3: hsl(30 80% 55%);
-    --chart-4: hsl(280 65% 60%);
-    --chart-5: hsl(340 75% 55%);
-    --sidebar-background: hsl(222.2 47.4% 11.2%);
-    --sidebar-foreground: hsl(210 40% 98%);
-    --sidebar-primary: hsl(226 70% 55%);
-    --sidebar-primary-foreground: hsl(0 0% 100%);
-    --sidebar-accent: hsl(217.2 32.6% 17.5%);
-    --sidebar-accent-foreground: hsl(210 40% 98%);
-    --sidebar-border: hsl(217.2 32.6% 17.5%);
-    --sidebar-ring: hsl(226 70% 55%);
-    --sidebar: hsl(222.2 47.4% 11.2%);
+    --destructive-foreground: hsl(0 0% 98%);
+    --border: hsl(220 10% 18%);
+    --input: hsl(220 10% 18%);
+    --ring: hsl(224.3 76.3% 48%);
+    --chart-1: hsl(47.9 95.8% 51.2%);
+    --chart-2: hsl(221.2 83.2% 53.3%);
+    --chart-3: hsl(142.1 76.2% 36.3%);
+    --chart-4: hsl(27.4 92.5% 58.3%);
+    --chart-5: hsl(262.1 83.3% 57.8%);
+    --sidebar-background: hsl(220 12% 8.5%);
+    --sidebar-foreground: hsl(220 10% 65%);
+    --sidebar-primary: hsl(221.2 83.2% 53.3%);
+    --sidebar-primary-foreground: hsl(0 0% 98%);
+    --sidebar-accent: hsl(220 11% 15%);
+    --sidebar-accent-foreground: hsl(220 10% 98%);
+    --sidebar-border: hsl(220 10% 18%);
+    --sidebar-ring: hsl(224.3 76.3% 48%);
+    --sidebar: hsl(220 12% 8.5%);
 }
 
 @layer base {
@@ -169,6 +173,76 @@
     body {
         @apply bg-background text-foreground transition-colors duration-200;
     }
+
+    /* Improve table spacing layout for hover borders */
+    table th,
+    table td {
+        padding-top: 0.5rem !important;
+        padding-bottom: 0.5rem !important;
+        padding-left: 0.75rem !important;
+        padding-right: 0.75rem !important;
+        font-size: 0.875rem !important;
+    }
+    table th:first-child,
+    table td:first-child {
+        padding-left: 1rem !important;
+    }
+    table th:last-child,
+    table td:last-child {
+        padding-right: 1rem !important;
+    }
+    table th {
+        padding-top: 0.625rem !important;
+        padding-bottom: 0.625rem !important;
+        color: var(--muted-foreground) !important;
+        font-weight: 500 !important;
+    }
+
+    /* Reset & Standardize HTML Inputs & Selects to look like shadcn-svelte UI */
+    input[type='text'],
+    input[type='email'],
+    input[type='password'],
+    input[type='number'],
+    select,
+    textarea {
+        background-color: var(--background) !important;
+        border: 1px solid var(--border) !important;
+        border-radius: var(--radius) !important;
+        padding-top: 0.5rem !important;
+        padding-bottom: 0.5rem !important;
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+        font-size: 0.875rem !important;
+        outline: none !important;
+        transition: all 0.2s ease-in-out !important;
+        color: var(--foreground) !important;
+    }
+
+    input[type='text']:focus,
+    input[type='email']:focus,
+    input[type='password']:focus,
+    input[type='number']:focus,
+    select:focus,
+    textarea:focus {
+        border-color: var(--primary) !important;
+        box-shadow: 0 0 0 2px hsla(221, 83%, 53%, 0.15) !important;
+    }
+
+    /* Style select dropdown arrow (remove default OS styling) */
+    select {
+        appearance: none !important;
+        -webkit-appearance: none !important;
+        -moz-appearance: none !important;
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23888888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e") !important;
+        background-repeat: no-repeat !important;
+        background-position: right 0.75rem center !important;
+        background-size: 1rem !important;
+        padding-right: 2.5rem !important;
+    }
+
+    .dark select {
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a1a1aa' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e") !important;
+    }
 }
 
 @layer utilities {
@@ -177,5 +251,51 @@
     }
     .glass-card {
         @apply border border-border/50 bg-card shadow-md backdrop-blur-md transition-all duration-300 hover:shadow-lg;
+    }
+
+    /* Force opaque backgrounds for cards to stand out on dark background */
+    .dark [class*='bg-card/'] {
+        background-color: var(--card) !important;
+    }
+
+    /* Force opaque borders for high-contrast Lyra preset style */
+    :global(.border-sidebar-border\/50) {
+        border-color: var(--sidebar-border) !important;
+    }
+    :global(.border-border\/50) {
+        border-color: var(--border) !important;
+    }
+    :global(.border-zinc-200\/50) {
+        border-color: var(--border) !important;
+    }
+
+    /* Map hardcoded zinc backgrounds to Mist base color variables */
+    :global(.bg-zinc-50) {
+        background-color: var(--background) !important;
+    }
+    :global(.bg-zinc-50\/50) {
+        background-color: var(--muted) !important;
+    }
+    :global(.bg-zinc-100),
+    :global(.bg-zinc-100\/40) {
+        background-color: var(--muted) !important;
+    }
+    :global(.hover\:bg-zinc-100\/40:hover) {
+        background-color: var(--accent) !important;
+    }
+
+    /* Dark mode zinc overrides */
+    :global(.dark .dark\:bg-zinc-900) {
+        background-color: var(--muted) !important;
+    }
+    :global(.dark .dark\:bg-zinc-900\/40),
+    :global(.dark .dark\:bg-zinc-900\/20) {
+        background-color: var(--muted) !important;
+    }
+    :global(.dark .dark\:hover\:bg-zinc-900\/40:hover) {
+        background-color: var(--accent) !important;
+    }
+    :global(.dark .dark\:hover\:bg-zinc-900:hover) {
+        background-color: var(--accent) !important;
     }
 }

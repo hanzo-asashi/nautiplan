@@ -30,11 +30,12 @@
                         >{item.label}</span
                     >
                     <div class="flex space-x-4 text-xs shrink-0">
-                        <span class="text-primary font-medium"
+                        <span
+                            class="text-yellow-600 dark:text-yellow-500 font-semibold"
                             >Pagu: {formatRupiah(item.value1)}</span
                         >
                         <span
-                            class="text-emerald-500 dark:text-emerald-400 font-medium"
+                            class="text-amber-500 dark:text-amber-400 font-semibold"
                             >Realisasi: {formatRupiah(item.value2)}</span
                         >
                     </div>
@@ -43,14 +44,14 @@
                 <div
                     class="relative h-6 w-full bg-zinc-200/50 dark:bg-zinc-800/50 rounded-full overflow-hidden flex flex-col justify-center border border-sidebar-border/30"
                 >
-                    <!-- Pagu Bar (Primary Blue) -->
+                    <!-- Pagu Bar (Yellow/Amber Opaque) -->
                     <div
-                        class="absolute left-0 top-0 h-3 bg-primary/70 transition-all duration-500 rounded-tr"
+                        class="absolute left-0 top-0 h-3 bg-yellow-600/70 transition-all duration-500 rounded-tr"
                         style="width: {(item.value1 / maxValue) * 100}%"
                     ></div>
-                    <!-- Realisasi Bar (Emerald Green) -->
+                    <!-- Realisasi Bar (Bright Amber) -->
                     <div
-                        class="absolute left-0 bottom-0 h-3 bg-emerald-500/70 transition-all duration-500 rounded-br"
+                        class="absolute left-0 bottom-0 h-3 bg-amber-400 transition-all duration-500 rounded-br"
                         style="width: {(item.value2 / maxValue) * 100}%"
                     ></div>
                 </div>

@@ -56,6 +56,7 @@ export default ts.config(
                 },
                 node: true,
             },
+            'import/internal-regex': '^@/',
         },
         rules: {
             'no-undef': 'off',
@@ -77,7 +78,7 @@ export default ts.config(
             'import/order': [
                 'error',
                 {
-                    groups: ['builtin', 'external', 'internal', 'parent', 'sibling', 'index'],
+                    groups: ['type', 'builtin', 'external', 'internal', 'parent', 'sibling', 'index'],
                     alphabetize: { order: 'asc', caseInsensitive: true },
                 },
             ],

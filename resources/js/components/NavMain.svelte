@@ -1,4 +1,5 @@
 <script lang="ts">
+    import type { NavItem } from '@/types';
     import { Link } from '@inertiajs/svelte';
     import {
         SidebarGroup,
@@ -9,7 +10,6 @@
     } from '@/components/ui/sidebar';
     import { currentUrlState } from '@/lib/currentUrl.svelte';
     import { toUrl } from '@/lib/utils';
-    import type { NavItem } from '@/types';
 
     let {
         items = [],

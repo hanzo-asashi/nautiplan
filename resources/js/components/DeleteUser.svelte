@@ -40,7 +40,7 @@
             </DialogTrigger>
             <DialogContent>
                 <Form
-                    {...ProfileController.destroy.form()}
+                    {...(ProfileController.destroy as any).form()}
                     class="space-y-6"
                     options={{ preserveScroll: true }}
                 >

@@ -1,4 +1,6 @@
 <script lang="ts">
+    import type { NavItem } from '@/types';
+    import type { Snippet } from 'svelte';
     import { Link, page } from '@inertiajs/svelte';
     import Activity from 'lucide-svelte/icons/activity';
     import Building from 'lucide-svelte/icons/building';
@@ -10,7 +12,6 @@
     import LayoutGrid from 'lucide-svelte/icons/layout-grid';
     import Target from 'lucide-svelte/icons/target';
     import Users from 'lucide-svelte/icons/users';
-    import type { Snippet } from 'svelte';
 
     import AppLogo from '@/components/AppLogo.svelte';
     import NavFooter from '@/components/NavFooter.svelte';
@@ -36,7 +37,6 @@
     import { index as renstraIndex } from '@/routes/renstra';
     import { index as unitIndex } from '@/routes/units';
     import { index as userIndex } from '@/routes/users';
-    import type { NavItem } from '@/types';
 
     let {
         children,

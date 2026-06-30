@@ -34,7 +34,7 @@
     separator="Or confirm with password"
 />
 
-<Form {...store.form()} resetOnSuccess>
+<Form {...(store as any).form()} resetOnSuccess>
     {#snippet children({ errors, processing })}
         <div class="space-y-6">
             <div class="grid gap-2">

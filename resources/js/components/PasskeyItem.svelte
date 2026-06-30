@@ -1,4 +1,5 @@
 <script lang="ts">
+    import type { Passkey } from '@/types/auth';
     import KeyRound from 'lucide-svelte/icons/key-round';
     import Trash2 from 'lucide-svelte/icons/trash-2';
     import { Button } from '@/components/ui/button';
@@ -11,7 +12,6 @@
         DialogTitle,
         DialogTrigger,
     } from '@/components/ui/dialog';
-    import type { Passkey } from '@/types/auth';
 
     let {
         passkey,

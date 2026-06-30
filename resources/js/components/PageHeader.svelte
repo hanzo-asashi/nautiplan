@@ -1,7 +1,7 @@
 <script lang="ts">
-    import { Link } from '@inertiajs/svelte';
-    import type { Snippet } from 'svelte';
     import type { BreadcrumbItem } from '@/types';
+    import type { Snippet } from 'svelte';
+    import { Link } from '@inertiajs/svelte';
 
     let {
         title,

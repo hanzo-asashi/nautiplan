@@ -24,7 +24,7 @@
 <AppHead title="Register" />
 
 <Form
-    {...store.form()}
+    {...(store as any).form()}
     resetOnSuccess={['password', 'password_confirmation']}
     class="flex flex-col gap-6"
 >

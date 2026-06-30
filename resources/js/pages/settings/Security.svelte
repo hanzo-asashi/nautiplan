@@ -12,13 +12,13 @@
 </script>
 
 <script lang="ts">
+    import type { Props as ManagePasskeysProps } from '@/components/ManagePasskeys.svelte';
     import { Form, page } from '@inertiajs/svelte';
     import SecurityController from '@/actions/App/Http/Controllers/Settings/SecurityController';
     import AppHead from '@/components/AppHead.svelte';
     import Heading from '@/components/Heading.svelte';
     import InputError from '@/components/InputError.svelte';
     import ManagePasskeys from '@/components/ManagePasskeys.svelte';
-    import type { Props as ManagePasskeysProps } from '@/components/ManagePasskeys.svelte';
     import ManageTwoFactor from '@/components/ManageTwoFactor.svelte';
     import PasswordInput from '@/components/PasswordInput.svelte';
     import { Button } from '@/components/ui/button';
@@ -50,7 +50,7 @@
     />
 
     <Form
-        {...SecurityController.update.form()}
+        {...(SecurityController.update as any).form()}
         class="space-y-6"
         options={{ preserveScroll: true }}
         resetOnSuccess

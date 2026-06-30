@@ -1,4 +1,5 @@
 <script lang="ts">
+    import type { BreadcrumbItem, NavItem } from '@/types';
     import { Link, page } from '@inertiajs/svelte';
     import BookOpen from 'lucide-svelte/icons/book-open';
     import Folder from 'lucide-svelte/icons/folder';
@@ -43,7 +44,6 @@
     import { getInitials } from '@/lib/initials';
     import { toUrl } from '@/lib/utils';
     import { dashboard } from '@/routes';
-    import type { BreadcrumbItem, NavItem } from '@/types';
 
     let {
         breadcrumbs = [],

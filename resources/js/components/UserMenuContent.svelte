@@ -1,4 +1,5 @@
 <script lang="ts">
+    import type { User } from '@/types';
     import { Link, router } from '@inertiajs/svelte';
     import LogOut from 'lucide-svelte/icons/log-out';
     import Settings from 'lucide-svelte/icons/settings';
@@ -12,7 +13,6 @@
     import { toUrl } from '@/lib/utils';
     import { logout } from '@/routes';
     import { edit } from '@/routes/profile';
-    import type { User } from '@/types';
 
     let {
         user,

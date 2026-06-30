@@ -1,6 +1,6 @@
 <script lang="ts">
-    import FolderOpen from 'lucide-svelte/icons/folder-open';
     import type { Snippet } from 'svelte';
+    import FolderOpen from 'lucide-svelte/icons/folder-open';
 
     let {
         title = 'No records found',

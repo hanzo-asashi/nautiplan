@@ -1,6 +1,6 @@
+import type { FlashToast } from '@/types/ui';
 import { router } from '@inertiajs/svelte';
 import { toast } from 'svelte-sonner';
-import type { FlashToast } from '@/types/ui';
 
 export function initializeFlashToast(): void {
     router.on('flash', (event) => {
