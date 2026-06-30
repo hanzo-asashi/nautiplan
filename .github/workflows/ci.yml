@@ -39,7 +39,21 @@ jobs:
           cp .env.example .env
           php artisan key:generate
 
+      - name: Create Database
+        run: |
+          mkdir -p database
+          touch database/database.sqlite
+
+      - name: Run Migrations
+        env:
+          DB_CONNECTION: sqlite
+          DB_DATABASE: database/database.sqlite
+        run: php artisan migrate --force
+
       - name: Generate Wayfinder Actions and Routes
+        env:
+          DB_CONNECTION: sqlite
+          DB_DATABASE: database/database.sqlite
         run: php artisan wayfinder:generate
 
       - name: PHP Lint (Pint)
