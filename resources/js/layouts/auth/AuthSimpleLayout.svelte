@@ -1,8 +1,8 @@
 <script lang="ts">
+    import type { Snippet } from 'svelte';
     import { Link } from '@inertiajs/svelte';
     import AppLogoIcon from '@/components/AppLogoIcon.svelte';
     import { home } from '@/routes';
-    import type { Snippet } from 'svelte';
 
     let {
         title = '',

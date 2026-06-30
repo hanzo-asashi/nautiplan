@@ -77,7 +77,7 @@ export default ts.config(
             'import/order': [
                 'error',
                 {
-                    groups: ['builtin', 'external', 'internal', 'parent', 'sibling', 'index', 'type'],
+                    groups: ['type', 'builtin', 'external', 'internal', 'parent', 'sibling', 'index'],
                     alphabetize: { order: 'asc', caseInsensitive: true },
                 },
             ],

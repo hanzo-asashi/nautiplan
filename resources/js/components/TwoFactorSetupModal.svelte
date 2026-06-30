@@ -1,4 +1,5 @@
 <script lang="ts">
+    import type { TwoFactorConfigContent } from '@/types';
     import { Form } from '@inertiajs/svelte';
     import Check from 'lucide-svelte/icons/check';
     import Copy from 'lucide-svelte/icons/copy';
@@ -22,7 +23,6 @@
     import { themeState } from '@/lib/theme.svelte';
     import { twoFactorAuthState } from '@/lib/twoFactorAuth.svelte';
     import { confirm } from '@/routes/two-factor';
-    import type { TwoFactorConfigContent } from '@/types';
 
     let {
         requiresConfirmation,

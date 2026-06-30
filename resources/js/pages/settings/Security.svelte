@@ -12,6 +12,7 @@
 </script>
 
 <script lang="ts">
+    import type { Props as ManagePasskeysProps } from '@/components/ManagePasskeys.svelte';
     import { Form, page } from '@inertiajs/svelte';
     import SecurityController from '@/actions/App/Http/Controllers/Settings/SecurityController';
     import AppHead from '@/components/AppHead.svelte';
@@ -22,7 +23,6 @@
     import PasswordInput from '@/components/PasswordInput.svelte';
     import { Button } from '@/components/ui/button';
     import { Label } from '@/components/ui/label';
-    import type { Props as ManagePasskeysProps } from '@/components/ManagePasskeys.svelte';
     const canManageTwoFactor = $derived(Boolean(page.props.canManageTwoFactor));
     const requiresConfirmation = $derived(
         Boolean(page.props.requiresConfirmation),

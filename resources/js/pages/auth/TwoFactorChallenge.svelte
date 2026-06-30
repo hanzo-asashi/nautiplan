@@ -1,4 +1,5 @@
 <script lang="ts">
+    import type { TwoFactorConfigContent } from '@/types';
     import { Form, setLayoutProps } from '@inertiajs/svelte';
     import AppHead from '@/components/AppHead.svelte';
     import InputError from '@/components/InputError.svelte';
@@ -10,7 +11,6 @@
         InputOTPSlot,
     } from '@/components/ui/input-otp';
     import { store } from '@/routes/two-factor/login';
-    import type { TwoFactorConfigContent } from '@/types';
 
     let showRecoveryInput = $state(false);
     let code = $state('');

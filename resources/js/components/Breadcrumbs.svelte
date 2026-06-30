@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { Link } from '@inertiajs/svelte';
     import type { BreadcrumbItem as BreadcrumbItemType } from '@/types';
+    import { Link } from '@inertiajs/svelte';
 
     let {
         breadcrumbs = [],

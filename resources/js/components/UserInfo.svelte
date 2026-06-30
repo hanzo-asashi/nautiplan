@@ -1,11 +1,11 @@
 <script lang="ts">
+    import type { User } from '@/types';
     import {
         Avatar,
         AvatarFallback,
         AvatarImage,
     } from '@/components/ui/avatar';
     import { getInitials } from '@/lib/initials';
-    import type { User } from '@/types';
 
     let {
         user,

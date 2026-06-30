@@ -1,4 +1,6 @@
 <script lang="ts">
+    import type { NavItem } from '@/types';
+    import type { Snippet } from 'svelte';
     import { Link } from '@inertiajs/svelte';
     import Heading from '@/components/Heading.svelte';
     import { Button } from '@/components/ui/button';
@@ -8,8 +10,6 @@
     import { edit as editAppearance } from '@/routes/appearance';
     import { edit as editProfile } from '@/routes/profile';
     import { edit as editSecurity } from '@/routes/security';
-    import type { NavItem } from '@/types';
-    import type { Snippet } from 'svelte';
 
     let {
         children,
