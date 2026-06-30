@@ -56,6 +56,7 @@ export default ts.config(
                 },
                 node: true,
             },
+            'import/internal-regex': '^@/',
         },
         rules: {
             'no-undef': 'off',
