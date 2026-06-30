@@ -134,4 +134,6 @@ nautiplan/
 
 ## 📄 Lisensi
 
-Hak Cipta © 2026 Politeknik Pelayaran Barombong Makassar. All rights reserved.
+Proyek ini dilisensikan di bawah [MIT License](LICENSE).
+
+Copyright © 2026 Politeknik Pelayaran Barombong Makassar.
