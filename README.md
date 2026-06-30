@@ -1,4 +1,11 @@
 <p align="center">
+  <a href="https://github.com/hanzo-asashi/nautiplan/actions/workflows/ci.yml"><img src="https://github.com/hanzo-asashi/nautiplan/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://github.com/hanzo-asashi/nautiplan/actions/workflows/release.yml"><img src="https://github.com/hanzo-asashi/nautiplan/actions/workflows/release.yml/badge.svg" alt="Release"></a>
+  <a href="https://github.com/hanzo-asashi/nautiplan/releases"><img src="https://img.shields.io/github/v/release/hanzo-asashi/nautiplan?style=flat-square&color=06B6D4" alt="Latest Release"></a>
+  <img src="https://img.shields.io/github/license/hanzo-asashi/nautiplan?style=flat-square&color=6366f1" alt="License">
+</p>
+
+<p align="center">
   <img src="https://img.shields.io/badge/Laravel-v13-FF2D20?style=for-the-badge&logo=laravel&logoColor=white" alt="Laravel">
   <img src="https://img.shields.io/badge/Svelte-5-FF3E00?style=for-the-badge&logo=svelte&logoColor=white" alt="Svelte">
   <img src="https://img.shields.io/badge/Inertia.js-v3-6C47FF?style=for-the-badge&logo=inertia&logoColor=white" alt="Inertia.js">
