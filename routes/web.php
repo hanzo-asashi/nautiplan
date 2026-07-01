@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\ActivityIndicatorController;
+use App\Http\Controllers\ActivityReportController;
 use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\BudgetController;
 use App\Http\Controllers\DashboardController;
@@ -56,6 +57,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // KPI & Monitoring
     Route::get('monitoring/kpi', [KpiDashboardController::class, 'index'])->name('monitoring.kpi');
+
+    // Quarterly Reporting & M&E Workflow
+    Route::get('monitoring/reports', [ActivityReportController::class, 'index'])->name('monitoring.reports.index');
+    Route::get('monitoring/reports/{activity}/{quarter}', [ActivityReportController::class, 'show'])->name('monitoring.reports.show');
+    Route::post('monitoring/reports/{activity}/{quarter}', [ActivityReportController::class, 'storeOrUpdate'])->name('monitoring.reports.store');
+    Route::post('monitoring/reports/{activity}/{quarter}/evaluate', [ActivityReportController::class, 'evaluate'])->name('monitoring.reports.evaluate');
 });
 
 require __DIR__.'/settings.php';
