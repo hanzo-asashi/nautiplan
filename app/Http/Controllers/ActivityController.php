@@ -164,6 +164,8 @@ class ActivityController extends Controller
             'budgets.realizations',
             'indicators',
             'documents.uploader',
+            'approvalRequest.steps.role',
+            'approvalRequest.steps.approver',
         ]);
 
         $users = User::get(['id', 'name']);
@@ -176,6 +178,12 @@ class ActivityController extends Controller
 
     public function edit(Activity $activity): Response
     {
+        $user = auth()->user();
+        $isAdmin = $user->isSuperAdmin() || $user->hasRole('admin');
+        if ($activity->status !== 'draft' && ! $isAdmin) {
+            abort(403, 'Kegiatan yang sedang ditinjau atau telah disetujui tidak dapat diubah.');
+        }
+
         $activity->load(['subActivities', 'indicators']);
         $programs = Program::where('status', 'active')->get(['id', 'name', 'code']);
         $renjas = Renja::where('status', 'approved')->get(['id', 'title']);
@@ -195,6 +203,12 @@ class ActivityController extends Controller
 
     public function update(Request $request, Activity $activity): RedirectResponse
     {
+        $user = auth()->user();
+        $isAdmin = $user->isSuperAdmin() || $user->hasRole('admin');
+        if ($activity->status !== 'draft' && ! $isAdmin) {
+            abort(403, 'Kegiatan yang sedang ditinjau atau telah disetujui tidak dapat diubah.');
+        }
+
         $validated = $request->validate([
             'code' => 'required|string|unique:activities,code,'.$activity->id.',id,fiscal_year_id,'.$request->input('fiscal_year_id'),
             'name' => 'required|string|max:255',
@@ -241,6 +255,10 @@ class ActivityController extends Controller
                 ]);
             }
             $pairs[] = $key;
+        }
+
+        if (! $isAdmin && $validated['status'] !== 'draft') {
+            abort(403, 'Hanya Administrator yang dapat mengubah status secara manual.');
         }
 
         $activity->update([

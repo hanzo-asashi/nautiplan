@@ -3,6 +3,7 @@
 use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\ActivityIndicatorController;
 use App\Http\Controllers\ActivityReportController;
+use App\Http\Controllers\ApprovalController;
 use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\BudgetController;
 use App\Http\Controllers\DashboardController;
@@ -63,6 +64,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('monitoring/reports/{activity}/{quarter}', [ActivityReportController::class, 'show'])->name('monitoring.reports.show');
     Route::post('monitoring/reports/{activity}/{quarter}', [ActivityReportController::class, 'storeOrUpdate'])->name('monitoring.reports.store');
     Route::post('monitoring/reports/{activity}/{quarter}/evaluate', [ActivityReportController::class, 'evaluate'])->name('monitoring.reports.evaluate');
+
+    // Approvals Workflow
+    Route::get('approvals', [ApprovalController::class, 'index'])->name('approvals.index');
+    Route::post('activities/{activity}/submit-approval', [ApprovalController::class, 'submit'])->name('activities.submit-approval');
+    Route::post('approvals/{approvalRequest}/action', [ApprovalController::class, 'action'])->name('approvals.action');
 });
 
 require __DIR__.'/settings.php';

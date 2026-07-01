@@ -54,7 +54,7 @@ class ApprovalRequest extends Model
         return $this->hasMany(ApprovalStep::class)->orderBy('step_order');
     }
 
-    public function getCurrentStepAttribute(): ?ApprovalStep
+    public function getPendingStepAttribute(): ?ApprovalStep
     {
         return $this->steps()->where('status', 'pending')->first();
     }
