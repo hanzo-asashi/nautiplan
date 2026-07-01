@@ -246,28 +246,28 @@
         {#snippet actions()}
             <Link
                 href={toUrl(activitiesIndex())}
-                class="inline-flex h-9 items-center justify-center rounded-md border border-zinc-200 dark:border-zinc-800 bg-background text-muted-foreground hover:text-foreground px-4 py-2 text-sm font-medium transition-colors cursor-pointer gap-1.5"
+                class="inline-flex h-9 items-center justify-center rounded-md border border-zinc-200 dark:border-zinc-800 bg-background text-muted-foreground hover:text-foreground px-4 py-2 text-sm font-medium transition-colors cursor-pointer gap-1.5 whitespace-nowrap"
             >
                 <ArrowLeft class="size-4" />
                 Kembali
             </Link>
             <a
                 href={toUrl(activityPdf({ activity: activity.id }))}
-                class="inline-flex h-9 items-center justify-center rounded-md border border-zinc-200 dark:border-zinc-800 bg-background text-muted-foreground hover:text-foreground px-4 py-2 text-sm font-medium transition-colors cursor-pointer gap-1.5"
+                class="inline-flex h-9 items-center justify-center rounded-md border border-zinc-200 dark:border-zinc-800 bg-background text-muted-foreground hover:text-foreground px-4 py-2 text-sm font-medium transition-colors cursor-pointer gap-1.5 whitespace-nowrap"
             >
                 <FileDown class="size-4" />
                 Unduh PDF
             </a>
             <Link
                 href={toUrl(kanban({ activity: activity.id }))}
-                class="inline-flex h-9 items-center justify-center rounded-md border border-zinc-200 dark:border-zinc-800 bg-background text-muted-foreground hover:text-foreground px-4 py-2 text-sm font-medium transition-colors cursor-pointer gap-1.5"
+                class="inline-flex h-9 items-center justify-center rounded-md border border-zinc-200 dark:border-zinc-800 bg-background text-muted-foreground hover:text-foreground px-4 py-2 text-sm font-medium transition-colors cursor-pointer gap-1.5 whitespace-nowrap"
             >
                 <KanbanSquare class="size-4" />
                 Papan Kanban
             </Link>
             <Link
                 href={toUrl(revisions({ activity: activity.id }))}
-                class="inline-flex h-9 items-center justify-center rounded-md border border-zinc-200 dark:border-zinc-800 bg-background text-muted-foreground hover:text-foreground px-4 py-2 text-sm font-medium transition-colors cursor-pointer gap-1.5"
+                class="inline-flex h-9 items-center justify-center rounded-md border border-zinc-200 dark:border-zinc-800 bg-background text-muted-foreground hover:text-foreground px-4 py-2 text-sm font-medium transition-colors cursor-pointer gap-1.5 whitespace-nowrap"
             >
                 <History class="size-4" />
                 Riwayat Perubahan
@@ -275,7 +275,7 @@
             {#if canEdit}
                 <Link
                     href={toUrl(edit({ activity: activity.id }))}
-                    class="inline-flex h-9 items-center justify-center rounded-md bg-primary hover:bg-primary/95 text-white px-4 py-2 text-sm font-medium shadow-md shadow-primary/20 transition-colors cursor-pointer gap-1.5"
+                    class="inline-flex h-9 items-center justify-center rounded-md bg-primary hover:bg-primary/95 text-white px-4 py-2 text-sm font-medium shadow-md shadow-primary/20 transition-colors cursor-pointer gap-1.5 whitespace-nowrap"
                 >
                     <Edit2 class="size-4" />
                     Edit Kegiatan
@@ -287,7 +287,7 @@
                         router.post(
                             toUrl(submitApproval({ activity: activity.id })),
                         )}
-                    class="inline-flex h-9 items-center justify-center rounded-md bg-emerald-600 hover:bg-emerald-600/90 text-white px-4 py-2 text-sm font-medium shadow-md shadow-emerald-500/20 transition-colors cursor-pointer gap-1.5"
+                    class="inline-flex h-9 items-center justify-center rounded-md bg-emerald-600 hover:bg-emerald-600/90 text-white px-4 py-2 text-sm font-medium shadow-md shadow-emerald-500/20 transition-colors cursor-pointer gap-1.5 whitespace-nowrap"
                 >
                     Ajukan Persetujuan
                 </button>
