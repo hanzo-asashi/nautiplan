@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
 /**
@@ -22,6 +23,8 @@ class ActivityDocument extends Model
 {
     protected $fillable = [
         'activity_id',
+        'parent_id',
+        'version',
         'uploaded_by',
         'file_name',
         'file_path',
@@ -44,6 +47,22 @@ class ActivityDocument extends Model
     public function uploader(): BelongsTo
     {
         return $this->belongsTo(User::class, 'uploaded_by');
+    }
+
+    /**
+     * @return BelongsTo<ActivityDocument, $this>
+     */
+    public function parent(): BelongsTo
+    {
+        return $this->belongsTo(ActivityDocument::class, 'parent_id');
+    }
+
+    /**
+     * @return HasMany<ActivityDocument, $this>
+     */
+    public function versions(): HasMany
+    {
+        return $this->hasMany(ActivityDocument::class, 'parent_id')->orderBy('version', 'desc');
     }
 
     public function getFormattedSizeAttribute(): string

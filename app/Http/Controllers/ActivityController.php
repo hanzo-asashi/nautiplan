@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Activity;
 use App\Models\ActivityDocument;
 use App\Models\ActivityIndicator;
+use App\Models\AuditLog;
 use App\Models\FiscalYear;
+use App\Models\Notification;
 use App\Models\Program;
 use App\Models\Renja;
 use App\Models\SubActivity;
@@ -164,6 +166,7 @@ class ActivityController extends Controller
             'budgets.realizations',
             'indicators',
             'documents.uploader',
+            'documents.versions.uploader',
             'approvalRequest.steps.role',
             'approvalRequest.steps.approver',
         ]);
@@ -314,13 +317,45 @@ class ActivityController extends Controller
         $request->validate([
             'file' => 'required|file|max:10240|mimes:pdf,docx,xlsx,png,jpg',
             'description' => 'nullable|string',
+            'parent_id' => 'nullable|integer|exists:activity_documents,id',
         ]);
 
         $file = $request->file('file');
         $path = $file->store('activity-documents', 'public');
 
+        $parentId = $request->input('parent_id');
+        $version = 1;
+
+        if ($parentId) {
+            $parent = ActivityDocument::where('id', $parentId)->firstOrFail();
+            if ($parent->activity_id !== $activity->id) {
+                abort(403, 'Parent document does not belong to this activity.');
+            }
+            $rootParentId = $parent->parent_id ?: $parent->id;
+            $parentId = $rootParentId;
+            $maxVersion = ActivityDocument::where('parent_id', $rootParentId)
+                ->orWhere('id', $rootParentId)
+                ->max('version');
+            $version = $maxVersion + 1;
+        } else {
+            $existingRootDoc = ActivityDocument::where('activity_id', $activity->id)
+                ->whereNull('parent_id')
+                ->where('file_name', $file->getClientOriginalName())
+                ->first();
+
+            if ($existingRootDoc) {
+                $parentId = $existingRootDoc->id;
+                $maxVersion = ActivityDocument::where('parent_id', $parentId)
+                    ->orWhere('id', $parentId)
+                    ->max('version');
+                $version = $maxVersion + 1;
+            }
+        }
+
         ActivityDocument::create([
             'activity_id' => $activity->id,
+            'parent_id' => $parentId,
+            'version' => $version,
             'uploaded_by' => Auth::id(),
             'file_name' => $file->getClientOriginalName(),
             'file_path' => $path,
@@ -338,6 +373,92 @@ class ActivityController extends Controller
         $document->delete();
 
         return back()->with('success', 'Dokumen berhasil dihapus.');
+    }
+
+    public function kanban(Activity $activity): Response
+    {
+        $activity->load([
+            'unit',
+            'fiscalYear',
+            'subActivities.assignedUser',
+        ]);
+
+        $users = User::get(['id', 'name']);
+
+        return Inertia::render('activities/Kanban', [
+            'activity' => $activity,
+            'users' => $users,
+        ]);
+    }
+
+    public function updateSubActivityStatus(Request $request, SubActivity $subActivity): RedirectResponse
+    {
+        $validated = $request->validate([
+            'status' => 'required|string|in:pending,in_progress,completed,cancelled',
+            'progress_percentage' => 'required|integer|min:0|max:100',
+        ]);
+
+        $subActivity->update($validated);
+
+        if ($validated['status'] === 'completed') {
+            $subActivity->update(['progress_percentage' => 100]);
+        }
+
+        $activity = $subActivity->activity;
+        $totalSubActivities = $activity->subActivities()->count();
+        if ($totalSubActivities > 0) {
+            $totalProgress = $activity->subActivities()->sum('progress_percentage');
+            $averageProgress = (int) round($totalProgress / $totalSubActivities);
+            $activity->update(['progress_percentage' => $averageProgress]);
+        }
+
+        if ($subActivity->assigned_to) {
+            Notification::create([
+                'user_id' => $subActivity->assigned_to,
+                'title' => 'Sub-Kegiatan Diperbarui',
+                'message' => "Status sub-kegiatan '{$subActivity->name}' diubah menjadi '".ucfirst(str_replace('_', ' ', $subActivity->status))."' dengan progres {$subActivity->progress_percentage}%.",
+                'type' => 'activity',
+            ]);
+        }
+
+        return back()->with('success', 'Status sub-kegiatan berhasil diperbarui.');
+    }
+
+    public function revisions(Activity $activity): Response
+    {
+        $activity->load(['unit', 'fiscalYear']);
+
+        $budgetIds = $activity->budgets()->pluck('id')->toArray();
+        $subActivityIds = $activity->subActivities()->pluck('id')->toArray();
+
+        $auditLogs = AuditLog::with('user')
+            ->where(function ($q) use ($activity) {
+                $q->where('auditable_type', Activity::class)
+                    ->where('auditable_id', $activity->id);
+            })
+            ->orWhere(function ($q) use ($budgetIds) {
+                if (! empty($budgetIds)) {
+                    $q->where('auditable_type', 'App\Models\ActivityBudget')
+                        ->whereIn('auditable_id', $budgetIds);
+                } else {
+                    $q->whereRaw('1=0');
+                }
+            })
+            ->orWhere(function ($q) use ($subActivityIds) {
+                if (! empty($subActivityIds)) {
+                    $q->where('auditable_type', 'App\Models\SubActivity')
+                        ->whereIn('auditable_id', $subActivityIds);
+                } else {
+                    $q->whereRaw('1=0');
+                }
+            })
+            ->latest()
+            ->paginate(30);
+
+        return Inertia::render('activities/Revisions', [
+            'activity' => $activity,
+            'revisions' => $auditLogs,
+        ]);
     }
 
     public function destroy(Activity $activity): RedirectResponse

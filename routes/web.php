@@ -9,6 +9,7 @@ use App\Http\Controllers\BudgetController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FiscalYearController;
 use App\Http\Controllers\KpiDashboardController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ProgramController;
 use App\Http\Controllers\RenjaController;
 use App\Http\Controllers\RenstraController;
@@ -30,6 +31,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Programs & Activities
     Route::resource('programs', ProgramController::class);
     Route::resource('activities', ActivityController::class);
+    Route::get('activities/{activity}/kanban', [ActivityController::class, 'kanban'])->name('activities.kanban');
+    Route::get('activities/{activity}/revisions', [ActivityController::class, 'revisions'])->name('activities.revisions');
+    Route::put('sub-activities/{subActivity}/status', [ActivityController::class, 'updateSubActivityStatus'])->name('sub-activities.update-status');
     Route::post('activities/{activity}/documents', [ActivityController::class, 'uploadDocument'])->name('activities.documents.upload');
     Route::delete('activity-documents/{document}', [ActivityController::class, 'deleteDocument'])->name('activities.documents.delete');
     Route::post('activities/{activity}/indicators', [ActivityIndicatorController::class, 'store'])->name('activities.indicators.store');
@@ -74,11 +78,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Reporting & Export Workflow
     Route::get('reports/gantt', [ReportController::class, 'gantt'])->name('reports.gantt');
     Route::get('reports/analytics', [ReportController::class, 'analytics'])->name('reports.analytics');
+    Route::get('reports/calendar', [ReportController::class, 'calendar'])->name('reports.calendar');
     Route::get('reports/export/excel', [ReportController::class, 'exportExcel'])->name('reports.export.excel');
     Route::get('reports/import/template', [ReportController::class, 'downloadTemplate'])->name('reports.import.template');
     Route::post('reports/import/excel', [ReportController::class, 'importExcel'])->name('reports.import.excel');
     Route::get('reports/activity/{activity}/pdf', [ReportController::class, 'downloadPdfActivity'])->name('reports.activity.pdf');
     Route::get('reports/quarterly/{activity}/{quarter}/pdf', [ReportController::class, 'downloadPdfQuarterly'])->name('reports.quarterly.pdf');
+
+    // Notifications Workflow
+    Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::get('notifications/stream', [NotificationController::class, 'stream'])->name('notifications.stream');
+    Route::post('notifications/{notification}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
+    Route::post('notifications/read-all', [NotificationController::class, 'markAllRead'])->name('notifications.read-all');
 });
 
 require __DIR__.'/settings.php';
