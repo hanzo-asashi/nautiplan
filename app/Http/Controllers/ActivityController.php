@@ -405,9 +405,10 @@ class ActivityController extends Controller
         }
 
         $activity = $subActivity->activity;
-        $totalSubActivities = $activity->subActivities()->count();
+        $subActivities = $activity->subActivities;
+        $totalSubActivities = $subActivities->count();
         if ($totalSubActivities > 0) {
-            $totalProgress = $activity->subActivities()->sum('progress_percentage');
+            $totalProgress = $subActivities->sum('progress_percentage');
             $averageProgress = (int) round($totalProgress / $totalSubActivities);
             $activity->update(['progress_percentage' => $averageProgress]);
         }
