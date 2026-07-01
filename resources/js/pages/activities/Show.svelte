@@ -36,7 +36,12 @@
     import PageHeader from '@/components/PageHeader.svelte';
     import StatusBadge from '@/components/StatusBadge.svelte';
     import { formatRupiah, toUrl } from '@/lib/utils';
-    import { edit, submitApproval, kanban, revisions } from '@/routes/activities';
+    import {
+        edit,
+        submitApproval,
+        kanban,
+        revisions,
+    } from '@/routes/activities';
     import { upload, deleteMethod } from '@/routes/activities/documents';
     import { pdf as activityPdf } from '@/routes/reports/activity';
 
@@ -742,7 +747,9 @@
             <!-- Document Upload & List -->
             <div
                 class="rounded-xl border transition-all duration-300 bg-card/40 backdrop-blur-md p-6 space-y-4 shadow-sm text-sm
-                    {isDragging ? 'border-primary ring-2 ring-primary bg-primary/5 border-dashed scale-[1.02]' : 'border-sidebar-border/50'}"
+                    {isDragging
+                    ? 'border-primary ring-2 ring-primary bg-primary/5 border-dashed scale-[1.02]'
+                    : 'border-sidebar-border/50'}"
                 role="region"
                 aria-label="Area seret dan lepas dokumen lampiran"
                 ondragover={handleDragOver}
@@ -754,16 +761,27 @@
                 >
                     Lampiran Dokumen
                     {#if isDragging}
-                        <span class="text-primary font-black animate-pulse">Lepas File Di Sini</span>
+                        <span class="text-primary font-black animate-pulse"
+                            >Lepas File Di Sini</span
+                        >
                     {/if}
                 </h3>
 
                 <!-- Upload form -->
                 <form onsubmit={handleUpload} class="space-y-3">
                     {#if uploadForm.parent_id}
-                        {@const parentDoc = activity.documents.find(d => d.id === uploadForm.parent_id)}
-                        <div class="p-2 bg-amber-500/10 border border-amber-500/20 text-amber-600 rounded-md text-[10px] font-semibold flex items-center justify-between">
-                            <span>Mengunggah versi baru untuk: <strong class="truncate">{parentDoc?.file_name}</strong></span>
+                        {@const parentDoc = activity.documents.find(
+                            (d) => d.id === uploadForm.parent_id,
+                        )}
+                        <div
+                            class="p-2 bg-amber-500/10 border border-amber-500/20 text-amber-600 rounded-md text-[10px] font-semibold flex items-center justify-between"
+                        >
+                            <span
+                                >Mengunggah versi baru untuk: <strong
+                                    class="truncate"
+                                    >{parentDoc?.file_name}</strong
+                                ></span
+                            >
                             <button
                                 type="button"
                                 onclick={cancelVersionUpload}
@@ -789,10 +807,18 @@
                         >
                             <FileUp class="size-5 text-muted-foreground" />
                             {#if uploadForm.file}
-                                <span class="text-primary truncate px-4 font-bold">{uploadForm.file.name}</span>
+                                <span
+                                    class="text-primary truncate px-4 font-bold"
+                                    >{uploadForm.file.name}</span
+                                >
                             {:else}
-                                <span class="text-[10px]">Tarik & lepas file atau Klik untuk memilih</span>
-                                <span class="text-[8px] text-muted-foreground/60">(Max 10MB: PDF, DOCX, XLSX, PNG, JPG)</span>
+                                <span class="text-[10px]"
+                                    >Tarik & lepas file atau Klik untuk memilih</span
+                                >
+                                <span
+                                    class="text-[8px] text-muted-foreground/60"
+                                    >(Max 10MB: PDF, DOCX, XLSX, PNG, JPG)</span
+                                >
                             {/if}
                         </button>
                     </div>
@@ -823,18 +849,28 @@
                         Belum ada dokumen diunggah.
                     </p>
                 {:else}
-                    {@const rootDocs = activity.documents.filter(d => !d.parent_id)}
+                    {@const rootDocs = activity.documents.filter(
+                        (d) => !d.parent_id,
+                    )}
                     <div
                         class="space-y-3 border-t border-sidebar-border/20 pt-3 mt-3"
                     >
                         {#each rootDocs as doc}
-                            {@const versions = activity.documents.filter(d => d.parent_id === doc.id).sort((a,b) => b.version - a.version)}
+                            {@const versions = activity.documents
+                                .filter((d) => d.parent_id === doc.id)
+                                .sort((a, b) => b.version - a.version)}
                             {@const isExpanded = !!expandedDocs[doc.id]}
-                            
-                            <div class="p-3.5 rounded-xl bg-zinc-50/50 dark:bg-zinc-900/40 border border-sidebar-border/20 space-y-2">
-                                <div class="flex items-start justify-between gap-3">
+
+                            <div
+                                class="p-3.5 rounded-xl bg-zinc-50/50 dark:bg-zinc-900/40 border border-sidebar-border/20 space-y-2"
+                            >
+                                <div
+                                    class="flex items-start justify-between gap-3"
+                                >
                                     <div class="flex items-start gap-2 min-w-0">
-                                        <Paperclip class="size-4 text-muted-foreground shrink-0 mt-0.5" />
+                                        <Paperclip
+                                            class="size-4 text-muted-foreground shrink-0 mt-0.5"
+                                        />
                                         <div class="min-w-0">
                                             <a
                                                 href={`/storage/${doc.file_path}`}
@@ -844,40 +880,56 @@
                                             >
                                                 {doc.file_name}
                                             </a>
-                                            <div class="flex flex-wrap items-center gap-1.5 text-[9px] text-muted-foreground/75 mt-0.5">
+                                            <div
+                                                class="flex flex-wrap items-center gap-1.5 text-[9px] text-muted-foreground/75 mt-0.5"
+                                            >
                                                 <span>Versi {doc.version}</span>
                                                 <span>•</span>
-                                                <span>{doc.uploader?.name || 'Sistem'}</span>
+                                                <span
+                                                    >{doc.uploader?.name ||
+                                                        'Sistem'}</span
+                                                >
                                             </div>
                                             {#if doc.description}
-                                                <p class="text-[10px] text-muted-foreground mt-1 leading-relaxed">
+                                                <p
+                                                    class="text-[10px] text-muted-foreground mt-1 leading-relaxed"
+                                                >
                                                     {doc.description}
                                                 </p>
                                             {/if}
                                         </div>
                                     </div>
 
-                                    <div class="flex items-center gap-1 shrink-0">
+                                    <div
+                                        class="flex items-center gap-1 shrink-0"
+                                    >
                                         <!-- Version history toggle -->
                                         {#if versions.length > 0}
                                             <button
-                                                onclick={() => toggleExpandDoc(doc.id)}
+                                                onclick={() =>
+                                                    toggleExpandDoc(doc.id)}
                                                 class="p-1 hover:bg-zinc-200/50 rounded text-muted-foreground hover:text-foreground cursor-pointer flex items-center gap-1"
                                                 title="Riwayat Versi"
                                             >
                                                 <History class="size-3.5" />
-                                                <span class="text-[9px] font-bold">+{versions.length}</span>
+                                                <span
+                                                    class="text-[9px] font-bold"
+                                                    >+{versions.length}</span
+                                                >
                                                 {#if isExpanded}
                                                     <ChevronUp class="size-3" />
                                                 {:else}
-                                                    <ChevronDown class="size-3" />
+                                                    <ChevronDown
+                                                        class="size-3"
+                                                    />
                                                 {/if}
                                             </button>
                                         {/if}
 
                                         <!-- Upload new version button -->
                                         <button
-                                            onclick={() => selectParentForVersion(doc.id)}
+                                            onclick={() =>
+                                                selectParentForVersion(doc.id)}
                                             class="p-1 hover:bg-zinc-200/50 rounded text-muted-foreground hover:text-primary cursor-pointer"
                                             title="Unggah Versi Baru"
                                         >
@@ -886,7 +938,8 @@
 
                                         <!-- Delete document -->
                                         <button
-                                            onclick={() => handleDeleteDoc(doc.id)}
+                                            onclick={() =>
+                                                handleDeleteDoc(doc.id)}
                                             class="text-rose-500 hover:text-rose-600 p-1 hover:bg-rose-500/10 rounded cursor-pointer"
                                             title="Hapus"
                                         >
@@ -897,13 +950,19 @@
 
                                 <!-- Versions Drawer -->
                                 {#if isExpanded && versions.length > 0}
-                                    <div class="pl-6 border-l border-sidebar-border/30 space-y-2 mt-2 pt-2 bg-zinc-100/10 dark:bg-zinc-950/10 p-2.5 rounded-lg">
-                                        <h5 class="text-[9px] font-bold text-muted-foreground uppercase tracking-wider mb-1.5 flex items-center gap-1">
+                                    <div
+                                        class="pl-6 border-l border-sidebar-border/30 space-y-2 mt-2 pt-2 bg-zinc-100/10 dark:bg-zinc-950/10 p-2.5 rounded-lg"
+                                    >
+                                        <h5
+                                            class="text-[9px] font-bold text-muted-foreground uppercase tracking-wider mb-1.5 flex items-center gap-1"
+                                        >
                                             <History class="size-3" />
                                             Riwayat Perubahan Versi
                                         </h5>
                                         {#each versions as ver}
-                                            <div class="flex items-center justify-between gap-3 text-[10px] text-muted-foreground p-1 hover:bg-zinc-100/50 dark:hover:bg-zinc-800/30 rounded transition-colors">
+                                            <div
+                                                class="flex items-center justify-between gap-3 text-[10px] text-muted-foreground p-1 hover:bg-zinc-100/50 dark:hover:bg-zinc-800/30 rounded transition-colors"
+                                            >
                                                 <div class="min-w-0">
                                                     <a
                                                         href={`/storage/${ver.file_path}`}
@@ -913,12 +972,17 @@
                                                     >
                                                         v{ver.version}: {ver.file_name}
                                                     </a>
-                                                    <span class="text-[8px] block text-muted-foreground/60 mt-0.5">
-                                                        Diunggah oleh {ver.uploader?.name || 'Sistem'}
+                                                    <span
+                                                        class="text-[8px] block text-muted-foreground/60 mt-0.5"
+                                                    >
+                                                        Diunggah oleh {ver
+                                                            .uploader?.name ||
+                                                            'Sistem'}
                                                     </span>
                                                 </div>
                                                 <button
-                                                    onclick={() => handleDeleteDoc(ver.id)}
+                                                    onclick={() =>
+                                                        handleDeleteDoc(ver.id)}
                                                     class="text-rose-500 hover:text-rose-600 p-0.5 hover:bg-rose-500/10 rounded cursor-pointer shrink-0"
                                                     title="Hapus Versi"
                                                 >

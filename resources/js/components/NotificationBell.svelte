@@ -13,16 +13,20 @@
     import { toUrl } from '@/lib/utils';
     import notificationsRoute from '@/routes/notifications';
 
-    let notifications = $state<Array<{
-        id: string;
-        title: string;
-        message: string;
-        type: string;
-        read_at: string | null;
-        created_at: string;
-    }>>([]);
+    let notifications = $state<
+        Array<{
+            id: string;
+            title: string;
+            message: string;
+            type: string;
+            read_at: string | null;
+            created_at: string;
+        }>
+    >([]);
 
-    const unreadCount = $derived(notifications.filter(n => !n.read_at).length);
+    const unreadCount = $derived(
+        notifications.filter((n) => !n.read_at).length,
+    );
 
     let eventSource: EventSource | null = null;
 
@@ -45,12 +49,17 @@
                 // Prepend new notifications and filter out duplicates
                 notifications = [
                     ...newItems,
-                    ...notifications.filter(n => !newItems.some(ni => ni.id === n.id))
+                    ...notifications.filter(
+                        (n) => !newItems.some((ni) => ni.id === n.id),
+                    ),
                 ].slice(0, 20); // Keep max 20 items
-                
+
                 // Trigger browser desktop notification if permitted
-                if (Notification.permission === 'granted' && newItems.length > 0) {
-                    newItems.forEach(item => {
+                if (
+                    Notification.permission === 'granted' &&
+                    newItems.length > 0
+                ) {
+                    newItems.forEach((item) => {
                         new Notification(item.title, { body: item.message });
                     });
                 }
@@ -60,7 +69,11 @@
         });
 
         // Request browser notification permission
-        if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'default') {
+        if (
+            typeof window !== 'undefined' &&
+            'Notification' in window &&
+            Notification.permission === 'default'
+        ) {
             Notification.requestPermission();
         }
     });
@@ -78,11 +91,13 @@
             {
                 preserveScroll: true,
                 onSuccess: () => {
-                    notifications = notifications.map(n => 
-                        n.id === id ? { ...n, read_at: new Date().toISOString() } : n
+                    notifications = notifications.map((n) =>
+                        n.id === id
+                            ? { ...n, read_at: new Date().toISOString() }
+                            : n,
                     );
-                }
-            }
+                },
+            },
         );
     }
 
@@ -93,37 +108,42 @@
             {
                 preserveScroll: true,
                 onSuccess: () => {
-                    notifications = notifications.map(n => ({
+                    notifications = notifications.map((n) => ({
                         ...n,
-                        read_at: new Date().toISOString()
+                        read_at: new Date().toISOString(),
                     }));
-                }
-            }
+                },
+            },
         );
     }
 
     function formatTimeAgo(dateStr: string): string {
         try {
             const date = new Date(dateStr);
-            const seconds = Math.floor((new Date().getTime() - date.getTime()) / 1000);
-            
+            const seconds = Math.floor(
+                (new Date().getTime() - date.getTime()) / 1000,
+            );
+
             if (seconds < 60) {
-return 'Baru saja';
-}
+                return 'Baru saja';
+            }
 
             const minutes = Math.floor(seconds / 60);
 
             if (minutes < 60) {
-return `${minutes}m yang lalu`;
-}
+                return `${minutes}m yang lalu`;
+            }
 
             const hours = Math.floor(minutes / 60);
 
             if (hours < 24) {
-return `${hours}j yang lalu`;
-}
-            
-            return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+                return `${hours}j yang lalu`;
+            }
+
+            return date.toLocaleDateString('id-ID', {
+                day: 'numeric',
+                month: 'short',
+            });
         } catch {
             return '';
         }
@@ -141,22 +161,35 @@ return `${hours}j yang lalu`;
                 aria-expanded={props['aria-expanded']}
                 data-state={props['data-state']}
             >
-                <Bell class="size-5 opacity-80 group-hover:opacity-100 transition-opacity" />
+                <Bell
+                    class="size-5 opacity-80 group-hover:opacity-100 transition-opacity"
+                />
                 {#if unreadCount > 0}
-                    <span class="absolute top-1.5 right-1.5 size-2 rounded-full bg-rose-500 ring-2 ring-background animate-pulse"></span>
+                    <span
+                        class="absolute top-1.5 right-1.5 size-2 rounded-full bg-rose-500 ring-2 ring-background animate-pulse"
+                    ></span>
                 {/if}
             </Button>
         {/snippet}
     </DropdownMenuTrigger>
 
-    <DropdownMenuContent align="end" class="w-80 p-0 overflow-hidden shadow-xl rounded-xl border border-sidebar-border/30 bg-card/95 backdrop-blur-md">
+    <DropdownMenuContent
+        align="end"
+        class="w-80 p-0 overflow-hidden shadow-xl rounded-xl border border-sidebar-border/30 bg-card/95 backdrop-blur-md"
+    >
         <!-- Header -->
-        <div class="p-4 border-b border-sidebar-border/30 flex items-center justify-between">
-            <span class="text-xs font-bold text-foreground flex items-center gap-1.5">
+        <div
+            class="p-4 border-b border-sidebar-border/30 flex items-center justify-between"
+        >
+            <span
+                class="text-xs font-bold text-foreground flex items-center gap-1.5"
+            >
                 <Bell class="size-4 text-primary" />
                 Notifikasi
                 {#if unreadCount > 0}
-                    <span class="px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-primary text-white leading-none">
+                    <span
+                        class="px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-primary text-white leading-none"
+                    >
                         {unreadCount} baru
                     </span>
                 {/if}
@@ -172,22 +205,37 @@ return `${hours}j yang lalu`;
         </div>
 
         <!-- List -->
-        <div class="max-h-[300px] overflow-y-auto divide-y divide-sidebar-border/20">
+        <div
+            class="max-h-[300px] overflow-y-auto divide-y divide-sidebar-border/20"
+        >
             {#if notifications.length === 0}
-                <div class="p-8 text-center text-xs text-muted-foreground/60 italic space-y-2">
+                <div
+                    class="p-8 text-center text-xs text-muted-foreground/60 italic space-y-2"
+                >
                     <Info class="size-6 text-muted-foreground/30 mx-auto" />
                     <p>Tidak ada notifikasi baru.</p>
                 </div>
             {:else}
                 {#each notifications as item (item.id)}
-                    <div 
+                    <div
                         class="p-3.5 text-left transition-colors flex items-start gap-3 hover:bg-zinc-50/50 dark:hover:bg-zinc-900/20 relative group
                             {item.read_at ? 'opacity-60' : 'bg-primary/5'}"
                     >
                         <div class="space-y-1 flex-1">
-                            <h4 class="text-[11px] font-bold text-foreground leading-tight">{item.title}</h4>
-                            <p class="text-[10px] text-muted-foreground leading-relaxed">{item.message}</p>
-                            <span class="text-[9px] text-muted-foreground/75 block pt-1">{formatTimeAgo(item.created_at)}</span>
+                            <h4
+                                class="text-[11px] font-bold text-foreground leading-tight"
+                            >
+                                {item.title}
+                            </h4>
+                            <p
+                                class="text-[10px] text-muted-foreground leading-relaxed"
+                            >
+                                {item.message}
+                            </p>
+                            <span
+                                class="text-[9px] text-muted-foreground/75 block pt-1"
+                                >{formatTimeAgo(item.created_at)}</span
+                            >
                         </div>
 
                         {#if !item.read_at}

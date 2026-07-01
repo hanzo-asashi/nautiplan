@@ -57,22 +57,26 @@
                 created_at: string;
                 user?: { name: string } | null;
             }>;
-            links: Array<{ url: string | null; label: string; active: boolean }>;
+            links: Array<{
+                url: string | null;
+                label: string;
+                active: boolean;
+            }>;
         };
     } = $props();
 
     function formatAuditableType(type: string): string {
         if (type.includes('ActivityBudget')) {
-return 'Anggaran';
-}
+            return 'Anggaran';
+        }
 
         if (type.includes('SubActivity')) {
-return 'Sub-Kegiatan';
-}
+            return 'Sub-Kegiatan';
+        }
 
         if (type.includes('Activity')) {
-return 'Kegiatan Utama';
-}
+            return 'Kegiatan Utama';
+        }
 
         return type;
     }
@@ -98,20 +102,24 @@ return 'Kegiatan Utama';
 
     function formatValue(key: string, val: any): string {
         if (val === null || val === undefined) {
-return 'Kosong';
-}
+            return 'Kosong';
+        }
 
         if (typeof val === 'boolean') {
-return val ? 'Ya' : 'Tidak';
-}
+            return val ? 'Ya' : 'Tidak';
+        }
 
         if (key === 'amount') {
-            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(val);
+            return new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR',
+                maximumFractionDigits: 0,
+            }).format(val);
         }
 
         if (typeof val === 'object') {
-return JSON.stringify(val);
-}
+            return JSON.stringify(val);
+        }
 
         return String(val);
     }
@@ -146,51 +154,101 @@ return JSON.stringify(val);
     </div>
 
     <!-- Timeline Layout -->
-    <div class="rounded-xl border border-sidebar-border/30 bg-card/40 backdrop-blur-md p-6 shadow-sm flex-1 space-y-6">
+    <div
+        class="rounded-xl border border-sidebar-border/30 bg-card/40 backdrop-blur-md p-6 shadow-sm flex-1 space-y-6"
+    >
         {#if revisions.data.length === 0}
-            <div class="p-12 text-center text-sm text-muted-foreground/60 italic space-y-2">
+            <div
+                class="p-12 text-center text-sm text-muted-foreground/60 italic space-y-2"
+            >
                 <Info class="size-8 text-muted-foreground/30 mx-auto" />
-                <p>Belum ada riwayat perubahan yang dicatat untuk kegiatan ini.</p>
+                <p>
+                    Belum ada riwayat perubahan yang dicatat untuk kegiatan ini.
+                </p>
             </div>
         {:else}
-            <div class="relative border-l-2 border-sidebar-border/50 pl-6 space-y-8">
+            <div
+                class="relative border-l-2 border-sidebar-border/50 pl-6 space-y-8"
+            >
                 {#each revisions.data as revision (revision.id)}
                     <div class="relative">
                         <!-- Timeline circle node -->
-                        <div class="absolute -left-[31px] top-1.5 size-4 rounded-full border bg-background flex items-center justify-center
-                            {revision.event === 'created' ? 'border-emerald-500 text-emerald-500 bg-emerald-50/50' : ''}
-                            {revision.event === 'updated' ? 'border-blue-500 text-blue-500 bg-blue-50/50' : ''}
-                            {revision.event === 'deleted' ? 'border-rose-500 text-rose-500 bg-rose-50/50' : ''}">
-                            <span class="size-1.5 rounded-full
-                                {revision.event === 'created' ? 'bg-emerald-500' : ''}
-                                {revision.event === 'updated' ? 'bg-blue-500' : ''}
-                                {revision.event === 'deleted' ? 'bg-rose-500' : ''}"></span>
+                        <div
+                            class="absolute -left-[31px] top-1.5 size-4 rounded-full border bg-background flex items-center justify-center
+                            {revision.event === 'created'
+                                ? 'border-emerald-500 text-emerald-500 bg-emerald-50/50'
+                                : ''}
+                            {revision.event === 'updated'
+                                ? 'border-blue-500 text-blue-500 bg-blue-50/50'
+                                : ''}
+                            {revision.event === 'deleted'
+                                ? 'border-rose-500 text-rose-500 bg-rose-50/50'
+                                : ''}"
+                        >
+                            <span
+                                class="size-1.5 rounded-full
+                                {revision.event === 'created'
+                                    ? 'bg-emerald-500'
+                                    : ''}
+                                {revision.event === 'updated'
+                                    ? 'bg-blue-500'
+                                    : ''}
+                                {revision.event === 'deleted'
+                                    ? 'bg-rose-500'
+                                    : ''}"
+                            ></span>
                         </div>
 
                         <!-- Card Body -->
-                        <div class="bg-background border border-sidebar-border/20 rounded-xl p-4 space-y-3 hover:border-sidebar-border/40 hover:shadow-sm transition-all">
+                        <div
+                            class="bg-background border border-sidebar-border/20 rounded-xl p-4 space-y-3 hover:border-sidebar-border/40 hover:shadow-sm transition-all"
+                        >
                             <!-- Title & Metadata -->
-                            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-sidebar-border/10 pb-2">
+                            <div
+                                class="flex flex-wrap items-center justify-between gap-3 border-b border-sidebar-border/10 pb-2"
+                            >
                                 <div class="flex items-center gap-2">
-                                    <span class="px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider
-                                        {revision.event === 'created' ? 'bg-emerald-500/10 text-emerald-600' : ''}
-                                        {revision.event === 'updated' ? 'bg-blue-500/10 text-blue-600' : ''}
-                                        {revision.event === 'deleted' ? 'bg-rose-500/10 text-rose-600' : ''}">
-                                        {revision.event === 'created' ? 'Baru' : ''}
-                                        {revision.event === 'updated' ? 'Revisi' : ''}
-                                        {revision.event === 'deleted' ? 'Hapus' : ''}
+                                    <span
+                                        class="px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider
+                                        {revision.event === 'created'
+                                            ? 'bg-emerald-500/10 text-emerald-600'
+                                            : ''}
+                                        {revision.event === 'updated'
+                                            ? 'bg-blue-500/10 text-blue-600'
+                                            : ''}
+                                        {revision.event === 'deleted'
+                                            ? 'bg-rose-500/10 text-rose-600'
+                                            : ''}"
+                                    >
+                                        {revision.event === 'created'
+                                            ? 'Baru'
+                                            : ''}
+                                        {revision.event === 'updated'
+                                            ? 'Revisi'
+                                            : ''}
+                                        {revision.event === 'deleted'
+                                            ? 'Hapus'
+                                            : ''}
                                     </span>
-                                    <span class="text-xs font-bold text-foreground">
-                                        Perubahan {formatAuditableType(revision.auditable_type)}
+                                    <span
+                                        class="text-xs font-bold text-foreground"
+                                    >
+                                        Perubahan {formatAuditableType(
+                                            revision.auditable_type,
+                                        )}
                                     </span>
                                 </div>
-                                <div class="flex items-center gap-3 text-[10px] text-muted-foreground">
+                                <div
+                                    class="flex items-center gap-3 text-[10px] text-muted-foreground"
+                                >
                                     <span class="flex items-center gap-1">
                                         <Clock class="size-3" />
                                         {formatDateTime(revision.created_at)}
                                     </span>
                                     {#if revision.ip_address}
-                                        <span class="flex items-center gap-1 hidden sm:inline-flex">
+                                        <span
+                                            class="flex items-center gap-1 hidden sm:inline-flex"
+                                        >
                                             <Network class="size-3" />
                                             {revision.ip_address}
                                         </span>
@@ -199,37 +257,85 @@ return JSON.stringify(val);
                             </div>
 
                             <!-- User Info -->
-                            <div class="flex items-center gap-2 text-[10px] text-muted-foreground">
+                            <div
+                                class="flex items-center gap-2 text-[10px] text-muted-foreground"
+                            >
                                 <User class="size-3.5 text-primary" />
-                                <span>Diubah oleh: <strong class="text-foreground">{revision.user?.name || 'Sistem'}</strong></span>
+                                <span
+                                    >Diubah oleh: <strong
+                                        class="text-foreground"
+                                        >{revision.user?.name ||
+                                            'Sistem'}</strong
+                                    ></span
+                                >
                                 {#if revision.user_agent}
-                                    <span class="flex items-center gap-1 hidden md:inline-flex ml-2">
+                                    <span
+                                        class="flex items-center gap-1 hidden md:inline-flex ml-2"
+                                    >
                                         <Laptop class="size-3" />
-                                        <span class="truncate max-w-[200px]" title={revision.user_agent}>{revision.user_agent}</span>
+                                        <span
+                                            class="truncate max-w-[200px]"
+                                            title={revision.user_agent}
+                                            >{revision.user_agent}</span
+                                        >
                                     </span>
                                 {/if}
                             </div>
 
                             <!-- Comparison Values Block -->
                             {#if revision.event === 'updated' && revision.new_values}
-                                <div class="overflow-x-auto border border-sidebar-border/10 rounded-lg">
-                                    <table class="w-full text-left text-xs border-collapse divide-y divide-sidebar-border/10">
+                                <div
+                                    class="overflow-x-auto border border-sidebar-border/10 rounded-lg"
+                                >
+                                    <table
+                                        class="w-full text-left text-xs border-collapse divide-y divide-sidebar-border/10"
+                                    >
                                         <thead>
-                                            <tr class="bg-zinc-50/50 dark:bg-zinc-900/50 text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-                                                <th class="px-4 py-2">Parameter</th>
-                                                <th class="px-4 py-2">Nilai Awal</th>
-                                                <th class="px-4 py-2">Nilai Baru</th>
+                                            <tr
+                                                class="bg-zinc-50/50 dark:bg-zinc-900/50 text-[10px] font-bold text-muted-foreground uppercase tracking-wider"
+                                            >
+                                                <th class="px-4 py-2"
+                                                    >Parameter</th
+                                                >
+                                                <th class="px-4 py-2"
+                                                    >Nilai Awal</th
+                                                >
+                                                <th class="px-4 py-2"
+                                                    >Nilai Baru</th
+                                                >
                                             </tr>
                                         </thead>
-                                        <tbody class="divide-y divide-sidebar-border/10">
+                                        <tbody
+                                            class="divide-y divide-sidebar-border/10"
+                                        >
                                             {#each Object.keys(revision.new_values) as key}
                                                 <tr>
-                                                    <td class="px-4 py-2.5 font-semibold text-foreground/80">{formatFieldName(key)}</td>
-                                                    <td class="px-4 py-2.5 text-rose-600 dark:text-rose-400 bg-rose-50/10 line-through">
-                                                        {formatValue(key, revision.old_values?.[key])}
+                                                    <td
+                                                        class="px-4 py-2.5 font-semibold text-foreground/80"
+                                                        >{formatFieldName(
+                                                            key,
+                                                        )}</td
+                                                    >
+                                                    <td
+                                                        class="px-4 py-2.5 text-rose-600 dark:text-rose-400 bg-rose-50/10 line-through"
+                                                    >
+                                                        {formatValue(
+                                                            key,
+                                                            revision
+                                                                .old_values?.[
+                                                                key
+                                                            ],
+                                                        )}
                                                     </td>
-                                                    <td class="px-4 py-2.5 text-emerald-600 dark:text-emerald-400 bg-emerald-50/10 font-bold">
-                                                        {formatValue(key, revision.new_values[key])}
+                                                    <td
+                                                        class="px-4 py-2.5 text-emerald-600 dark:text-emerald-400 bg-emerald-50/10 font-bold"
+                                                    >
+                                                        {formatValue(
+                                                            key,
+                                                            revision.new_values[
+                                                                key
+                                                            ],
+                                                        )}
                                                     </td>
                                                 </tr>
                                             {/each}
@@ -237,16 +343,33 @@ return JSON.stringify(val);
                                     </table>
                                 </div>
                             {:else if revision.event === 'created' && revision.new_values}
-                                <div class="p-3 bg-zinc-50/50 dark:bg-zinc-900/20 border border-sidebar-border/10 rounded-lg space-y-1.5 text-xs">
-                                    <span class="text-[10px] font-bold text-muted-foreground uppercase block mb-1">Detail Entri Baru:</span>
+                                <div
+                                    class="p-3 bg-zinc-50/50 dark:bg-zinc-900/20 border border-sidebar-border/10 rounded-lg space-y-1.5 text-xs"
+                                >
+                                    <span
+                                        class="text-[10px] font-bold text-muted-foreground uppercase block mb-1"
+                                        >Detail Entri Baru:</span
+                                    >
                                     {#each Object.keys(revision.new_values).slice(0, 5) as key}
                                         <div class="flex justify-between">
-                                            <span class="text-muted-foreground">{formatFieldName(key)}:</span>
-                                            <span class="font-semibold text-foreground">{formatValue(key, revision.new_values[key])}</span>
+                                            <span class="text-muted-foreground"
+                                                >{formatFieldName(key)}:</span
+                                            >
+                                            <span
+                                                class="font-semibold text-foreground"
+                                                >{formatValue(
+                                                    key,
+                                                    revision.new_values[key],
+                                                )}</span
+                                            >
                                         </div>
                                     {/each}
                                     {#if Object.keys(revision.new_values).length > 5}
-                                        <span class="text-[9px] text-muted-foreground/60 block italic">dan beberapa detail teknis lainnya...</span>
+                                        <span
+                                            class="text-[9px] text-muted-foreground/60 block italic"
+                                            >dan beberapa detail teknis
+                                            lainnya...</span
+                                        >
                                     {/if}
                                 </div>
                             {/if}
@@ -257,18 +380,24 @@ return JSON.stringify(val);
 
             <!-- Pagination -->
             {#if revisions.links && revisions.links.length > 3}
-                <div class="flex items-center justify-center gap-1.5 pt-6 border-t border-sidebar-border/20">
+                <div
+                    class="flex items-center justify-center gap-1.5 pt-6 border-t border-sidebar-border/20"
+                >
                     {#each revisions.links as link}
                         {#if link.url}
                             <Link
                                 href={link.url}
                                 class="px-3 py-1.5 text-xs rounded-md border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 transition-colors
-                                    {link.active ? 'bg-primary text-white hover:bg-primary/95 border-primary' : 'bg-background'}"
+                                    {link.active
+                                    ? 'bg-primary text-white hover:bg-primary/95 border-primary'
+                                    : 'bg-background'}"
                             >
                                 {@html link.label}
                             </Link>
                         {:else}
-                            <span class="px-3 py-1.5 text-xs rounded-md border border-zinc-200/50 dark:border-zinc-800/50 text-muted-foreground/45 bg-zinc-50/20">
+                            <span
+                                class="px-3 py-1.5 text-xs rounded-md border border-zinc-200/50 dark:border-zinc-800/50 text-muted-foreground/45 bg-zinc-50/20"
+                            >
                                 {@html link.label}
                             </span>
                         {/if}
