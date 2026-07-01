@@ -1,7 +1,7 @@
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
-export default {
-    preprocess: vitePreprocess({ script: true }),
+const config = {
+    preprocess: vitePreprocess(),
     onwarn(warning, handler) {
         // Suppress warnings for capturing initial prop values in $state()/useForm()
         // This is intentional behavior with Inertia.js forms and filter initialization
@@ -17,3 +17,5 @@ export default {
         handler(warning);
     },
 };
+
+export default config;

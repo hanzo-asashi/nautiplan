@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ActivityController;
+use App\Http\Controllers\ActivityIndicatorController;
 use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\BudgetController;
 use App\Http\Controllers\DashboardController;
@@ -27,6 +28,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('activities', ActivityController::class);
     Route::post('activities/{activity}/documents', [ActivityController::class, 'uploadDocument'])->name('activities.documents.upload');
     Route::delete('activity-documents/{document}', [ActivityController::class, 'deleteDocument'])->name('activities.documents.delete');
+    Route::post('activities/{activity}/indicators', [ActivityIndicatorController::class, 'store'])->name('activities.indicators.store');
+    Route::put('activities/indicators/{indicator}', [ActivityIndicatorController::class, 'update'])->name('activities.indicators.update');
+    Route::delete('activities/indicators/{indicator}', [ActivityIndicatorController::class, 'destroy'])->name('activities.indicators.destroy');
 
     // Budgets
     Route::get('budgets', [BudgetController::class, 'index'])->name('budgets.index');
