@@ -6,6 +6,7 @@ use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\BudgetController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FiscalYearController;
+use App\Http\Controllers\KpiDashboardController;
 use App\Http\Controllers\ProgramController;
 use App\Http\Controllers\RenjaController;
 use App\Http\Controllers\RenstraController;
@@ -52,6 +53,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Audit Logs
     Route::get('audit-logs', [AuditLogController::class, 'index'])->name('audit-logs.index')->middleware('role:super-admin');
+
+    // KPI & Monitoring
+    Route::get('monitoring/kpi', [KpiDashboardController::class, 'index'])->name('monitoring.kpi');
 });
 
 require __DIR__.'/settings.php';

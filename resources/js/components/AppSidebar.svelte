@@ -6,6 +6,7 @@
     import Building from 'lucide-svelte/icons/building';
     import Calendar from 'lucide-svelte/icons/calendar';
     import CalendarDays from 'lucide-svelte/icons/calendar-days';
+    import ChartPie from 'lucide-svelte/icons/chart-pie';
     import Coins from 'lucide-svelte/icons/coins';
     import Folder from 'lucide-svelte/icons/folder';
     import History from 'lucide-svelte/icons/history';
@@ -32,6 +33,7 @@
     import { index as auditLogIndex } from '@/routes/audit-logs';
     import { index as budgetIndex } from '@/routes/budgets';
     import { index as fiscalYearIndex } from '@/routes/fiscal-years';
+    import { kpi as kpiIndex } from '@/routes/monitoring';
     import { index as programIndex } from '@/routes/programs';
     import { index as renjaIndex } from '@/routes/renja';
     import { index as renstraIndex } from '@/routes/renstra';
@@ -75,6 +77,11 @@
                 title: 'Activities',
                 href: activityIndex(),
                 icon: Activity,
+            },
+            {
+                title: 'Capaian KPI',
+                href: kpiIndex(),
+                icon: ChartPie,
             },
             {
                 title: 'Budget & Realization',
