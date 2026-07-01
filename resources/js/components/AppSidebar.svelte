@@ -3,6 +3,7 @@
     import type { Snippet } from 'svelte';
     import { Link, page } from '@inertiajs/svelte';
     import Activity from 'lucide-svelte/icons/activity';
+    import BarChart3 from 'lucide-svelte/icons/bar-chart-3';
     import Building from 'lucide-svelte/icons/building';
     import Calendar from 'lucide-svelte/icons/calendar';
     import CalendarDays from 'lucide-svelte/icons/calendar-days';
@@ -41,6 +42,10 @@
     import { index as programIndex } from '@/routes/programs';
     import { index as renjaIndex } from '@/routes/renja';
     import { index as renstraIndex } from '@/routes/renstra';
+    import {
+        gantt as ganttIndex,
+        analytics as analyticsIndex,
+    } from '@/routes/reports';
     import { index as unitIndex } from '@/routes/units';
     import { index as userIndex } from '@/routes/users';
 
@@ -96,6 +101,16 @@
                 title: 'Laporan & Monev',
                 href: reportIndex(),
                 icon: ClipboardCheck,
+            },
+            {
+                title: 'Gantt Chart',
+                href: ganttIndex(),
+                icon: CalendarDays,
+            },
+            {
+                title: 'Analisis & Realisasi',
+                href: analyticsIndex(),
+                icon: BarChart3,
             },
             {
                 title: 'Budget & Realization',

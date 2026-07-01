@@ -24,16 +24,17 @@
     import { Link, useForm, router, page } from '@inertiajs/svelte';
     import ArrowLeft from 'lucide-svelte/icons/arrow-left';
     import Edit2 from 'lucide-svelte/icons/edit-2';
+    import FileDown from 'lucide-svelte/icons/file-down';
     import FileUp from 'lucide-svelte/icons/file-up';
     import Paperclip from 'lucide-svelte/icons/paperclip';
     import Trash2 from 'lucide-svelte/icons/trash-2';
     import AppHead from '@/components/AppHead.svelte';
     import PageHeader from '@/components/PageHeader.svelte';
     import StatusBadge from '@/components/StatusBadge.svelte';
-    import { formatRupiah } from '@/lib/utils';
-    import { toUrl } from '@/lib/utils';
+    import { formatRupiah, toUrl } from '@/lib/utils';
     import { edit, submitApproval } from '@/routes/activities';
     import { upload, deleteMethod } from '@/routes/activities/documents';
+    import { pdf as activityPdf } from '@/routes/reports/activity';
 
     let {
         activity,
@@ -205,6 +206,13 @@
                 <ArrowLeft class="size-4" />
                 Kembali
             </Link>
+            <a
+                href={toUrl(activityPdf({ activity: activity.id }))}
+                class="inline-flex h-9 items-center justify-center rounded-md border border-zinc-200 dark:border-zinc-800 bg-background text-muted-foreground hover:text-foreground px-4 py-2 text-sm font-medium transition-colors cursor-pointer gap-1.5"
+            >
+                <FileDown class="size-4" />
+                Unduh PDF
+            </a>
             {#if canEdit}
                 <Link
                     href={toUrl(edit({ activity: activity.id }))}

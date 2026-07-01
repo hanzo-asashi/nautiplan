@@ -41,7 +41,7 @@ NautiPlan is an extremely large application (~18 modules, 30+ database tables, 5
 
 ---
 
-## Phase 3 — Approval Workflow ✅ In Progress
+## Phase 3 — Approval Workflow ✅ Complete
 
 **Goal**: Build the configurable multi-step approval chain for activity proposals.
 
@@ -55,7 +55,7 @@ NautiPlan is an extremely large application (~18 modules, 30+ database tables, 5
 
 ---
 
-## Phase 4 — Reporting & Export
+## Phase 4 — Reporting & Export 🚧 In Progress
 
 **Goal**: Add comprehensive reporting with PDF/Excel export and visual analysis tools.
 
