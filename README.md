@@ -35,8 +35,15 @@ NautiPlan adalah platform manajemen perencanaan strategis yang dirancang khusus 
 | 📝 **Renstra** | Rencana Strategis jangka menengah dengan indikator capaian |
 | 📋 **Renja** | Rencana Kerja Tahunan yang terhubung ke Renstra |
 | 🎯 **Program & Kegiatan** | Manajemen program, kegiatan, dan sub-kegiatan |
+| 📋 **Papan Kanban** | Manajemen tugas visual (sub-kegiatan) operasional |
+| 📅 **Kalender & Penjadwalan** | Kalender kegiatan interaktif bulanan terintegrasi |
+| 🔔 **Notifikasi Real-time** | Pemberitahuan instan berbasis Server-Sent Events (SSE) |
+| 📎 **Manajemen Versi Dokumen** | Lampiran dokumen kegiatan dengan version history |
+| 📜 **Riwayat Perubahan** | Audit trail komparatif visual untuk riwayat revisi |
 | 💰 **Anggaran & Realisasi** | Tracking pagu anggaran dan realisasi belanja |
 | 📜 **Audit Log** | Jejak audit lengkap untuk akuntabilitas |
+
+*Untuk panduan lengkap mengenai fitur-fitur operasional tingkat lanjut, silakan baca [Panduan Pengguna](docs/USER_GUIDE.md).*
 
 ## 🛠️ Tech Stack
 
