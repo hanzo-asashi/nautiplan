@@ -26,7 +26,7 @@ NautiPlan is an extremely large application (~18 modules, 30+ database tables, 5
 
 ---
 
-## Phase 2 — KPI & Monitoring ✅ In Progress
+## Phase 2 — KPI & Monitoring ✅ Done
 
 **Goal**: Implement performance indicator tracking and monitoring/evaluation workflows.
 
@@ -41,7 +41,7 @@ NautiPlan is an extremely large application (~18 modules, 30+ database tables, 5
 
 ---
 
-## Phase 3 — Approval Workflow
+## Phase 3 — Approval Workflow ✅ In Progress
 
 **Goal**: Build the configurable multi-step approval chain for activity proposals.
 

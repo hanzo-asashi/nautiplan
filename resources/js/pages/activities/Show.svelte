@@ -21,7 +21,7 @@
 </script>
 
 <script lang="ts">
-    import { Link, useForm, router } from '@inertiajs/svelte';
+    import { Link, useForm, router, page } from '@inertiajs/svelte';
     import ArrowLeft from 'lucide-svelte/icons/arrow-left';
     import Edit2 from 'lucide-svelte/icons/edit-2';
     import FileUp from 'lucide-svelte/icons/file-up';
@@ -32,7 +32,7 @@
     import StatusBadge from '@/components/StatusBadge.svelte';
     import { formatRupiah } from '@/lib/utils';
     import { toUrl } from '@/lib/utils';
-    import { edit } from '@/routes/activities';
+    import { edit, submitApproval } from '@/routes/activities';
     import { upload, deleteMethod } from '@/routes/activities/documents';
 
     let {
@@ -92,8 +92,30 @@
                 description: string | null;
                 uploader?: { name: string } | null;
             }>;
+            approval_request?: {
+                id: number;
+                status: string;
+                notes: string | null;
+                steps: Array<{
+                    id: number;
+                    step_order: number;
+                    role_id: number;
+                    approver_id: number | null;
+                    status: string;
+                    notes: string | null;
+                    acted_at: string | null;
+                    role?: { display_name: string } | null;
+                    approver?: { name: string } | null;
+                }>;
+            } | null;
         };
     } = $props();
+
+    const user = $derived(page.props.auth.user as any);
+    const isAdmin = $derived(
+        user?.is_super_admin || user?.roles?.includes('admin'),
+    );
+    const canEdit = $derived(activity.status === 'draft' || isAdmin);
 
     function calculateAchievement(
         target: number,
@@ -183,13 +205,26 @@
                 <ArrowLeft class="size-4" />
                 Kembali
             </Link>
-            <Link
-                href={toUrl(edit({ activity: activity.id }))}
-                class="inline-flex h-9 items-center justify-center rounded-md bg-primary hover:bg-primary/95 text-white px-4 py-2 text-sm font-medium shadow-md shadow-primary/20 transition-colors cursor-pointer gap-1.5"
-            >
-                <Edit2 class="size-4" />
-                Edit Kegiatan
-            </Link>
+            {#if canEdit}
+                <Link
+                    href={toUrl(edit({ activity: activity.id }))}
+                    class="inline-flex h-9 items-center justify-center rounded-md bg-primary hover:bg-primary/95 text-white px-4 py-2 text-sm font-medium shadow-md shadow-primary/20 transition-colors cursor-pointer gap-1.5"
+                >
+                    <Edit2 class="size-4" />
+                    Edit Kegiatan
+                </Link>
+            {/if}
+            {#if activity.status === 'draft'}
+                <button
+                    onclick={() =>
+                        router.post(
+                            toUrl(submitApproval({ activity: activity.id })),
+                        )}
+                    class="inline-flex h-9 items-center justify-center rounded-md bg-emerald-600 hover:bg-emerald-600/90 text-white px-4 py-2 text-sm font-medium shadow-md shadow-emerald-500/20 transition-colors cursor-pointer gap-1.5"
+                >
+                    Ajukan Persetujuan
+                </button>
+            {/if}
         {/snippet}
     </PageHeader>
 
@@ -553,6 +588,94 @@
                     {/if}
                 </div>
             </div>
+
+            <!-- Approval Timeline -->
+            {#if activity.approval_request}
+                <div
+                    class="rounded-xl border border-sidebar-border/50 bg-card/40 backdrop-blur-md p-6 space-y-4 shadow-sm text-sm"
+                >
+                    <h3
+                        class="text-xs font-semibold uppercase tracking-wider text-muted-foreground border-b border-sidebar-border/30 pb-2"
+                    >
+                        Status Persetujuan
+                    </h3>
+
+                    <div class="space-y-4">
+                        {#each activity.approval_request.steps as step, idx}
+                            <div
+                                class="relative pl-6 pb-2 last:pb-0 border-l border-sidebar-border/40 last:border-transparent"
+                            >
+                                <!-- Bullet point -->
+                                <div
+                                    class="absolute -left-[5px] top-1 size-2 rounded-full border
+                                    {step.status === 'approved'
+                                        ? 'bg-emerald-500 border-emerald-600'
+                                        : ''}
+                                    {step.status === 'rejected'
+                                        ? 'bg-rose-500 border-rose-600'
+                                        : ''}
+                                    {step.status === 'pending'
+                                        ? 'bg-zinc-300 dark:bg-zinc-700 border-zinc-400'
+                                        : ''}
+                                "
+                                ></div>
+
+                                <div class="space-y-1">
+                                    <div
+                                        class="flex justify-between items-center text-xs"
+                                    >
+                                        <span class="font-bold text-foreground"
+                                            >Langkah {idx + 1}: {step.role
+                                                ?.display_name ||
+                                                step.role_id}</span
+                                        >
+                                        <span
+                                            class="text-[9px] font-bold uppercase
+                                            {step.status === 'approved'
+                                                ? 'text-emerald-500'
+                                                : ''}
+                                            {step.status === 'rejected'
+                                                ? 'text-rose-500'
+                                                : ''}
+                                            {step.status === 'pending'
+                                                ? 'text-muted-foreground'
+                                                : ''}
+                                        "
+                                        >
+                                            {step.status === 'approved'
+                                                ? 'Setuju'
+                                                : ''}
+                                            {step.status === 'rejected'
+                                                ? 'Tolak'
+                                                : ''}
+                                            {step.status === 'pending'
+                                                ? 'Menunggu'
+                                                : ''}
+                                        </span>
+                                    </div>
+                                    {#if step.approver}
+                                        <div
+                                            class="text-[10px] text-muted-foreground"
+                                        >
+                                            Oleh: <span
+                                                class="font-semibold text-foreground"
+                                                >{step.approver.name}</span
+                                            >
+                                        </div>
+                                    {/if}
+                                    {#if step.notes}
+                                        <p
+                                            class="text-[10px] text-foreground bg-background/50 border border-sidebar-border/30 rounded p-1.5 italic"
+                                        >
+                                            "{step.notes}"
+                                        </p>
+                                    {/if}
+                                </div>
+                            </div>
+                        {/each}
+                    </div>
+                </div>
+            {/if}
 
             <!-- Document Upload & List -->
             <div

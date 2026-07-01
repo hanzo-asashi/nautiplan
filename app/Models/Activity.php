@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 
@@ -152,6 +153,14 @@ class Activity extends Model
     public function approvalRequests(): MorphMany
     {
         return $this->morphMany(ApprovalRequest::class, 'approvable');
+    }
+
+    /**
+     * @return MorphOne<ApprovalRequest, $this>
+     */
+    public function approvalRequest(): MorphOne
+    {
+        return $this->morphOne(ApprovalRequest::class, 'approvable')->latestOfMany();
     }
 
     public function getTotalBudgetAttribute(): float

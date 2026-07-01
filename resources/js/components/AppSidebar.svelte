@@ -9,6 +9,7 @@
     import ChartPie from 'lucide-svelte/icons/chart-pie';
     import ClipboardCheck from 'lucide-svelte/icons/clipboard-check';
     import Coins from 'lucide-svelte/icons/coins';
+    import FileCheck from 'lucide-svelte/icons/file-check';
     import Folder from 'lucide-svelte/icons/folder';
     import History from 'lucide-svelte/icons/history';
     import LayoutGrid from 'lucide-svelte/icons/layout-grid';
@@ -31,6 +32,7 @@
     import { toUrl } from '@/lib/utils';
     import { dashboard } from '@/routes';
     import { index as activityIndex } from '@/routes/activities';
+    import { index as approvalIndex } from '@/routes/approvals';
     import { index as auditLogIndex } from '@/routes/audit-logs';
     import { index as budgetIndex } from '@/routes/budgets';
     import { index as fiscalYearIndex } from '@/routes/fiscal-years';
@@ -79,6 +81,11 @@
                 title: 'Activities',
                 href: activityIndex(),
                 icon: Activity,
+            },
+            {
+                title: 'Persetujuan',
+                href: approvalIndex(),
+                icon: FileCheck,
             },
             {
                 title: 'Capaian KPI',
