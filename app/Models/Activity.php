@@ -139,6 +139,14 @@ class Activity extends Model
     }
 
     /**
+     * @return HasMany<ActivityReport, $this>
+     */
+    public function reports(): HasMany
+    {
+        return $this->hasMany(ActivityReport::class);
+    }
+
+    /**
      * @return MorphMany<ApprovalRequest, $this>
      */
     public function approvalRequests(): MorphMany
