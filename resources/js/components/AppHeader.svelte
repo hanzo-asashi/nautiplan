@@ -9,6 +9,7 @@
     import AppLogo from '@/components/AppLogo.svelte';
     import AppLogoIcon from '@/components/AppLogoIcon.svelte';
     import Breadcrumbs from '@/components/Breadcrumbs.svelte';
+    import NotificationBell from '@/components/NotificationBell.svelte';
     import {
         Avatar,
         AvatarFallback,
@@ -210,6 +211,8 @@
                             class="size-5 opacity-80 group-hover:opacity-100"
                         />
                     </Button>
+
+                    <NotificationBell />
 
                     <div class="hidden space-x-1 lg:flex">
                         {#each rightNavItems as item (toUrl(item.href))}

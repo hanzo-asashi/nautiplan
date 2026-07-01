@@ -45,6 +45,7 @@
     import {
         gantt as ganttIndex,
         analytics as analyticsIndex,
+        calendar as calendarIndex,
     } from '@/routes/reports';
     import { index as unitIndex } from '@/routes/units';
     import { index as userIndex } from '@/routes/users';
@@ -111,6 +112,11 @@
                 title: 'Analisis & Realisasi',
                 href: analyticsIndex(),
                 icon: BarChart3,
+            },
+            {
+                title: 'Kalender & Penjadwalan',
+                href: calendarIndex(),
+                icon: Calendar,
             },
             {
                 title: 'Budget & Realization',

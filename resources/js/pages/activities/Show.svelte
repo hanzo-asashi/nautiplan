@@ -23,16 +23,20 @@
 <script lang="ts">
     import { Link, useForm, router, page } from '@inertiajs/svelte';
     import ArrowLeft from 'lucide-svelte/icons/arrow-left';
+    import ChevronDown from 'lucide-svelte/icons/chevron-down';
+    import ChevronUp from 'lucide-svelte/icons/chevron-up';
     import Edit2 from 'lucide-svelte/icons/edit-2';
     import FileDown from 'lucide-svelte/icons/file-down';
     import FileUp from 'lucide-svelte/icons/file-up';
+    import History from 'lucide-svelte/icons/history';
+    import KanbanSquare from 'lucide-svelte/icons/kanban-square';
     import Paperclip from 'lucide-svelte/icons/paperclip';
     import Trash2 from 'lucide-svelte/icons/trash-2';
     import AppHead from '@/components/AppHead.svelte';
     import PageHeader from '@/components/PageHeader.svelte';
     import StatusBadge from '@/components/StatusBadge.svelte';
     import { formatRupiah, toUrl } from '@/lib/utils';
-    import { edit, submitApproval } from '@/routes/activities';
+    import { edit, submitApproval, kanban, revisions } from '@/routes/activities';
     import { upload, deleteMethod } from '@/routes/activities/documents';
     import { pdf as activityPdf } from '@/routes/reports/activity';
 
@@ -86,6 +90,8 @@
             }>;
             documents: Array<{
                 id: number;
+                parent_id: number | null;
+                version: number;
                 file_name: string;
                 file_path: string;
                 file_type: string;
@@ -132,9 +138,12 @@
     const uploadForm = useForm({
         file: null as File | null,
         description: '',
+        parent_id: null as number | null,
     });
 
     let fileInput: HTMLInputElement;
+    let isDragging = $state(false);
+    let expandedDocs = $state<Record<number, boolean>>({});
 
     function handleFileChange(e: Event) {
         const target = e.target as HTMLInputElement;
@@ -142,6 +151,37 @@
         if (target.files && target.files.length > 0) {
             uploadForm.file = target.files[0];
         }
+    }
+
+    function handleDragOver(e: DragEvent) {
+        e.preventDefault();
+        isDragging = true;
+    }
+
+    function handleDragLeave() {
+        isDragging = false;
+    }
+
+    function handleDrop(e: DragEvent) {
+        e.preventDefault();
+        isDragging = false;
+        const file = e.dataTransfer?.files[0];
+
+        if (file) {
+            uploadForm.file = file;
+        }
+    }
+
+    function selectParentForVersion(parentId: number) {
+        uploadForm.parent_id = parentId;
+    }
+
+    function cancelVersionUpload() {
+        uploadForm.parent_id = null;
+    }
+
+    function toggleExpandDoc(docId: number) {
+        expandedDocs[docId] = !expandedDocs[docId];
     }
 
     function handleUpload(e: Event) {
@@ -213,6 +253,20 @@
                 <FileDown class="size-4" />
                 Unduh PDF
             </a>
+            <Link
+                href={toUrl(kanban({ activity: activity.id }))}
+                class="inline-flex h-9 items-center justify-center rounded-md border border-zinc-200 dark:border-zinc-800 bg-background text-muted-foreground hover:text-foreground px-4 py-2 text-sm font-medium transition-colors cursor-pointer gap-1.5"
+            >
+                <KanbanSquare class="size-4" />
+                Papan Kanban
+            </Link>
+            <Link
+                href={toUrl(revisions({ activity: activity.id }))}
+                class="inline-flex h-9 items-center justify-center rounded-md border border-zinc-200 dark:border-zinc-800 bg-background text-muted-foreground hover:text-foreground px-4 py-2 text-sm font-medium transition-colors cursor-pointer gap-1.5"
+            >
+                <History class="size-4" />
+                Riwayat Perubahan
+            </Link>
             {#if canEdit}
                 <Link
                     href={toUrl(edit({ activity: activity.id }))}
@@ -687,16 +741,39 @@
 
             <!-- Document Upload & List -->
             <div
-                class="rounded-xl border border-sidebar-border/50 bg-card/40 backdrop-blur-md p-6 space-y-4 shadow-sm text-sm"
+                class="rounded-xl border transition-all duration-300 bg-card/40 backdrop-blur-md p-6 space-y-4 shadow-sm text-sm
+                    {isDragging ? 'border-primary ring-2 ring-primary bg-primary/5 border-dashed scale-[1.02]' : 'border-sidebar-border/50'}"
+                role="region"
+                aria-label="Area seret dan lepas dokumen lampiran"
+                ondragover={handleDragOver}
+                ondragleave={handleDragLeave}
+                ondrop={handleDrop}
             >
                 <h3
-                    class="text-xs font-semibold uppercase tracking-wider text-muted-foreground border-b border-sidebar-border/30 pb-2"
+                    class="text-xs font-semibold uppercase tracking-wider text-muted-foreground border-b border-sidebar-border/30 pb-2 flex justify-between items-center"
                 >
                     Lampiran Dokumen
+                    {#if isDragging}
+                        <span class="text-primary font-black animate-pulse">Lepas File Di Sini</span>
+                    {/if}
                 </h3>
 
                 <!-- Upload form -->
-                <form onsubmit={handleUpload} class="space-y-2">
+                <form onsubmit={handleUpload} class="space-y-3">
+                    {#if uploadForm.parent_id}
+                        {@const parentDoc = activity.documents.find(d => d.id === uploadForm.parent_id)}
+                        <div class="p-2 bg-amber-500/10 border border-amber-500/20 text-amber-600 rounded-md text-[10px] font-semibold flex items-center justify-between">
+                            <span>Mengunggah versi baru untuk: <strong class="truncate">{parentDoc?.file_name}</strong></span>
+                            <button
+                                type="button"
+                                onclick={cancelVersionUpload}
+                                class="text-[9px] text-zinc-500 hover:text-foreground font-black uppercase cursor-pointer"
+                            >
+                                Batal
+                            </button>
+                        </div>
+                    {/if}
+
                     <div class="flex flex-col gap-1">
                         <input
                             type="file"
@@ -708,31 +785,34 @@
                         <button
                             type="button"
                             onclick={() => fileInput?.click()}
-                            class="w-full flex items-center justify-center gap-1.5 h-9 rounded-md border border-dashed border-zinc-200 dark:border-zinc-800 bg-background text-xs font-semibold text-muted-foreground hover:text-foreground hover:bg-accent transition-colors cursor-pointer"
+                            class="w-full flex flex-col items-center justify-center gap-1.5 py-4 rounded-xl border border-dashed border-zinc-200 dark:border-zinc-800 bg-background text-xs font-semibold text-muted-foreground hover:text-foreground hover:bg-accent transition-all cursor-pointer"
                         >
-                            <FileUp class="size-4" />
+                            <FileUp class="size-5 text-muted-foreground" />
                             {#if uploadForm.file}
-                                {uploadForm.file.name}
+                                <span class="text-primary truncate px-4 font-bold">{uploadForm.file.name}</span>
                             {:else}
-                                Pilih File Dokumen (Max 10MB)
+                                <span class="text-[10px]">Tarik & lepas file atau Klik untuk memilih</span>
+                                <span class="text-[8px] text-muted-foreground/60">(Max 10MB: PDF, DOCX, XLSX, PNG, JPG)</span>
                             {/if}
                         </button>
                     </div>
 
-                    <input
-                        type="text"
-                        bind:value={uploadForm.description}
-                        placeholder="Deskripsi singkat..."
-                        class="w-full px-2.5 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-md outline-none focus:border-primary"
-                    />
+                    <div class="flex gap-2">
+                        <input
+                            type="text"
+                            bind:value={uploadForm.description}
+                            placeholder="Deskripsi singkat..."
+                            class="flex-1 px-2.5 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-md outline-none focus:border-primary"
+                        />
 
-                    <button
-                        type="submit"
-                        disabled={uploadForm.processing || !uploadForm.file}
-                        class="w-full flex items-center justify-center gap-1 h-8 rounded-md bg-primary hover:bg-primary/95 text-white text-xs font-medium transition-colors cursor-pointer disabled:opacity-50"
-                    >
-                        Unggah Dokumen
-                    </button>
+                        <button
+                            type="submit"
+                            disabled={uploadForm.processing || !uploadForm.file}
+                            class="px-4 flex items-center justify-center gap-1 h-8 rounded-md bg-primary hover:bg-primary/95 text-white text-xs font-medium transition-colors cursor-pointer disabled:opacity-50"
+                        >
+                            Unggah
+                        </button>
+                    </div>
                 </form>
 
                 <!-- Document List -->
@@ -743,42 +823,111 @@
                         Belum ada dokumen diunggah.
                     </p>
                 {:else}
+                    {@const rootDocs = activity.documents.filter(d => !d.parent_id)}
                     <div
-                        class="space-y-2 border-t border-sidebar-border/20 pt-3 mt-3"
+                        class="space-y-3 border-t border-sidebar-border/20 pt-3 mt-3"
                     >
-                        {#each activity.documents as doc}
-                            <div
-                                class="flex items-start justify-between gap-2 p-2 rounded bg-zinc-50/50 dark:bg-zinc-900/40 border border-sidebar-border/20"
-                            >
-                                <div class="flex items-start gap-1.5 min-w-0">
-                                    <Paperclip
-                                        class="size-3.5 text-muted-foreground shrink-0 mt-0.5"
-                                    />
-                                    <div class="min-w-0">
-                                        <a
-                                            href={`/storage/${doc.file_path}`}
-                                            target="_blank"
-                                            class="text-xs font-medium text-primary hover:underline truncate block"
-                                            title={doc.file_name}
-                                        >
-                                            {doc.file_name}
-                                        </a>
-                                        {#if doc.description}
-                                            <p
-                                                class="text-[10px] text-muted-foreground leading-tight mt-0.5"
+                        {#each rootDocs as doc}
+                            {@const versions = activity.documents.filter(d => d.parent_id === doc.id).sort((a,b) => b.version - a.version)}
+                            {@const isExpanded = !!expandedDocs[doc.id]}
+                            
+                            <div class="p-3.5 rounded-xl bg-zinc-50/50 dark:bg-zinc-900/40 border border-sidebar-border/20 space-y-2">
+                                <div class="flex items-start justify-between gap-3">
+                                    <div class="flex items-start gap-2 min-w-0">
+                                        <Paperclip class="size-4 text-muted-foreground shrink-0 mt-0.5" />
+                                        <div class="min-w-0">
+                                            <a
+                                                href={`/storage/${doc.file_path}`}
+                                                target="_blank"
+                                                class="text-xs font-bold text-foreground hover:text-primary hover:underline truncate block"
+                                                title={doc.file_name}
                                             >
-                                                {doc.description}
-                                            </p>
+                                                {doc.file_name}
+                                            </a>
+                                            <div class="flex flex-wrap items-center gap-1.5 text-[9px] text-muted-foreground/75 mt-0.5">
+                                                <span>Versi {doc.version}</span>
+                                                <span>•</span>
+                                                <span>{doc.uploader?.name || 'Sistem'}</span>
+                                            </div>
+                                            {#if doc.description}
+                                                <p class="text-[10px] text-muted-foreground mt-1 leading-relaxed">
+                                                    {doc.description}
+                                                </p>
+                                            {/if}
+                                        </div>
+                                    </div>
+
+                                    <div class="flex items-center gap-1 shrink-0">
+                                        <!-- Version history toggle -->
+                                        {#if versions.length > 0}
+                                            <button
+                                                onclick={() => toggleExpandDoc(doc.id)}
+                                                class="p-1 hover:bg-zinc-200/50 rounded text-muted-foreground hover:text-foreground cursor-pointer flex items-center gap-1"
+                                                title="Riwayat Versi"
+                                            >
+                                                <History class="size-3.5" />
+                                                <span class="text-[9px] font-bold">+{versions.length}</span>
+                                                {#if isExpanded}
+                                                    <ChevronUp class="size-3" />
+                                                {:else}
+                                                    <ChevronDown class="size-3" />
+                                                {/if}
+                                            </button>
                                         {/if}
+
+                                        <!-- Upload new version button -->
+                                        <button
+                                            onclick={() => selectParentForVersion(doc.id)}
+                                            class="p-1 hover:bg-zinc-200/50 rounded text-muted-foreground hover:text-primary cursor-pointer"
+                                            title="Unggah Versi Baru"
+                                        >
+                                            <FileUp class="size-3.5" />
+                                        </button>
+
+                                        <!-- Delete document -->
+                                        <button
+                                            onclick={() => handleDeleteDoc(doc.id)}
+                                            class="text-rose-500 hover:text-rose-600 p-1 hover:bg-rose-500/10 rounded cursor-pointer"
+                                            title="Hapus"
+                                        >
+                                            <Trash2 class="size-3.5" />
+                                        </button>
                                     </div>
                                 </div>
-                                <button
-                                    onclick={() => handleDeleteDoc(doc.id)}
-                                    class="text-rose-500 hover:text-rose-600 p-1 hover:bg-rose-500/10 rounded shrink-0 cursor-pointer"
-                                    title="Hapus"
-                                >
-                                    <Trash2 class="size-3.5" />
-                                </button>
+
+                                <!-- Versions Drawer -->
+                                {#if isExpanded && versions.length > 0}
+                                    <div class="pl-6 border-l border-sidebar-border/30 space-y-2 mt-2 pt-2 bg-zinc-100/10 dark:bg-zinc-950/10 p-2.5 rounded-lg">
+                                        <h5 class="text-[9px] font-bold text-muted-foreground uppercase tracking-wider mb-1.5 flex items-center gap-1">
+                                            <History class="size-3" />
+                                            Riwayat Perubahan Versi
+                                        </h5>
+                                        {#each versions as ver}
+                                            <div class="flex items-center justify-between gap-3 text-[10px] text-muted-foreground p-1 hover:bg-zinc-100/50 dark:hover:bg-zinc-800/30 rounded transition-colors">
+                                                <div class="min-w-0">
+                                                    <a
+                                                        href={`/storage/${ver.file_path}`}
+                                                        target="_blank"
+                                                        class="font-semibold text-primary hover:underline truncate block"
+                                                        title={ver.file_name}
+                                                    >
+                                                        v{ver.version}: {ver.file_name}
+                                                    </a>
+                                                    <span class="text-[8px] block text-muted-foreground/60 mt-0.5">
+                                                        Diunggah oleh {ver.uploader?.name || 'Sistem'}
+                                                    </span>
+                                                </div>
+                                                <button
+                                                    onclick={() => handleDeleteDoc(ver.id)}
+                                                    class="text-rose-500 hover:text-rose-600 p-0.5 hover:bg-rose-500/10 rounded cursor-pointer shrink-0"
+                                                    title="Hapus Versi"
+                                                >
+                                                    <Trash2 class="size-3" />
+                                                </button>
+                                            </div>
+                                        {/each}
+                                    </div>
+                                {/if}
                             </div>
                         {/each}
                     </div>

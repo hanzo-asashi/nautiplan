@@ -6,6 +6,7 @@ use App\Mail\ApprovalStatusChanged;
 use App\Models\Activity;
 use App\Models\ApprovalRequest;
 use App\Models\ApprovalStep;
+use App\Models\Notification;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
@@ -131,6 +132,23 @@ class ApprovalController extends Controller
             Mail::to($user->email)->send(new ApprovalStatusChanged($activity->name, 'proposed'));
         }
 
+        // Create database notifications
+        Notification::create([
+            'user_id' => $activity->responsible_user_id ?: auth()->id(),
+            'title' => 'Kegiatan Diajukan',
+            'message' => "Kegiatan [{$activity->code}] {$activity->name} berhasil diajukan untuk persetujuan.",
+            'type' => 'approval',
+        ]);
+
+        foreach ($nextUsers as $nu) {
+            Notification::create([
+                'user_id' => $nu->id,
+                'title' => 'Persetujuan Kegiatan Baru',
+                'message' => "Kegiatan [{$activity->code}] {$activity->name} diajukan dan membutuhkan persetujuan Anda.",
+                'type' => 'approval',
+            ]);
+        }
+
         return back()->with('success', 'Kegiatan berhasil diajukan untuk persetujuan.');
     }
 
@@ -184,7 +202,25 @@ class ApprovalController extends Controller
                     foreach ($nextUsers as $nu) {
                         Mail::to($nu->email)->send(new ApprovalStatusChanged($activity->name, 'proposed', $notes));
                     }
+
+                    // Notify next step approvers
+                    foreach ($nextUsers as $nu) {
+                        Notification::create([
+                            'user_id' => $nu->id,
+                            'title' => 'Persetujuan Kegiatan Baru',
+                            'message' => "Kegiatan [{$activity->code}] {$activity->name} membutuhkan persetujuan Anda.",
+                            'type' => 'approval',
+                        ]);
+                    }
                 }
+
+                // Notify requester
+                Notification::create([
+                    'user_id' => $approvalRequest->requested_by,
+                    'title' => 'Persetujuan Langkah Selesai',
+                    'message' => "Langkah persetujuan {$step->step_order} untuk kegiatan [{$activity->code}] {$activity->name} telah disetujui oleh {$user->name}.",
+                    'type' => 'approval',
+                ]);
             } else {
                 // Fully approved
                 $approvalRequest->update(['status' => 'approved', 'notes' => $notes]);
@@ -192,6 +228,13 @@ class ApprovalController extends Controller
 
                 // Notify requester
                 Mail::to($approvalRequest->requester->email)->send(new ApprovalStatusChanged($activity->name, 'approved', $notes));
+
+                Notification::create([
+                    'user_id' => $approvalRequest->requested_by,
+                    'title' => 'Kegiatan Disetujui Sepenuhnya',
+                    'message' => "Kegiatan [{$activity->code}] {$activity->name} telah disetujui sepenuhnya.",
+                    'type' => 'approval',
+                ]);
             }
         } elseif ($validated['status'] === 'rejected') {
             $step->update([
@@ -206,6 +249,13 @@ class ApprovalController extends Controller
 
             // Notify requester
             Mail::to($approvalRequest->requester->email)->send(new ApprovalStatusChanged($activity->name, 'rejected', $notes));
+
+            Notification::create([
+                'user_id' => $approvalRequest->requested_by,
+                'title' => 'Kegiatan Ditolak',
+                'message' => "Kegiatan [{$activity->code}] {$activity->name} ditolak. Catatan: {$notes}.",
+                'type' => 'approval',
+            ]);
         } elseif ($validated['status'] === 'revision') {
             $step->update([
                 'status' => 'pending', // Keeps step pending but logs revision request at request level
@@ -219,6 +269,13 @@ class ApprovalController extends Controller
 
             // Notify requester
             Mail::to($approvalRequest->requester->email)->send(new ApprovalStatusChanged($activity->name, 'revision', $notes));
+
+            Notification::create([
+                'user_id' => $approvalRequest->requested_by,
+                'title' => 'Permintaan Revisi Kegiatan',
+                'message' => "Kegiatan [{$activity->code}] {$activity->name} memerlukan revisi. Catatan: {$notes}.",
+                'type' => 'approval',
+            ]);
         }
 
         return back()->with('success', 'Tindakan persetujuan berhasil disimpan.');
