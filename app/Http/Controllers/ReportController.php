@@ -84,10 +84,15 @@ class ReportController extends Controller
         $selectedYearId = $request->input('fiscal_year_id', $activeYear?->id);
 
         // Budget vs Realization by Unit
-        $unitsData = Unit::with(['activities.budgets.realizations'])
+        $unitsData = Unit::with([
+            'activities' => function ($query) use ($selectedYearId) {
+                $query->where('fiscal_year_id', $selectedYearId);
+            },
+            'activities.budgets.realizations',
+        ])
             ->get()
-            ->map(function ($unit) use ($selectedYearId) {
-                $activities = $unit->activities->where('fiscal_year_id', $selectedYearId);
+            ->map(function ($unit) {
+                $activities = $unit->activities;
                 $pagu = $activities->flatMap->budgets->sum('amount');
                 $realisasi = $activities->flatMap->budgets->flatMap->realizations->sum('amount');
 
@@ -514,7 +519,7 @@ class ReportController extends Controller
         $selectedUnitId = $request->input('unit_id');
         $selectedStatus = $request->input('status');
 
-        $query = Activity::with(['program', 'unit', 'fiscalYear', 'responsibleUser', 'subActivities.assignedUser'])
+        $query = Activity::with(['unit', 'subActivities.assignedUser'])
             ->whereNotNull('start_date')
             ->whereNotNull('end_date');
 
