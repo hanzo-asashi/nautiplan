@@ -12,6 +12,7 @@ use App\Http\Controllers\KpiDashboardController;
 use App\Http\Controllers\ProgramController;
 use App\Http\Controllers\RenjaController;
 use App\Http\Controllers\RenstraController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\UserManagementController;
 use Illuminate\Support\Facades\Route;
@@ -69,6 +70,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('approvals', [ApprovalController::class, 'index'])->name('approvals.index');
     Route::post('activities/{activity}/submit-approval', [ApprovalController::class, 'submit'])->name('activities.submit-approval');
     Route::post('approvals/{approvalRequest}/action', [ApprovalController::class, 'action'])->name('approvals.action');
+
+    // Reporting & Export Workflow
+    Route::get('reports/gantt', [ReportController::class, 'gantt'])->name('reports.gantt');
+    Route::get('reports/analytics', [ReportController::class, 'analytics'])->name('reports.analytics');
+    Route::get('reports/export/excel', [ReportController::class, 'exportExcel'])->name('reports.export.excel');
+    Route::get('reports/import/template', [ReportController::class, 'downloadTemplate'])->name('reports.import.template');
+    Route::post('reports/import/excel', [ReportController::class, 'importExcel'])->name('reports.import.excel');
+    Route::get('reports/activity/{activity}/pdf', [ReportController::class, 'downloadPdfActivity'])->name('reports.activity.pdf');
+    Route::get('reports/quarterly/{activity}/{quarter}/pdf', [ReportController::class, 'downloadPdfQuarterly'])->name('reports.quarterly.pdf');
 });
 
 require __DIR__.'/settings.php';

@@ -25,6 +25,7 @@
     import AlertTriangle from 'lucide-svelte/icons/alert-triangle';
     import ArrowLeft from 'lucide-svelte/icons/arrow-left';
     import CheckCircle from 'lucide-svelte/icons/check-circle';
+    import FileDown from 'lucide-svelte/icons/file-down';
     import FileText from 'lucide-svelte/icons/file-text';
     import Info from 'lucide-svelte/icons/info';
     import ShieldAlert from 'lucide-svelte/icons/shield-alert';
@@ -35,6 +36,7 @@
         store as reportStore,
         evaluate as reportEvaluate,
     } from '@/routes/monitoring/reports';
+    import { pdf as quarterlyPdf } from '@/routes/reports/quarterly';
 
     let {
         activity,
@@ -139,7 +141,22 @@
         <PageHeader
             title={`Laporan & Evaluasi - ${quarter}`}
             description={`Kegiatan: [${activity.code}] ${activity.name}`}
-        />
+        >
+            {#snippet actions()}
+                <a
+                    href={toUrl(
+                        quarterlyPdf({
+                            activity: activity.id,
+                            quarter: quarter,
+                        }),
+                    )}
+                    class="inline-flex h-9 items-center justify-center rounded-md border border-zinc-200 dark:border-zinc-800 bg-background text-muted-foreground hover:text-foreground px-4 py-2 text-sm font-medium transition-colors cursor-pointer gap-1.5"
+                >
+                    <FileDown class="size-4" />
+                    Unduh PDF (Monev)
+                </a>
+            {/snippet}
+        </PageHeader>
     </div>
 
     <!-- Layout Grid -->

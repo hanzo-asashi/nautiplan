@@ -30,8 +30,7 @@
                         >{item.label}</span
                     >
                     <div class="flex space-x-4 text-xs shrink-0">
-                        <span
-                            class="text-yellow-600 dark:text-yellow-500 font-semibold"
+                        <span class="text-primary font-semibold"
                             >Pagu: {formatRupiah(item.value1)}</span
                         >
                         <span
@@ -44,12 +43,12 @@
                 <div
                     class="relative h-6 w-full bg-zinc-200/50 dark:bg-zinc-800/50 rounded-full overflow-hidden flex flex-col justify-center border border-sidebar-border/30"
                 >
-                    <!-- Pagu Bar (Yellow/Amber Opaque) -->
+                    <!-- Pagu Bar (Primary Theme Color) -->
                     <div
-                        class="absolute left-0 top-0 h-3 bg-yellow-600/70 transition-all duration-500 rounded-tr"
+                        class="absolute left-0 top-0 h-3 bg-primary/80 transition-all duration-500 rounded-tr"
                         style="width: {(item.value1 / maxValue) * 100}%"
                     ></div>
-                    <!-- Realisasi Bar (Bright Amber) -->
+                    <!-- Realisasi Bar (Bright Amber / Yellow) -->
                     <div
                         class="absolute left-0 bottom-0 h-3 bg-amber-400 transition-all duration-500 rounded-br"
                         style="width: {(item.value2 / maxValue) * 100}%"
