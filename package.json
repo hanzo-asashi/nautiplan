@@ -10,7 +10,7 @@
         "format:check": "prettier --check resources/",
         "lint": "eslint . --fix",
         "lint:check": "eslint .",
-        "types:check": "svelte-check --tsconfig ./tsconfig.json --compiler-warnings state_referenced_locally:ignore,a11y_label_has_associated_control:ignore"
+        "types:check": "svelte-check --tsconfig ./tsconfig.json --config svelte.config.js --compiler-warnings state_referenced_locally:ignore,a11y_label_has_associated_control:ignore"
     },
     "devDependencies": {
         "@eslint/js": "^9.19.0",

@@ -73,6 +73,16 @@
                     description: string | null;
                 }>;
             }>;
+            indicators: Array<{
+                id: number;
+                code: string;
+                name: string;
+                indicator_type: 'iku' | 'ikk';
+                target_value: number;
+                actual_value: number | null;
+                unit_of_measure: string;
+                quarter: string;
+            }>;
             documents: Array<{
                 id: number;
                 file_name: string;
@@ -84,6 +94,17 @@
             }>;
         };
     } = $props();
+
+    function calculateAchievement(
+        target: number,
+        actual: number | null,
+    ): number {
+        if (!target) {
+            return 0;
+        }
+
+        return Math.round(((actual || 0) / target) * 100);
+    }
 
     const uploadForm = useForm({
         file: null as File | null,
@@ -270,6 +291,121 @@
                                             >{sub.progress_percentage}%</strong
                                         ></span
                                     >
+                                </div>
+                            </div>
+                        {/each}
+                    </div>
+                {/if}
+            </div>
+
+            <!-- Indikator Kinerja (IKU/IKK) -->
+            <div
+                class="rounded-xl border border-sidebar-border/50 bg-card/40 backdrop-blur-md p-6 shadow-sm space-y-4"
+            >
+                <div
+                    class="flex items-center justify-between border-b border-sidebar-border/30 pb-3"
+                >
+                    <h3
+                        class="text-sm font-semibold uppercase tracking-wider text-muted-foreground"
+                    >
+                        Indikator Kinerja (IKU / IKK)
+                    </h3>
+                </div>
+
+                {#if !activity.indicators || activity.indicators.length === 0}
+                    <p
+                        class="text-sm text-muted-foreground/60 italic text-center py-6"
+                    >
+                        Belum ada indikator kinerja yang didefinisikan.
+                    </p>
+                {:else}
+                    <div class="space-y-4">
+                        {#each activity.indicators as indicator}
+                            <div
+                                class="p-4 rounded-lg border border-sidebar-border/40 bg-zinc-50/50 dark:bg-zinc-900/40 space-y-3"
+                            >
+                                <div
+                                    class="flex items-start justify-between gap-4"
+                                >
+                                    <div class="space-y-1">
+                                        <div class="flex items-center gap-2">
+                                            <span
+                                                class="text-[10px] font-bold uppercase px-1.5 py-0.5 rounded bg-primary/10 text-primary"
+                                            >
+                                                {indicator.indicator_type.toUpperCase()}
+                                            </span>
+                                            <span
+                                                class="text-xs font-semibold text-muted-foreground"
+                                            >
+                                                {indicator.code}
+                                            </span>
+                                            <span
+                                                class="text-xs font-medium text-muted-foreground/70"
+                                            >
+                                                • {indicator.quarter ===
+                                                'annual'
+                                                    ? 'Tahunan'
+                                                    : indicator.quarter}
+                                            </span>
+                                        </div>
+                                        <h4
+                                            class="font-bold text-sm text-foreground"
+                                        >
+                                            {indicator.name}
+                                        </h4>
+                                    </div>
+                                </div>
+
+                                <div
+                                    class="grid grid-cols-3 gap-2 text-xs pt-2 border-t border-sidebar-border/10"
+                                >
+                                    <div>
+                                        <span
+                                            class="text-muted-foreground block text-[10px] uppercase font-medium"
+                                            >Target</span
+                                        >
+                                        <span
+                                            class="font-semibold text-foreground"
+                                        >
+                                            {Number(indicator.target_value)}
+                                            {indicator.unit_of_measure}
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <span
+                                            class="text-muted-foreground block text-[10px] uppercase font-medium"
+                                            >Realisasi</span
+                                        >
+                                        <span
+                                            class="font-semibold text-foreground"
+                                        >
+                                            {indicator.actual_value !== null
+                                                ? `${Number(indicator.actual_value)} ${indicator.unit_of_measure}`
+                                                : '-'}
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <span
+                                            class="text-muted-foreground block text-[10px] uppercase font-medium"
+                                            >Capaian</span
+                                        >
+                                        <span
+                                            class="font-bold text-emerald-600 dark:text-emerald-400"
+                                        >
+                                            {calculateAchievement(
+                                                Number(indicator.target_value),
+                                                indicator.actual_value,
+                                            )}%
+                                        </span>
+                                    </div>
+                                </div>
+                                <div
+                                    class="w-full bg-zinc-200 dark:bg-zinc-800 rounded-full h-1.5"
+                                >
+                                    <div
+                                        class="bg-emerald-500 h-1.5 rounded-full transition-all duration-300"
+                                        style={`width: ${Math.min(calculateAchievement(Number(indicator.target_value), indicator.actual_value), 100)}%`}
+                                    ></div>
                                 </div>
                             </div>
                         {/each}

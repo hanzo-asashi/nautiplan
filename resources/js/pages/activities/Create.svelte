@@ -66,6 +66,15 @@
             progress_percentage: number;
             assigned_to: any;
         }>,
+        indicators: [] as Array<{
+            code: string;
+            name: string;
+            indicator_type: 'iku' | 'ikk';
+            target_value: number;
+            actual_value: number | null;
+            unit_of_measure: string;
+            quarter: string;
+        }>,
     });
 
     function addSubActivity() {
@@ -85,6 +94,25 @@
 
     function removeSubActivity(index: number) {
         form.sub_activities = form.sub_activities.filter((_, i) => i !== index);
+    }
+
+    function addIndicator() {
+        form.indicators = [
+            ...form.indicators,
+            {
+                code: '',
+                name: '',
+                indicator_type: 'ikk',
+                target_value: 0,
+                actual_value: null,
+                unit_of_measure: 'persen',
+                quarter: 'annual',
+            },
+        ];
+    }
+
+    function removeIndicator(index: number) {
+        form.indicators = form.indicators.filter((_, i) => i !== index);
     }
 
     function handleSubmit(e: Event) {
@@ -521,6 +549,162 @@
                                             max="100"
                                             required
                                         />
+                                    </div>
+                                </div>
+                            </div>
+                        {/each}
+                    </div>
+                {/if}
+            </div>
+
+            <!-- Indikator Kinerja (IKU/IKK) -->
+            <div class="space-y-4 pt-4 border-t border-sidebar-border/20">
+                <div
+                    class="flex items-center justify-between border-b border-sidebar-border/30 pb-2"
+                >
+                    <h3 class="text-base font-bold text-foreground">
+                        Indikator Kinerja Kegiatan (IKU / IKK)
+                    </h3>
+                    <button
+                        type="button"
+                        onclick={addIndicator}
+                        class="inline-flex items-center gap-1.5 text-xs bg-primary/10 hover:bg-primary/15 text-primary px-2.5 py-1.5 rounded-lg font-semibold transition-colors cursor-pointer"
+                    >
+                        <Plus class="size-3.5" />
+                        Tambah Indikator
+                    </button>
+                </div>
+
+                {#if form.errors.indicators}
+                    <p class="text-xs text-rose-500 font-semibold">
+                        {form.errors.indicators}
+                    </p>
+                {/if}
+
+                {#if form.indicators.length === 0}
+                    <p
+                        class="text-sm text-muted-foreground/60 italic text-center py-4"
+                    >
+                        Belum ada indikator kinerja. Klik "Tambah Indikator"
+                        jika ada.
+                    </p>
+                {:else}
+                    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                        {#each form.indicators as ind, index}
+                            <div
+                                class="p-4 rounded-lg border border-sidebar-border/40 bg-zinc-50/50 dark:bg-zinc-900/40 space-y-3 shadow-sm hover:border-sidebar-border transition-all"
+                            >
+                                <div class="flex items-center justify-between">
+                                    <span
+                                        class="text-sm font-bold text-foreground"
+                                        >Indikator #{index + 1}</span
+                                    >
+                                    <button
+                                        type="button"
+                                        onclick={() => removeIndicator(index)}
+                                        class="text-xs text-rose-500 hover:underline cursor-pointer flex items-center gap-1"
+                                    >
+                                        <Trash2 class="size-3.5" />
+                                        Hapus
+                                    </button>
+                                </div>
+
+                                <div class="grid gap-3">
+                                    <div class="space-y-1">
+                                        <label
+                                            class="text-xs font-semibold text-foreground"
+                                            >Kode Indikator</label
+                                        >
+                                        <input
+                                            type="text"
+                                            bind:value={ind.code}
+                                            placeholder="E.g., IKK.01"
+                                            class="w-full px-2.5 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-md outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+                                            required
+                                        />
+                                    </div>
+
+                                    <div class="space-y-1">
+                                        <label
+                                            class="text-xs font-semibold text-foreground"
+                                            >Nama Indikator</label
+                                        >
+                                        <input
+                                            type="text"
+                                            bind:value={ind.name}
+                                            placeholder="E.g., Persentase taruna..."
+                                            class="w-full px-2.5 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-md outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+                                            required
+                                        />
+                                    </div>
+
+                                    <div class="grid gap-2 grid-cols-2">
+                                        <div class="space-y-1">
+                                            <label
+                                                class="text-xs font-semibold text-foreground"
+                                                >Tipe</label
+                                            >
+                                            <select
+                                                bind:value={ind.indicator_type}
+                                                class="w-full px-2.5 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-md outline-none focus:border-primary focus:ring-1 focus:ring-primary cursor-pointer transition-all"
+                                                required
+                                            >
+                                                <option value="ikk"
+                                                    >IKK (Kegiatan)</option
+                                                >
+                                                <option value="iku"
+                                                    >IKU (Utama)</option
+                                                >
+                                            </select>
+                                        </div>
+                                        <div class="space-y-1">
+                                            <label
+                                                class="text-xs font-semibold text-foreground"
+                                                >Periode</label
+                                            >
+                                            <select
+                                                bind:value={ind.quarter}
+                                                class="w-full px-2.5 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-md outline-none focus:border-primary focus:ring-1 focus:ring-primary cursor-pointer transition-all"
+                                                required
+                                            >
+                                                <option value="annual"
+                                                    >Tahunan</option
+                                                >
+                                                <option value="Q1">Q1</option>
+                                                <option value="Q2">Q2</option>
+                                                <option value="Q3">Q3</option>
+                                                <option value="Q4">Q4</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="grid gap-2 grid-cols-2">
+                                        <div class="space-y-1">
+                                            <label
+                                                class="text-xs font-semibold text-foreground"
+                                                >Target</label
+                                            >
+                                            <input
+                                                type="number"
+                                                step="0.01"
+                                                bind:value={ind.target_value}
+                                                class="w-full px-2.5 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-md outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+                                                required
+                                            />
+                                        </div>
+                                        <div class="space-y-1">
+                                            <label
+                                                class="text-xs font-semibold text-foreground"
+                                                >Satuan</label
+                                            >
+                                            <input
+                                                type="text"
+                                                bind:value={ind.unit_of_measure}
+                                                placeholder="persen, dokumen..."
+                                                class="w-full px-2.5 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-md outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+                                                required
+                                            />
+                                        </div>
                                     </div>
                                 </div>
                             </div>

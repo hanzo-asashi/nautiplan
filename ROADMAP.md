@@ -8,11 +8,12 @@ NautiPlan is an extremely large application (~18 modules, 30+ database tables, 5
 
 ---
 
-## Phase 1 — Foundation & Core Data ✅ In Progress
+## Phase 1 — Foundation & Core Data ✅ Complete
 
 **Goal**: Build the foundation — database schema, role system, landing page, dashboard, and core CRUD for all master data and planning modules.
 
 ### Deliverables
+
 - 18 database migrations with full ERD
 - 18 Eloquent models with relationships, factories, and seeders
 - Role-based access control (8 roles)
@@ -21,16 +22,16 @@ NautiPlan is an extremely large application (~18 modules, 30+ database tables, 5
 - CRUD pages: Units, Fiscal Years, Renstra, Renja, Programs, Activities, Budgets, Users, Audit Logs
 - Expanded sidebar navigation with collapsible groups
 - Reusable UI components (DataTable, charts, status badges, etc.)
-- Glassmorphism soft UI with Indigo/Emerald/Slate/Zinc palette
 - Dark/light mode support
 
 ---
 
-## Phase 2 — KPI & Monitoring
+## Phase 2 — KPI & Monitoring ✅ In Progress
 
 **Goal**: Implement performance indicator tracking and monitoring/evaluation workflows.
 
 ### Deliverables
+
 - Activity Indicators CRUD (IKU/IKK)
 - Quarterly reporting
 - Progress tracking dashboard
@@ -45,6 +46,7 @@ NautiPlan is an extremely large application (~18 modules, 30+ database tables, 5
 **Goal**: Build the configurable multi-step approval chain for activity proposals.
 
 ### Deliverables
+
 - Activity proposal flow
 - Configurable multi-step approval chain (Unit Operator → Head of Dept → Deputy Director → Director)
 - Revision requests
@@ -58,6 +60,7 @@ NautiPlan is an extremely large application (~18 modules, 30+ database tables, 5
 **Goal**: Add comprehensive reporting with PDF/Excel export and visual analysis tools.
 
 ### Deliverables
+
 - PDF report generation (barryvdh/laravel-dompdf)
 - Excel export/import (openspout/openspout)
 - Gantt chart view
@@ -72,6 +75,7 @@ NautiPlan is an extremely large application (~18 modules, 30+ database tables, 5
 **Goal**: Add power-user features for day-to-day operational management.
 
 ### Deliverables
+
 - Kanban task board for sub-activities
 - Calendar & scheduling
 - Real-time notifications (broadcasting)
@@ -86,6 +90,7 @@ NautiPlan is an extremely large application (~18 modules, 30+ database tables, 5
 **Goal**: Optimize performance, complete test coverage, and prepare for production deployment.
 
 ### Deliverables
+
 - Performance optimization
 - Full test coverage
 - Accessibility audit
@@ -97,13 +102,13 @@ NautiPlan is an extremely large application (~18 modules, 30+ database tables, 5
 
 ## Technical Decisions
 
-| Decision | Choice | Rationale |
-|---|---|---|
-| Fiscal Year | Calendar year (Jan–Dec) | Follows Indonesian government fiscal year |
-| Approval Chain | Configurable | Flexibility for organizational changes |
-| Budget Currency | IDR (Rupiah) | Single-currency system |
-| PDF Export | barryvdh/laravel-dompdf | Mature, well-supported |
-| Excel Export | openspout/openspout | PHP 8.5 compatible, memory-efficient |
-| Frontend Framework | Svelte 5 + Inertia v3 | SPA experience with server-side routing |
-| UI Components | shadcn-svelte (bits-ui) | Accessible, customizable |
-| CSS Framework | TailwindCSS 4 | Utility-first, v4 with CSS custom properties |
+| Decision           | Choice                  | Rationale                                    |
+| ------------------ | ----------------------- | -------------------------------------------- |
+| Fiscal Year        | Calendar year (Jan–Dec) | Follows Indonesian government fiscal year    |
+| Approval Chain     | Configurable            | Flexibility for organizational changes       |
+| Budget Currency    | IDR (Rupiah)            | Single-currency system                       |
+| PDF Export         | barryvdh/laravel-dompdf | Mature, well-supported                       |
+| Excel Export       | openspout/openspout     | PHP 8.5 compatible, memory-efficient         |
+| Frontend Framework | Svelte 5 + Inertia v3   | SPA experience with server-side routing      |
+| UI Components      | shadcn-svelte (bits-ui) | Accessible, customizable                     |
+| CSS Framework      | TailwindCSS 4           | Utility-first, v4 with CSS custom properties |

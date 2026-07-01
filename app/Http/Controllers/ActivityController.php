@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Activity;
 use App\Models\ActivityDocument;
+use App\Models\ActivityIndicator;
 use App\Models\FiscalYear;
 use App\Models\Program;
 use App\Models\Renja;
@@ -14,6 +15,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -96,28 +98,55 @@ class ActivityController extends Controller
             'sub_activities.*.end_date' => 'nullable|date|after_or_equal:sub_activities.*.start_date',
             'sub_activities.*.progress_percentage' => 'required|integer|min:0|max:100',
             'sub_activities.*.assigned_to' => 'nullable|exists:users,id',
+            'indicators' => 'nullable|array',
+            'indicators.*.code' => 'required|string|max:255',
+            'indicators.*.name' => 'required|string|max:255',
+            'indicators.*.indicator_type' => 'required|string|in:iku,ikk',
+            'indicators.*.target_value' => 'required|numeric|min:0',
+            'indicators.*.actual_value' => 'nullable|numeric|min:0',
+            'indicators.*.unit_of_measure' => 'required|string|max:255',
+            'indicators.*.quarter' => 'required|string|in:Q1,Q2,Q3,Q4,annual',
         ]);
+
+        // Check local duplicates in request indicators array
+        $indicators = $request->input('indicators', []);
+        $pairs = [];
+        foreach ($indicators as $ind) {
+            $key = $ind['code'].'-'.$ind['quarter'];
+            if (in_array($key, $pairs)) {
+                throw ValidationException::withMessages([
+                    'indicators' => 'Kode dan periode indikator tidak boleh duplikat dalam satu kegiatan.',
+                ]);
+            }
+            $pairs[] = $key;
+        }
 
         $activity = Activity::create([
             'code' => $validated['code'],
             'name' => $validated['name'],
-            'description' => $validated['description'],
+            'description' => $validated['description'] ?? null,
             'program_id' => $validated['program_id'],
-            'renja_id' => $validated['renja_id'],
+            'renja_id' => $validated['renja_id'] ?? null,
             'unit_id' => $validated['unit_id'],
             'fiscal_year_id' => $validated['fiscal_year_id'],
-            'responsible_user_id' => $validated['responsible_user_id'],
+            'responsible_user_id' => $validated['responsible_user_id'] ?? null,
             'status' => $validated['status'],
             'priority' => $validated['priority'],
-            'start_date' => $validated['start_date'],
-            'end_date' => $validated['end_date'],
+            'start_date' => $validated['start_date'] ?? null,
+            'end_date' => $validated['end_date'] ?? null,
             'progress_percentage' => 0,
-            'location' => $validated['location'],
+            'location' => $validated['location'] ?? null,
         ]);
 
         if (! empty($validated['sub_activities'])) {
             foreach ($validated['sub_activities'] as $sub) {
                 $activity->subActivities()->create($sub);
+            }
+        }
+
+        if (! empty($validated['indicators'])) {
+            foreach ($validated['indicators'] as $ind) {
+                $activity->indicators()->create($ind);
             }
         }
 
@@ -147,7 +176,7 @@ class ActivityController extends Controller
 
     public function edit(Activity $activity): Response
     {
-        $activity->load('subActivities');
+        $activity->load(['subActivities', 'indicators']);
         $programs = Program::where('status', 'active')->get(['id', 'name', 'code']);
         $renjas = Renja::where('status', 'approved')->get(['id', 'title']);
         $units = Unit::where('is_active', true)->get(['id', 'name', 'code']);
@@ -190,23 +219,45 @@ class ActivityController extends Controller
             'sub_activities.*.end_date' => 'nullable|date|after_or_equal:sub_activities.*.start_date',
             'sub_activities.*.progress_percentage' => 'required|integer|min:0|max:100',
             'sub_activities.*.assigned_to' => 'nullable|exists:users,id',
+            'indicators' => 'nullable|array',
+            'indicators.*.id' => 'nullable|exists:activity_indicators,id',
+            'indicators.*.code' => 'required|string|max:255',
+            'indicators.*.name' => 'required|string|max:255',
+            'indicators.*.indicator_type' => 'required|string|in:iku,ikk',
+            'indicators.*.target_value' => 'required|numeric|min:0',
+            'indicators.*.actual_value' => 'nullable|numeric|min:0',
+            'indicators.*.unit_of_measure' => 'required|string|max:255',
+            'indicators.*.quarter' => 'required|string|in:Q1,Q2,Q3,Q4,annual',
         ]);
+
+        // Check local duplicates in request indicators array
+        $indicators = $request->input('indicators', []);
+        $pairs = [];
+        foreach ($indicators as $ind) {
+            $key = $ind['code'].'-'.$ind['quarter'];
+            if (in_array($key, $pairs)) {
+                throw ValidationException::withMessages([
+                    'indicators' => 'Kode dan periode indikator tidak boleh duplikat dalam satu kegiatan.',
+                ]);
+            }
+            $pairs[] = $key;
+        }
 
         $activity->update([
             'code' => $validated['code'],
             'name' => $validated['name'],
-            'description' => $validated['description'],
+            'description' => $validated['description'] ?? null,
             'program_id' => $validated['program_id'],
-            'renja_id' => $validated['renja_id'],
+            'renja_id' => $validated['renja_id'] ?? null,
             'unit_id' => $validated['unit_id'],
             'fiscal_year_id' => $validated['fiscal_year_id'],
-            'responsible_user_id' => $validated['responsible_user_id'],
+            'responsible_user_id' => $validated['responsible_user_id'] ?? null,
             'status' => $validated['status'],
             'priority' => $validated['priority'],
-            'start_date' => $validated['start_date'],
-            'end_date' => $validated['end_date'],
+            'start_date' => $validated['start_date'] ?? null,
+            'end_date' => $validated['end_date'] ?? null,
             'progress_percentage' => $validated['progress_percentage'],
-            'location' => $validated['location'],
+            'location' => $validated['location'] ?? null,
         ]);
 
         // Sync sub activities
@@ -219,6 +270,20 @@ class ActivityController extends Controller
                     SubActivity::where('id', $sub['id'])->firstOrFail()->update($sub);
                 } else {
                     $activity->subActivities()->create($sub);
+                }
+            }
+        }
+
+        // Sync indicators
+        $existingIndicatorIds = array_filter(array_map(fn ($ind) => $ind['id'] ?? null, $validated['indicators'] ?? []));
+        $activity->indicators()->whereNotIn('id', $existingIndicatorIds)->delete();
+
+        if (! empty($validated['indicators'])) {
+            foreach ($validated['indicators'] as $ind) {
+                if (isset($ind['id'])) {
+                    ActivityIndicator::where('id', $ind['id'])->firstOrFail()->update($ind);
+                } else {
+                    $activity->indicators()->create($ind);
                 }
             }
         }
