@@ -21,6 +21,7 @@ jobs:
         with:
           php-version: '8.5'
           tools: composer:v2
+          cache: composer
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -79,6 +80,7 @@ jobs:
         with:
           php-version: '8.5'
           tools: composer:v2
+          cache: composer
 
       - name: Install PHP Dependencies
         run: composer install --no-interaction --prefer-dist --optimize-autoloader
@@ -89,7 +91,6 @@ jobs:
   test:
     name: Tests (PHP ${{ matrix.php }})
     runs-on: ubuntu-latest
-    needs: [lint, analyse]
     strategy:
       fail-fast: true
       matrix:
@@ -103,7 +104,8 @@ jobs:
         with:
           php-version: ${{ matrix.php }}
           tools: composer:v2
-          coverage: xdebug
+          coverage: none
+          cache: composer
 
       - name: Setup Node
         uses: actions/setup-node@v4
