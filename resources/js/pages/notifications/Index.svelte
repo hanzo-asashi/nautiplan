@@ -155,6 +155,7 @@
                                 onclick={() => markAsRead(item.id)}
                                 class="h-8 w-8 text-muted-foreground hover:text-primary cursor-pointer"
                                 title="Tandai telah dibaca"
+                                aria-label="Tandai notifikasi ini sebagai telah dibaca"
                             >
                                 <Check class="size-4" />
                             </Button>

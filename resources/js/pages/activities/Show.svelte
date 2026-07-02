@@ -804,6 +804,7 @@
                             type="button"
                             onclick={() => fileInput?.click()}
                             class="w-full flex flex-col items-center justify-center gap-1.5 py-4 rounded-xl border border-dashed border-zinc-200 dark:border-zinc-800 bg-background text-xs font-semibold text-muted-foreground hover:text-foreground hover:bg-accent transition-all cursor-pointer"
+                            aria-label="Pilih file untuk diunggah"
                         >
                             <FileUp class="size-5 text-muted-foreground" />
                             {#if uploadForm.file}
@@ -829,6 +830,7 @@
                             bind:value={uploadForm.description}
                             placeholder="Deskripsi singkat..."
                             class="flex-1 px-2.5 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-md outline-none focus:border-primary"
+                            aria-label="Deskripsi singkat berkas lampiran"
                         />
 
                         <button
@@ -910,6 +912,8 @@
                                                     toggleExpandDoc(doc.id)}
                                                 class="p-1 hover:bg-zinc-200/50 rounded text-muted-foreground hover:text-foreground cursor-pointer flex items-center gap-1"
                                                 title="Riwayat Versi"
+                                                aria-label="Tampilkan riwayat versi untuk {doc.file_name}"
+                                                aria-expanded={isExpanded}
                                             >
                                                 <History class="size-3.5" />
                                                 <span
@@ -932,6 +936,7 @@
                                                 selectParentForVersion(doc.id)}
                                             class="p-1 hover:bg-zinc-200/50 rounded text-muted-foreground hover:text-primary cursor-pointer"
                                             title="Unggah Versi Baru"
+                                            aria-label="Unggah versi baru untuk dokumen {doc.file_name}"
                                         >
                                             <FileUp class="size-3.5" />
                                         </button>
@@ -942,6 +947,7 @@
                                                 handleDeleteDoc(doc.id)}
                                             class="text-rose-500 hover:text-rose-600 p-1 hover:bg-rose-500/10 rounded cursor-pointer"
                                             title="Hapus"
+                                            aria-label="Hapus dokumen {doc.file_name}"
                                         >
                                             <Trash2 class="size-3.5" />
                                         </button>
@@ -985,6 +991,7 @@
                                                         handleDeleteDoc(ver.id)}
                                                     class="text-rose-500 hover:text-rose-600 p-0.5 hover:bg-rose-500/10 rounded cursor-pointer shrink-0"
                                                     title="Hapus Versi"
+                                                    aria-label="Hapus versi {ver.version} dokumen {ver.file_name}"
                                                 >
                                                     <Trash2 class="size-3" />
                                                 </button>
