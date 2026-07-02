@@ -376,6 +376,22 @@
         </div>
     </div>
 
+    <!-- Keterangan Warna (Legend) -->
+    <div class="flex items-center gap-4 px-1 text-xs">
+        <span
+            class="text-muted-foreground font-bold uppercase tracking-wider text-[10px]"
+            >Legenda:</span
+        >
+        <div class="flex items-center gap-2">
+            <span class="size-3 rounded-full bg-primary shadow-sm"></span>
+            <span class="font-semibold text-foreground">Kegiatan Utama</span>
+        </div>
+        <div class="flex items-center gap-2">
+            <span class="size-3 rounded-full bg-amber-500 shadow-sm"></span>
+            <span class="font-semibold text-foreground">Sub-Kegiatan</span>
+        </div>
+    </div>
+
     <!-- Calendar Layout Grid -->
     <div class="grid gap-6 lg:grid-cols-3 items-start flex-1">
         <!-- Calendar Grid (2 Cols) -->
