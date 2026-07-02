@@ -160,6 +160,7 @@
                 onclick={props.onclick}
                 aria-expanded={props['aria-expanded']}
                 data-state={props['data-state']}
+                aria-label="Notifikasi, {unreadCount} belum dibaca"
             >
                 <Bell
                     class="size-5 opacity-80 group-hover:opacity-100 transition-opacity"
@@ -243,6 +244,7 @@
                                 onclick={() => markAsRead(item.id)}
                                 class="p-1 rounded-md bg-zinc-100 hover:bg-primary/10 hover:text-primary dark:bg-zinc-800 text-muted-foreground opacity-0 group-hover:opacity-100 transition-all cursor-pointer"
                                 title="Tandai telah dibaca"
+                                aria-label="Tandai notifikasi ini sebagai telah dibaca"
                             >
                                 <Check class="size-3" />
                             </button>

@@ -287,6 +287,7 @@
                 >
                 <select
                     value={filters.fiscal_year_id}
+                    aria-label="Tahun Anggaran"
                     onchange={(e) =>
                         applyFilters({
                             fiscal_year_id: Number(
@@ -308,6 +309,7 @@
                 >
                 <select
                     value={filters.unit_id || ''}
+                    aria-label="Unit Kerja"
                     onchange={(e) =>
                         applyFilters({
                             unit_id: (e.target as HTMLSelectElement).value
@@ -330,6 +332,7 @@
                 >
                 <select
                     value={filters.status || ''}
+                    aria-label="Status Kegiatan"
                     onchange={(e) =>
                         applyFilters({
                             status:
@@ -353,6 +356,7 @@
             <button
                 onclick={prevMonth}
                 class="p-1.5 border border-zinc-200 dark:border-zinc-800 bg-background/50 hover:bg-zinc-100 rounded-md transition-colors cursor-pointer"
+                aria-label="Bulan sebelumnya"
             >
                 <ChevronLeft class="size-4" />
             </button>
@@ -365,6 +369,7 @@
             <button
                 onclick={nextMonth}
                 class="p-1.5 border border-zinc-200 dark:border-zinc-800 bg-background/50 hover:bg-zinc-100 rounded-md transition-colors cursor-pointer"
+                aria-label="Bulan berikutnya"
             >
                 <ChevronRight class="size-4" />
             </button>
@@ -410,6 +415,12 @@
                             {isSelected
                             ? 'bg-primary/5 ring-1 ring-primary'
                             : ''}"
+                        aria-label="{day.date.toLocaleDateString('id-ID', {
+                            day: 'numeric',
+                            month: 'long',
+                            year: 'numeric',
+                        })}. Ada {dayEvents.length} kegiatan."
+                        aria-current={isSelected ? 'date' : undefined}
                     >
                         <!-- Day Number -->
                         <span

@@ -348,6 +348,7 @@
                                                 max="100"
                                                 bind:value={tempProgress}
                                                 class="flex-1 accent-primary h-1"
+                                                aria-label="Progres Sub-Kegiatan (%)"
                                             />
                                             <span
                                                 class="text-[9px] font-bold shrink-0"
@@ -395,6 +396,7 @@
                                         {:else}
                                             <select
                                                 value={task.status}
+                                                aria-label="Ubah Status Sub-Kegiatan"
                                                 onchange={(e) =>
                                                     updateStatus(
                                                         task.id,
