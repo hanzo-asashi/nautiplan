@@ -552,263 +552,279 @@
             closeDetail();
         }
     }}
-    class="rounded-2xl border border-sidebar-border/50 bg-card/95 backdrop-blur-md p-6 shadow-2xl max-w-2xl w-full text-foreground backdrop:bg-zinc-950/40 backdrop:backdrop-blur-sm outline-none overflow-hidden flex flex-col max-h-[85vh] font-sans"
+    class="rounded-2xl border border-sidebar-border/50 bg-card/95 backdrop-blur-md p-6 shadow-2xl max-w-2xl w-full text-foreground backdrop:bg-zinc-950/40 backdrop:backdrop-blur-sm outline-none overflow-hidden max-h-[85vh] font-sans"
 >
     {#if selectedLog}
-        <!-- Header -->
-        <div
-            class="flex items-start justify-between pb-4 border-b border-sidebar-border/50 mb-4 flex-shrink-0"
-        >
-            <div class="space-y-1">
-                <div class="flex items-center gap-2">
-                    <History class="size-5 text-primary" />
-                    <h3 class="text-lg font-bold text-foreground">
-                        Detail Perubahan Data
-                    </h3>
-                </div>
-                <p class="text-xs text-muted-foreground">
-                    Perubahan pada {getFriendlyModelName(
-                        selectedLog.auditable_type,
-                    )} (ID: {selectedLog.auditable_id})
-                </p>
-            </div>
-            <button
-                onclick={closeDetail}
-                class="rounded-full p-1 hover:bg-accent text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
-            >
-                <X class="size-4" />
-            </button>
-        </div>
-
-        <!-- Metadata Grid -->
-        <div
-            class="grid grid-cols-2 gap-4 bg-muted/30 p-4 rounded-xl border border-sidebar-border/30 text-xs mb-4 flex-shrink-0"
-        >
-            <div class="flex items-center gap-2">
-                <Clock class="size-4 text-muted-foreground" />
-                <div>
-                    <span
-                        class="block text-[10px] text-muted-foreground uppercase font-bold"
-                        >Waktu Transaksi</span
-                    >
-                    <span class="font-semibold text-foreground"
-                        >{formatDate(selectedLog.created_at, true)}</span
-                    >
-                </div>
-            </div>
-            <div class="flex items-center gap-2">
-                <UserIcon class="size-4 text-muted-foreground" />
-                <div>
-                    <span
-                        class="block text-[10px] text-muted-foreground uppercase font-bold"
-                        >Dilakukan Oleh</span
-                    >
-                    <span class="font-semibold text-foreground"
-                        >{selectedLog.user?.name || 'Sistem'}</span
-                    >
-                </div>
-            </div>
-            <div class="flex items-center gap-2">
-                <Globe class="size-4 text-muted-foreground" />
-                <div>
-                    <span
-                        class="block text-[10px] text-muted-foreground uppercase font-bold"
-                        >IP Address</span
-                    >
-                    <span class="font-semibold text-foreground font-mono"
-                        >{selectedLog.ip_address || '-'}</span
-                    >
-                </div>
-            </div>
-            <div class="flex items-center gap-2">
-                <Monitor class="size-4 text-muted-foreground" />
-                <div>
-                    <span
-                        class="block text-[10px] text-muted-foreground uppercase font-bold"
-                        >Event Aksi</span
-                    >
-                    <StatusBadge status={selectedLog.event} />
-                </div>
-            </div>
-        </div>
-
-        <!-- User Agent Display -->
-        {#if selectedLog.user_agent}
+        <div class="flex flex-col max-h-[78vh]">
+            <!-- Header -->
             <div
-                class="px-4 py-2 bg-muted/20 border border-sidebar-border/30 rounded-lg text-[11px] text-muted-foreground font-mono truncate mb-4 flex-shrink-0"
-                title={selectedLog.user_agent}
+                class="flex items-start justify-between pb-4 border-b border-sidebar-border/50 mb-4 flex-shrink-0"
             >
-                <span class="font-bold text-foreground">User Agent:</span>
-                {selectedLog.user_agent}
+                <div class="space-y-1">
+                    <div class="flex items-center gap-2">
+                        <History class="size-5 text-primary" />
+                        <h3 class="text-lg font-bold text-foreground">
+                            Detail Perubahan Data
+                        </h3>
+                    </div>
+                    <p class="text-xs text-muted-foreground">
+                        Perubahan pada {getFriendlyModelName(
+                            selectedLog.auditable_type,
+                        )} (ID: {selectedLog.auditable_id})
+                    </p>
+                </div>
+                <button
+                    onclick={closeDetail}
+                    class="rounded-full p-1 hover:bg-accent text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+                >
+                    <X class="size-4" />
+                </button>
             </div>
-        {/if}
 
-        <!-- Values/Diff display -->
-        <div class="flex-1 overflow-y-auto pr-1">
-            {#if selectedLog.event === 'created'}
-                <!-- Created display: show new values -->
-                <div class="space-y-3">
-                    <h4
-                        class="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400"
-                    >
-                        Data Baru Yang Dibuat
-                    </h4>
-                    <div
-                        class="border border-sidebar-border/50 rounded-xl overflow-hidden bg-emerald-500/[0.02]"
-                    >
-                        <table class="w-full text-left text-xs border-collapse">
-                            <thead>
-                                <tr
-                                    class="bg-emerald-500/10 border-b border-sidebar-border/50 text-emerald-800 dark:text-emerald-300 font-semibold"
-                                >
-                                    <th class="p-3 w-1/3">Kolom / Atribut</th>
-                                    <th class="p-3">Nilai</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-sidebar-border/30">
-                                {#each Object.entries(selectedLog.new_values || {}) as [key, val]}
-                                    <tr class="hover:bg-emerald-500/[0.04]">
-                                        <td
-                                            class="p-3 font-semibold text-foreground"
-                                            >{formatFieldName(key)}</td
-                                        >
-                                        <td
-                                            class="p-3 text-emerald-600 dark:text-emerald-300 font-medium whitespace-pre-wrap"
-                                            >{formatValue(key, val)}</td
-                                        >
-                                    </tr>
-                                {/each}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            {:else if selectedLog.event === 'deleted'}
-                <!-- Deleted display: show old values -->
-                <div class="space-y-3">
-                    <h4
-                        class="text-xs font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400"
-                    >
-                        Data Yang Dihapus
-                    </h4>
-                    <div
-                        class="border border-sidebar-border/50 rounded-xl overflow-hidden bg-rose-500/[0.02]"
-                    >
-                        <table class="w-full text-left text-xs border-collapse">
-                            <thead>
-                                <tr
-                                    class="bg-rose-500/10 border-b border-sidebar-border/50 text-rose-800 dark:text-rose-300 font-semibold"
-                                >
-                                    <th class="p-3 w-1/3">Kolom / Atribut</th>
-                                    <th class="p-3">Nilai Sebelum Dihapus</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-sidebar-border/30">
-                                {#each Object.entries(selectedLog.old_values || {}) as [key, val]}
-                                    <tr class="hover:bg-rose-500/[0.04]">
-                                        <td
-                                            class="p-3 font-semibold text-foreground"
-                                            >{formatFieldName(key)}</td
-                                        >
-                                        <td
-                                            class="p-3 text-rose-600 dark:text-rose-300 font-medium line-through whitespace-pre-wrap"
-                                            >{formatValue(key, val)}</td
-                                        >
-                                    </tr>
-                                {/each}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            {:else if selectedLog.event === 'updated'}
-                <!-- Updated display: show only diffs -->
-                <div class="space-y-3">
-                    <h4
-                        class="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400"
-                    >
-                        Perbandingan Perubahan Data
-                    </h4>
-
-                    {#if diffKeys.length === 0}
-                        <div
-                            class="p-4 rounded-xl border border-sidebar-border/30 text-center text-xs text-muted-foreground italic bg-muted/20"
+            <!-- Metadata Grid -->
+            <div
+                class="grid grid-cols-2 gap-4 bg-muted/30 p-4 rounded-xl border border-sidebar-border/30 text-xs mb-4 flex-shrink-0"
+            >
+                <div class="flex items-center gap-2">
+                    <Clock class="size-4 text-muted-foreground" />
+                    <div>
+                        <span
+                            class="block text-[10px] text-muted-foreground uppercase font-bold"
+                            >Waktu Transaksi</span
                         >
-                            Tidak ada perubahan signifikan yang dicatat (hanya
-                            perubahan timestamp/kolom internal).
-                        </div>
-                    {:else}
+                        <span class="font-semibold text-foreground"
+                            >{formatDate(selectedLog.created_at, true)}</span
+                        >
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <UserIcon class="size-4 text-muted-foreground" />
+                    <div>
+                        <span
+                            class="block text-[10px] text-muted-foreground uppercase font-bold"
+                            >Dilakukan Oleh</span
+                        >
+                        <span class="font-semibold text-foreground"
+                            >{selectedLog.user?.name || 'Sistem'}</span
+                        >
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <Globe class="size-4 text-muted-foreground" />
+                    <div>
+                        <span
+                            class="block text-[10px] text-muted-foreground uppercase font-bold"
+                            >IP Address</span
+                        >
+                        <span class="font-semibold text-foreground font-mono"
+                            >{selectedLog.ip_address || '-'}</span
+                        >
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <Monitor class="size-4 text-muted-foreground" />
+                    <div>
+                        <span
+                            class="block text-[10px] text-muted-foreground uppercase font-bold"
+                            >Event Aksi</span
+                        >
+                        <StatusBadge status={selectedLog.event} />
+                    </div>
+                </div>
+            </div>
+
+            <!-- User Agent Display -->
+            {#if selectedLog.user_agent}
+                <div
+                    class="px-4 py-2 bg-muted/20 border border-sidebar-border/30 rounded-lg text-[11px] text-muted-foreground font-mono truncate mb-4 flex-shrink-0"
+                    title={selectedLog.user_agent}
+                >
+                    <span class="font-bold text-foreground">User Agent:</span>
+                    {selectedLog.user_agent}
+                </div>
+            {/if}
+
+            <!-- Values/Diff display -->
+            <div class="flex-1 overflow-y-auto pr-1">
+                {#if selectedLog.event === 'created'}
+                    <!-- Created display: show new values -->
+                    <div class="space-y-3">
+                        <h4
+                            class="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400"
+                        >
+                            Data Baru Yang Dibuat
+                        </h4>
                         <div
-                            class="border border-sidebar-border/50 rounded-xl overflow-hidden bg-amber-500/[0.01]"
+                            class="border border-sidebar-border/50 rounded-xl overflow-hidden bg-emerald-500/[0.02]"
                         >
                             <table
                                 class="w-full text-left text-xs border-collapse"
                             >
                                 <thead>
                                     <tr
-                                        class="bg-amber-500/10 border-b border-sidebar-border/50 text-amber-800 dark:text-amber-300 font-semibold"
+                                        class="bg-emerald-500/10 border-b border-sidebar-border/50 text-emerald-800 dark:text-emerald-300 font-semibold"
                                     >
-                                        <th class="p-3 w-1/4"
+                                        <th class="p-3 w-1/3"
                                             >Kolom / Atribut</th
                                         >
-                                        <th
-                                            class="p-3 w-3/8 text-rose-700 dark:text-rose-400"
-                                            >Sebelum (Lama)</th
+                                        <th class="p-3">Nilai</th>
+                                    </tr>
+                                </thead>
+                                <tbody
+                                    class="divide-y divide-sidebar-border/30"
+                                >
+                                    {#each Object.entries(selectedLog.new_values || {}) as [key, val]}
+                                        <tr class="hover:bg-emerald-500/[0.04]">
+                                            <td
+                                                class="p-3 font-semibold text-foreground"
+                                                >{formatFieldName(key)}</td
+                                            >
+                                            <td
+                                                class="p-3 text-emerald-600 dark:text-emerald-300 font-medium whitespace-pre-wrap"
+                                                >{formatValue(key, val)}</td
+                                            >
+                                        </tr>
+                                    {/each}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                {:else if selectedLog.event === 'deleted'}
+                    <!-- Deleted display: show old values -->
+                    <div class="space-y-3">
+                        <h4
+                            class="text-xs font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400"
+                        >
+                            Data Yang Dihapus
+                        </h4>
+                        <div
+                            class="border border-sidebar-border/50 rounded-xl overflow-hidden bg-rose-500/[0.02]"
+                        >
+                            <table
+                                class="w-full text-left text-xs border-collapse"
+                            >
+                                <thead>
+                                    <tr
+                                        class="bg-rose-500/10 border-b border-sidebar-border/50 text-rose-800 dark:text-rose-300 font-semibold"
+                                    >
+                                        <th class="p-3 w-1/3"
+                                            >Kolom / Atribut</th
                                         >
-                                        <th
-                                            class="p-3 w-3/8 text-emerald-700 dark:text-emerald-400"
-                                            >Sesudah (Baru)</th
+                                        <th class="p-3"
+                                            >Nilai Sebelum Dihapus</th
                                         >
                                     </tr>
                                 </thead>
                                 <tbody
                                     class="divide-y divide-sidebar-border/30"
                                 >
-                                    {#each diffKeys as key}
-                                        <tr class="hover:bg-amber-500/[0.03]">
+                                    {#each Object.entries(selectedLog.old_values || {}) as [key, val]}
+                                        <tr class="hover:bg-rose-500/[0.04]">
                                             <td
                                                 class="p-3 font-semibold text-foreground"
                                                 >{formatFieldName(key)}</td
                                             >
                                             <td
-                                                class="p-3 text-rose-600 dark:text-rose-400/90 line-through bg-rose-500/[0.02] whitespace-pre-wrap"
+                                                class="p-3 text-rose-600 dark:text-rose-300 font-medium line-through whitespace-pre-wrap"
+                                                >{formatValue(key, val)}</td
                                             >
-                                                {formatValue(
-                                                    key,
-                                                    selectedLog.old_values?.[
-                                                        key
-                                                    ],
-                                                )}
-                                            </td>
-                                            <td
-                                                class="p-3 text-emerald-600 dark:text-emerald-400 bg-emerald-500/[0.02] font-semibold whitespace-pre-wrap"
-                                            >
-                                                {formatValue(
-                                                    key,
-                                                    selectedLog.new_values?.[
-                                                        key
-                                                    ],
-                                                )}
-                                            </td>
                                         </tr>
                                     {/each}
                                 </tbody>
                             </table>
                         </div>
-                    {/if}
-                </div>
-            {/if}
-        </div>
+                    </div>
+                {:else if selectedLog.event === 'updated'}
+                    <!-- Updated display: show only diffs -->
+                    <div class="space-y-3">
+                        <h4
+                            class="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400"
+                        >
+                            Perbandingan Perubahan Data
+                        </h4>
 
-        <!-- Footer actions -->
-        <div
-            class="flex justify-end pt-4 border-t border-sidebar-border/50 mt-4 flex-shrink-0"
-        >
-            <button
-                type="button"
-                onclick={closeDetail}
-                class="inline-flex h-9 items-center justify-center rounded-md border border-zinc-200/50 dark:border-zinc-800 bg-background px-5 py-2 text-sm font-semibold transition-colors hover:bg-accent hover:text-accent-foreground outline-none cursor-pointer text-foreground"
+                        {#if diffKeys.length === 0}
+                            <div
+                                class="p-4 rounded-xl border border-sidebar-border/30 text-center text-xs text-muted-foreground italic bg-muted/20"
+                            >
+                                Tidak ada perubahan signifikan yang dicatat
+                                (hanya perubahan timestamp/kolom internal).
+                            </div>
+                        {:else}
+                            <div
+                                class="border border-sidebar-border/50 rounded-xl overflow-hidden bg-amber-500/[0.01]"
+                            >
+                                <table
+                                    class="w-full text-left text-xs border-collapse"
+                                >
+                                    <thead>
+                                        <tr
+                                            class="bg-amber-500/10 border-b border-sidebar-border/50 text-amber-800 dark:text-amber-300 font-semibold"
+                                        >
+                                            <th class="p-3 w-1/4"
+                                                >Kolom / Atribut</th
+                                            >
+                                            <th
+                                                class="p-3 w-3/8 text-rose-700 dark:text-rose-400"
+                                                >Sebelum (Lama)</th
+                                            >
+                                            <th
+                                                class="p-3 w-3/8 text-emerald-700 dark:text-emerald-400"
+                                                >Sesudah (Baru)</th
+                                            >
+                                        </tr>
+                                    </thead>
+                                    <tbody
+                                        class="divide-y divide-sidebar-border/30"
+                                    >
+                                        {#each diffKeys as key}
+                                            <tr
+                                                class="hover:bg-amber-500/[0.03]"
+                                            >
+                                                <td
+                                                    class="p-3 font-semibold text-foreground"
+                                                    >{formatFieldName(key)}</td
+                                                >
+                                                <td
+                                                    class="p-3 text-rose-600 dark:text-rose-400/90 line-through bg-rose-500/[0.02] whitespace-pre-wrap"
+                                                >
+                                                    {formatValue(
+                                                        key,
+                                                        selectedLog
+                                                            .old_values?.[key],
+                                                    )}
+                                                </td>
+                                                <td
+                                                    class="p-3 text-emerald-600 dark:text-emerald-400 bg-emerald-500/[0.02] font-semibold whitespace-pre-wrap"
+                                                >
+                                                    {formatValue(
+                                                        key,
+                                                        selectedLog
+                                                            .new_values?.[key],
+                                                    )}
+                                                </td>
+                                            </tr>
+                                        {/each}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {/if}
+                    </div>
+                {/if}
+            </div>
+
+            <!-- Footer actions -->
+            <div
+                class="flex justify-end pt-4 border-t border-sidebar-border/50 mt-4 flex-shrink-0"
             >
-                Tutup
-            </button>
+                <button
+                    type="button"
+                    onclick={closeDetail}
+                    class="inline-flex h-9 items-center justify-center rounded-md border border-zinc-200/50 dark:border-zinc-800 bg-background px-5 py-2 text-sm font-semibold transition-colors hover:bg-accent hover:text-accent-foreground outline-none cursor-pointer text-foreground"
+                >
+                    Tutup
+                </button>
+            </div>
         </div>
     {/if}
 </dialog>
