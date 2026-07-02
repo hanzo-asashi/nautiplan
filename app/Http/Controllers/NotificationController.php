@@ -85,9 +85,11 @@ class NotificationController extends Controller
 
     public function markAsRead(Notification $notification): RedirectResponse
     {
-        if ($notification->user_id === auth()->id() || is_null($notification->user_id)) {
-            $notification->update(['read_at' => now()]);
+        if ($notification->user_id !== null && $notification->user_id !== auth()->id()) {
+            abort(403, 'Anda tidak memiliki wewenang untuk mengakses notifikasi ini.');
         }
+
+        $notification->update(['read_at' => now()]);
 
         return back()->with('success', 'Notifikasi ditandai sebagai telah dibaca.');
     }
