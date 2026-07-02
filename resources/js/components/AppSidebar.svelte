@@ -61,84 +61,94 @@
         user?.is_super_admin || user?.roles?.includes('admin'),
     );
 
-    const mainNavItems = $derived.by((): NavItem[] => {
-        const items: NavItem[] = [
-            {
-                title: 'Dashboard',
-                href: dashboard(),
-                icon: LayoutGrid,
-            },
-            {
-                title: 'Renstra (Strategic)',
-                href: renstraIndex(),
-                icon: Target,
-            },
-            {
-                title: 'Renja (Annual)',
-                href: renjaIndex(),
-                icon: Calendar,
-            },
-            {
-                title: 'Programs',
-                href: programIndex(),
-                icon: Folder,
-            },
-            {
-                title: 'Activities',
-                href: activityIndex(),
-                icon: Activity,
-            },
-            {
-                title: 'Persetujuan',
-                href: approvalIndex(),
-                icon: FileCheck,
-            },
-            {
-                title: 'Capaian KPI',
-                href: kpiIndex(),
-                icon: ChartPie,
-            },
-            {
-                title: 'Laporan & Monev',
-                href: reportIndex(),
-                icon: ClipboardCheck,
-            },
-            {
-                title: 'Gantt Chart',
-                href: ganttIndex(),
-                icon: CalendarDays,
-            },
-            {
-                title: 'Analisis & Realisasi',
-                href: analyticsIndex(),
-                icon: BarChart3,
-            },
-            {
-                title: 'Kalender & Penjadwalan',
-                href: calendarIndex(),
-                icon: Calendar,
-            },
-            {
-                title: 'Budget & Realization',
-                href: budgetIndex(),
-                icon: Coins,
-            },
-            {
-                title: 'Organizational Units',
-                href: unitIndex(),
-                icon: Building,
-            },
-            {
-                title: 'Fiscal Years',
-                href: fiscalYearIndex(),
-                icon: CalendarDays,
-            },
-        ];
+    const dashboardItems = $derived.by((): NavItem[] => [
+        {
+            title: 'Dashboard',
+            href: dashboard(),
+            icon: LayoutGrid,
+        },
+    ]);
 
+    const planningItems = $derived.by((): NavItem[] => [
+        {
+            title: 'Renstra (Strategis)',
+            href: renstraIndex(),
+            icon: Target,
+        },
+        {
+            title: 'Renja (Tahunan)',
+            href: renjaIndex(),
+            icon: Calendar,
+        },
+        {
+            title: 'Program Kerja',
+            href: programIndex(),
+            icon: Folder,
+        },
+        {
+            title: 'Kegiatan Utama',
+            href: activityIndex(),
+            icon: Activity,
+        },
+        {
+            title: 'Anggaran & Realisasi',
+            href: budgetIndex(),
+            icon: Coins,
+        },
+        {
+            title: 'Persetujuan Rencana',
+            href: approvalIndex(),
+            icon: FileCheck,
+        },
+    ]);
+
+    const monitoringItems = $derived.by((): NavItem[] => [
+        {
+            title: 'Capaian KPI',
+            href: kpiIndex(),
+            icon: ChartPie,
+        },
+        {
+            title: 'Laporan & Monev',
+            href: reportIndex(),
+            icon: ClipboardCheck,
+        },
+        {
+            title: 'Jadwal Kalender',
+            href: calendarIndex(),
+            icon: Calendar,
+        },
+        {
+            title: 'Linimasa Gantt',
+            href: ganttIndex(),
+            icon: CalendarDays,
+        },
+        {
+            title: 'Analisis & Realisasi',
+            href: analyticsIndex(),
+            icon: BarChart3,
+        },
+    ]);
+
+    const masterItems = $derived.by((): NavItem[] => [
+        {
+            title: 'Unit Organisasi',
+            href: unitIndex(),
+            icon: Building,
+        },
+        {
+            title: 'Tahun Anggaran',
+            href: fiscalYearIndex(),
+            icon: CalendarDays,
+        },
+    ]);
+
+    const systemItems = $derived.by((): NavItem[] => {
+        const items: NavItem[] = [];
         if (isAdmin) {
             items.push(
                 {
-                    title: 'User Management',
+                    title: 'Manajemen Pengguna',
                     href: userIndex(),
                     icon: Users,
                 },
@@ -149,7 +159,6 @@
                 },
             );
         }
-
         return items;
     });
 
@@ -176,7 +185,11 @@
     </SidebarHeader>
 
     <SidebarContent>
-        <NavMain items={mainNavItems} />
+        <NavMain items={dashboardItems} label="Ringkasan" />
+        <NavMain items={planningItems} label="Perencanaan & Anggaran" />
+        <NavMain items={monitoringItems} label="Monitoring & Pelaporan" />
+        <NavMain items={masterItems} label="Data Master" />
+        <NavMain items={systemItems} label="Pengaturan Sistem" />
     </SidebarContent>
 
     <SidebarFooter>
