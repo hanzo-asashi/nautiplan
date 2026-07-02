@@ -31,11 +31,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Programs & Activities
     Route::resource('programs', ProgramController::class);
     Route::resource('activities', ActivityController::class);
-    Route::get('activities/{activity}/kanban', [ActivityController::class, 'kanban'])->name('activities.kanban');
-    Route::get('activities/{activity}/revisions', [ActivityController::class, 'revisions'])->name('activities.revisions');
-    Route::put('sub-activities/{subActivity}/status', [ActivityController::class, 'updateSubActivityStatus'])->name('sub-activities.update-status');
-    Route::post('activities/{activity}/documents', [ActivityController::class, 'uploadDocument'])->name('activities.documents.upload');
-    Route::delete('activity-documents/{document}', [ActivityController::class, 'deleteDocument'])->name('activities.documents.delete');
+    Route::get('activities/{activity}/kanban', [ActivityController::class, 'kanban'])->name('activities.kanban')->middleware('throttle:60,1');
+    Route::get('activities/{activity}/revisions', [ActivityController::class, 'revisions'])->name('activities.revisions')->middleware('throttle:60,1');
+    Route::put('sub-activities/{subActivity}/status', [ActivityController::class, 'updateSubActivityStatus'])->name('sub-activities.update-status')->middleware('throttle:60,1');
+    Route::post('activities/{activity}/documents', [ActivityController::class, 'uploadDocument'])->name('activities.documents.upload')->middleware('throttle:30,1');
+    Route::delete('activity-documents/{document}', [ActivityController::class, 'deleteDocument'])->name('activities.documents.delete')->middleware('throttle:30,1');
     Route::post('activities/{activity}/indicators', [ActivityIndicatorController::class, 'store'])->name('activities.indicators.store');
     Route::put('activities/indicators/{indicator}', [ActivityIndicatorController::class, 'update'])->name('activities.indicators.update');
     Route::delete('activities/indicators/{indicator}', [ActivityIndicatorController::class, 'destroy'])->name('activities.indicators.destroy');
@@ -87,9 +87,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Notifications Workflow
     Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
-    Route::get('notifications/stream', [NotificationController::class, 'stream'])->name('notifications.stream');
-    Route::post('notifications/{notification}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
-    Route::post('notifications/read-all', [NotificationController::class, 'markAllRead'])->name('notifications.read-all');
+    Route::get('notifications/stream', [NotificationController::class, 'stream'])->name('notifications.stream')->middleware('throttle:30,1');
+    Route::post('notifications/{notification}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read')->middleware('throttle:60,1');
+    Route::post('notifications/read-all', [NotificationController::class, 'markAllRead'])->name('notifications.read-all')->middleware('throttle:60,1');
 });
 
 require __DIR__.'/settings.php';

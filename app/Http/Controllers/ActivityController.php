@@ -314,7 +314,16 @@ class ActivityController extends Controller
 
     public function uploadDocument(Request $request, Activity $activity): RedirectResponse
     {
-        $request->validate([
+        $user = auth()->user();
+        $isAllowed = $activity->responsible_user_id === $user->id
+            || $user->unit_id === $activity->unit_id;
+        $isAdmin = $user->isSuperAdmin() || $user->hasRole('admin');
+
+        if (! $isAdmin && ! $isAllowed) {
+            abort(403, 'Anda tidak memiliki wewenang untuk mengunggah dokumen pada kegiatan ini.');
+        }
+
+        $validated = $request->validate([
             'file' => 'required|file|max:10240|mimes:pdf,docx,xlsx,png,jpg',
             'description' => 'nullable|string',
             'parent_id' => 'nullable|integer|exists:activity_documents,id',
@@ -369,6 +378,16 @@ class ActivityController extends Controller
 
     public function deleteDocument(ActivityDocument $document): RedirectResponse
     {
+        $user = auth()->user();
+        $activity = $document->activity;
+        $isAllowed = $document->uploaded_by === $user->id
+            || $activity->responsible_user_id === $user->id;
+        $isAdmin = $user->isSuperAdmin() || $user->hasRole('admin');
+
+        if (! $isAdmin && ! $isAllowed) {
+            abort(403, 'Anda tidak memiliki wewenang untuk menghapus dokumen ini.');
+        }
+
         Storage::disk('public')->delete($document->file_path);
         $document->delete();
 
@@ -377,6 +396,15 @@ class ActivityController extends Controller
 
     public function kanban(Activity $activity): Response
     {
+        $user = auth()->user();
+        $isAllowed = $activity->responsible_user_id === $user->id
+            || $user->unit_id === $activity->unit_id;
+        $isAdmin = $user->isSuperAdmin() || $user->hasRole('admin');
+
+        if (! $isAdmin && ! $isAllowed) {
+            abort(403, 'Anda tidak memiliki wewenang untuk mengakses papan Kanban kegiatan ini.');
+        }
+
         $activity->load([
             'unit',
             'fiscalYear',
@@ -393,6 +421,17 @@ class ActivityController extends Controller
 
     public function updateSubActivityStatus(Request $request, SubActivity $subActivity): RedirectResponse
     {
+        $user = auth()->user();
+        $activity = $subActivity->activity;
+        $isAllowed = $subActivity->assigned_to === $user->id
+            || $activity->responsible_user_id === $user->id
+            || $user->unit_id === $activity->unit_id;
+        $isAdmin = $user->isSuperAdmin() || $user->hasRole('admin');
+
+        if (! $isAdmin && ! $isAllowed) {
+            abort(403, 'Anda tidak memiliki wewenang untuk memperbarui sub-kegiatan ini.');
+        }
+
         $validated = $request->validate([
             'status' => 'required|string|in:pending,in_progress,completed,cancelled',
             'progress_percentage' => 'required|integer|min:0|max:100',
@@ -427,6 +466,15 @@ class ActivityController extends Controller
 
     public function revisions(Activity $activity): Response
     {
+        $user = auth()->user();
+        $isAllowed = $activity->responsible_user_id === $user->id
+            || $user->unit_id === $activity->unit_id;
+        $isAdmin = $user->isSuperAdmin() || $user->hasRole('admin');
+
+        if (! $isAdmin && ! $isAllowed) {
+            abort(403, 'Anda tidak memiliki wewenang untuk melihat riwayat revisi kegiatan ini.');
+        }
+
         $activity->load(['unit', 'fiscalYear']);
 
         $budgetIds = $activity->budgets()->pluck('id')->toArray();
