@@ -129,18 +129,27 @@
 </head>
 <body>
 
-    <div class="header">
-        <table>
+    <div class="header" style="border-bottom: 2px double #000; padding-bottom: 8px; margin-bottom: 15px;">
+        <table style="width: 100%;">
             <tr>
-                <td>
-                    <div class="title">NautiPlan - Detail Rencana Kegiatan</div>
-                    <div class="subtitle">Sistem Terintegrasi Pengelolaan Program & Kegiatan | Politeknik Pelayaran Barombong</div>
+                <td style="width: 12%; text-align: center; vertical-align: middle; padding-right: 10px;">
+                    <span style="font-size: 28px; font-weight: bold; color: #1e3a8a;">⚓</span>
                 </td>
-                <td class="text-right" style="vertical-align: bottom; font-size: 10px; color: #64748b;">
-                    Dicetak pada: {{ now()->format('d M Y H:i') }}
+                <td style="width: 88%; text-align: center;">
+                    <div style="font-size: 13px; font-weight: bold; letter-spacing: 0.5px; text-transform: uppercase;">KEMENTERIAN PERHUBUNGAN</div>
+                    <div style="font-size: 11px; font-weight: bold; letter-spacing: 0.5px; text-transform: uppercase;">BADAN PENGEMBANGAN SUMBER DAYA MANUSIA PERHUBUNGAN</div>
+                    <div style="font-size: 12px; font-weight: bold; letter-spacing: 0.5px; text-transform: uppercase; color: #1e3a8a;">POLITEKNIK PELAYARAN BAROMBONG</div>
+                    <div style="font-size: 8px; color: #64748b; margin-top: 2px;">
+                        Jl. Permandian Alam No. 1, Barombong, Kec. Tamalate, Kota Makassar | Telp: (0411) 889722 | Email: poltekpel.barombong@dephub.go.id
+                    </div>
                 </td>
             </tr>
         </table>
+    </div>
+
+    <div style="text-align: center; margin-bottom: 20px;">
+        <div style="font-size: 14px; font-weight: bold; text-decoration: underline; text-transform: uppercase;">LAPORAN REALISASI ANGGARAN & KEGIATAN PPK</div>
+        <div style="font-size: 9px; color: #64748b; margin-top: 2px;">Tahun Anggaran: {{ $activity->fiscalYear ? $activity->fiscalYear->year : '-' }} | Dicetak pada: {{ now()->format('d M Y H:i') }}</div>
     </div>
 
     <div class="section-title">Informasi Umum Kegiatan</div>
@@ -226,7 +235,7 @@
         <thead>
             <tr>
                 <th style="width: 5%">No</th>
-                <th style="width: 30%">Kategori Anggaran</th>
+                <th style="width: 30%">Kode / Kategori Akun</th>
                 <th style="width: 40%">Deskripsi Perincian</th>
                 <th style="width: 25%" class="text-right">Pagu Anggaran</th>
             </tr>
@@ -235,7 +244,14 @@
             @forelse ($activity->budgets as $idx => $budget)
                 <tr>
                     <td class="text-center">{{ $idx + 1 }}</td>
-                    <td>{{ ucwords(str_replace('_', ' ', $budget->budget_category)) }}</td>
+                    <td>
+                        <strong>{{ ucwords(str_replace('_', ' ', $budget->budget_category)) }}</strong>
+                        @if ($budget->account_code)
+                            <div style="font-size: 9px; color: #475569; margin-top: 2px;">
+                                Akun: {{ $budget->account_code }} - {{ $budget->account_name }}
+                            </div>
+                        @endif
+                    </td>
                     <td>{{ $budget->description ?: '-' }}</td>
                     <td class="text-right">Rp {{ number_format($budget->amount, 0, ',', '.') }}</td>
                 </tr>
@@ -253,8 +269,9 @@
             <thead>
                 <tr>
                     <th style="width: 5%">No</th>
-                    <th style="width: 20%">Tanggal</th>
-                    <th style="width: 50%">Keterangan Realisasi</th>
+                    <th style="width: 15%">Tanggal</th>
+                    <th style="width: 15%">Tipe / Bukti</th>
+                    <th style="width: 40%">Keterangan & Penyedia</th>
                     <th style="width: 25%" class="text-right">Jumlah Realisasi</th>
                 </tr>
             </thead>
@@ -265,7 +282,27 @@
                         <tr>
                             <td class="text-center">{{ $realizationIdx++ }}</td>
                             <td>{{ \Carbon\Carbon::parse($realization->realization_date)->format('d M Y') }}</td>
-                            <td>[{{ ucwords(str_replace('_', ' ', $budget->budget_category)) }}] {{ $realization->description ?: '-' }}</td>
+                            <td>
+                                <span style="font-size: 9px; font-weight: bold; text-transform: uppercase;">
+                                    {{ $realization->realization_type === 'surat_pesanan' ? 'Surat Pesanan' : 'Non-Pengadaan' }}
+                                </span>
+                                @if ($realization->receipt_number)
+                                    <div style="font-size: 8px; color: #64748b; font-family: monospace;">
+                                        {{ $realization->receipt_number }}
+                                    </div>
+                                @endif
+                            </td>
+                            <td>
+                                <div>{{ $realization->description ?: '-' }}</div>
+                                @if ($realization->realization_type === 'surat_pesanan' && $realization->vendor_name)
+                                    <div style="font-size: 9px; color: #475569; margin-top: 2px;">
+                                        Penyedia: <strong>{{ $realization->vendor_name }}</strong>
+                                        @if ($realization->procurement_number)
+                                            (SP: {{ $realization->procurement_number }})
+                                        @endif
+                                    </div>
+                                @endif
+                            </td>
                             <td class="text-right">Rp {{ number_format($realization->amount, 0, ',', '.') }}</td>
                         </tr>
                     @endforeach

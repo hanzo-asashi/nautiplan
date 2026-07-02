@@ -74,6 +74,8 @@
             budgets: Array<{
                 id: number;
                 budget_category: string;
+                account_code: string | null;
+                account_name: string | null;
                 description: string | null;
                 amount: number;
                 realizations: Array<{
@@ -81,6 +83,14 @@
                     amount: number;
                     realization_date: string;
                     description: string | null;
+                    realization_type: string;
+                    vendor_name: string | null;
+                    vendor_address: string | null;
+                    vendor_npwp: string | null;
+                    procurement_number: string | null;
+                    procurement_date: string | null;
+                    sp2d_number: string | null;
+                    sp2d_date: string | null;
                 }>;
             }>;
             indicators: Array<{
@@ -538,14 +548,30 @@
                         >
                             <div class="flex justify-between items-start">
                                 <div>
-                                    <span
-                                        class="text-xs uppercase font-semibold px-2 py-0.5 rounded bg-primary/10 text-primary"
-                                        >{budget.budget_category}</span
-                                    >
+                                    <div class="flex items-center gap-2">
+                                        <span
+                                            class="text-xs uppercase font-semibold px-2 py-0.5 rounded bg-primary/10 text-primary"
+                                            >{budget.budget_category}</span
+                                        >
+                                        {#if budget.account_code}
+                                            <span
+                                                class="text-xs font-semibold px-2 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-muted-foreground"
+                                            >
+                                                Kode: {budget.account_code}
+                                            </span>
+                                        {/if}
+                                    </div>
                                     <p
                                         class="text-sm font-medium mt-1 text-foreground"
                                     >
                                         {budget.description || 'Pagu Belanja'}
+                                        {#if budget.account_name}
+                                            <span
+                                                class="text-xs text-muted-foreground font-medium block mt-0.5"
+                                            >
+                                                Akun: {budget.account_name}
+                                            </span>
+                                        {/if}
                                     </p>
                                 </div>
                                 <span class="font-bold text-foreground"
@@ -564,20 +590,69 @@
                                     </h5>
                                     {#each budget.realizations as real}
                                         <div
-                                            class="flex justify-between text-xs text-muted-foreground"
+                                            class="flex flex-col sm:flex-row sm:justify-between border-b border-zinc-100 dark:border-zinc-800/40 pb-2 last:border-0 last:pb-0 text-xs text-muted-foreground"
                                         >
-                                            <span
-                                                >{real.description ||
-                                                    'Realisasi'} ({formatDate(
-                                                    real.realization_date,
-                                                )})</span
+                                            <div class="space-y-0.5">
+                                                <div
+                                                    class="flex items-center gap-2"
+                                                >
+                                                    <span
+                                                        class="font-medium text-foreground"
+                                                        >{real.description ||
+                                                            'Realisasi'}</span
+                                                    >
+                                                    {#if real.realization_type === 'surat_pesanan'}
+                                                        <span
+                                                            class="px-1 py-0.5 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 rounded text-[9px] uppercase tracking-wider font-semibold"
+                                                        >
+                                                            Surat Pesanan
+                                                        </span>
+                                                    {:else}
+                                                        <span
+                                                            class="px-1 py-0.5 bg-zinc-100 dark:bg-zinc-800 text-zinc-500 rounded text-[9px] uppercase tracking-wider font-semibold"
+                                                        >
+                                                            Non-Pengadaan
+                                                        </span>
+                                                    {/if}
+                                                </div>
+                                                <p
+                                                    class="text-[10px] text-muted-foreground"
+                                                >
+                                                    Tanggal: {formatDate(
+                                                        real.realization_date,
+                                                    )}
+                                                    {#if real.vendor_name}
+                                                        | Vendor: <strong
+                                                            class="text-foreground"
+                                                            >{real.vendor_name}</strong
+                                                        >
+                                                    {/if}
+                                                    {#if real.procurement_number}
+                                                        | SP: <strong
+                                                            class="text-foreground"
+                                                            >{real.procurement_number}</strong
+                                                        >
+                                                    {/if}
+                                                </p>
+                                            </div>
+                                            <div
+                                                class="flex items-center gap-3 mt-1 sm:mt-0 font-bold text-emerald-600 dark:text-emerald-400"
                                             >
-                                            <span
-                                                class="font-bold text-emerald-600 dark:text-emerald-400"
-                                                >{formatRupiah(
-                                                    real.amount,
-                                                )}</span
-                                            >
+                                                <span
+                                                    >{formatRupiah(
+                                                        real.amount,
+                                                    )}</span
+                                                >
+                                                {#if real.realization_type === 'surat_pesanan'}
+                                                    <a
+                                                        href={`/reports/realization/${real.id}/pdf`}
+                                                        target="_blank"
+                                                        class="text-[9px] px-1.5 py-0.5 rounded border border-primary/30 text-primary hover:bg-primary hover:text-white transition-colors cursor-pointer"
+                                                    >
+                                                        PDF SP
+                                                    </a>
+                                                {/if}
+                                            </div>
                                         </div>
                                     {/each}
                                 </div>

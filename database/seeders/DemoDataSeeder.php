@@ -294,6 +294,8 @@ class DemoDataSeeder extends Seeder
         $bud1 = ActivityBudget::create([
             'activity_id' => $actDiklat->id,
             'budget_category' => 'goods_services',
+            'account_code' => '521811',
+            'account_name' => 'Belanja Barang Persediaan Konsumsi (BLU)',
             'description' => 'Penyediaan Bahan Habis Pakai Ujian & Modul Ajar (BLU)',
             'amount' => 1881841000.0, // Rp 1.881.841.000 (from Excel row reference DL3996.DCB)
             'fiscal_year_id' => $fy2026->id,
@@ -303,6 +305,8 @@ class DemoDataSeeder extends Seeder
         $bud2 = ActivityBudget::create([
             'activity_id' => $actDiklat->id,
             'budget_category' => 'other',
+            'account_code' => '522131',
+            'account_name' => 'Belanja Jasa Pemateri & Instruktur (RM)',
             'description' => 'Belanja Jasa Pemateri & Instruktur Luar Poltekpel (RM)',
             'amount' => 1048716000.0, // Rp 1.048.716.000
             'fiscal_year_id' => $fy2026->id,
@@ -313,6 +317,8 @@ class DemoDataSeeder extends Seeder
         $bud3 = ActivityBudget::create([
             'activity_id' => $actPemeliharaan->id,
             'budget_category' => 'capital',
+            'account_code' => '532111',
+            'account_name' => 'Belanja Modal Gedung & Bangunan (BLU)',
             'description' => 'Pengecatan & Maintenance Fisik Gedung Simulator (BLU)',
             'amount' => 133145000.0, // Rp 133.145.000
             'fiscal_year_id' => $fy2026->id,
@@ -323,10 +329,18 @@ class DemoDataSeeder extends Seeder
         // Realization 1: Pembayaran Vendor Cetak Modul
         BudgetRealization::create([
             'activity_budget_id' => $bud1->id,
+            'realization_type' => 'surat_pesanan',
             'amount' => 850000000.0,
             'realization_date' => '2026-03-15',
             'description' => 'Pembayaran termin 1 pengadaan modul pembelajaran taruna angkatan 70',
             'receipt_number' => 'REC-20260315-01',
+            'vendor_name' => 'CV. Barombong Bahari Jaya',
+            'vendor_address' => 'Jl. Pelayaran No. 12, Barombong, Makassar',
+            'vendor_npwp' => '01.234.567.8-901.000',
+            'procurement_number' => 'SP/DIKLAT/2026/001',
+            'procurement_date' => '2026-03-01',
+            'sp2d_number' => 'SP2D/394161/2026/099',
+            'sp2d_date' => '2026-03-12',
             'verified_by' => $plannerUser->id,
             'verified_at' => '2026-03-16 10:00:00',
         ]);
@@ -334,6 +348,7 @@ class DemoDataSeeder extends Seeder
         // Realization 2: Honor Instruktur Bulan Maret-April
         BudgetRealization::create([
             'activity_budget_id' => $bud2->id,
+            'realization_type' => 'non_pengadaan',
             'amount' => 242407064.0,
             'realization_date' => '2026-04-30',
             'description' => 'Pembayaran honor instruktur diklat peningkatan kompetensi laut gelombang 1',
@@ -345,10 +360,18 @@ class DemoDataSeeder extends Seeder
         // Realization 3: Pembayaran Kalibrasi Bridge Simulator
         BudgetRealization::create([
             'activity_budget_id' => $bud3->id,
+            'realization_type' => 'surat_pesanan',
             'amount' => 83694000.0,
             'realization_date' => '2026-05-18',
             'description' => 'Biaya termin 1 kalibrasi radar & simulator kemudi kapal',
             'receipt_number' => 'REC-20260518-05',
+            'vendor_name' => 'PT. Simulator Global Indonesia',
+            'vendor_address' => 'Ruko Techno Block A No. 5, Sudirman, Jakarta',
+            'vendor_npwp' => '02.555.666.7-999.000',
+            'procurement_number' => 'SP/SIMULATOR/2026/045',
+            'procurement_date' => '2026-05-05',
+            'sp2d_number' => 'SP2D/394161/2026/184',
+            'sp2d_date' => '2026-05-15',
             'verified_by' => $plannerUser->id,
             'verified_at' => '2026-05-20 14:00:00',
         ]);

@@ -23,6 +23,8 @@ class ActivityBudget extends Model
     protected $fillable = [
         'activity_id',
         'budget_category',
+        'account_code',
+        'account_name',
         'description',
         'amount',
         'fiscal_year_id',

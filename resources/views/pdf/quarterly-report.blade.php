@@ -127,18 +127,27 @@
 </head>
 <body>
 
-    <div class="header">
-        <table>
+    <div class="header" style="border-bottom: 2px double #000; padding-bottom: 8px; margin-bottom: 15px;">
+        <table style="width: 100%;">
             <tr>
-                <td>
-                    <div class="title">Laporan Monitoring & Evaluasi Kinerja (Monev)</div>
-                    <div class="subtitle">Sistem Terintegrasi Pengelolaan Program & Kegiatan | Politeknik Pelayaran Barombong</div>
+                <td style="width: 12%; text-align: center; vertical-align: middle; padding-right: 10px;">
+                    <span style="font-size: 28px; font-weight: bold; color: #1e3a8a;">⚓</span>
                 </td>
-                <td class="text-right" style="vertical-align: bottom; font-size: 10px; color: #64748b;">
-                    Dicetak pada: {{ now()->format('d M Y H:i') }}
+                <td style="width: 88%; text-align: center;">
+                    <div style="font-size: 13px; font-weight: bold; letter-spacing: 0.5px; text-transform: uppercase;">KEMENTERIAN PERHUBUNGAN</div>
+                    <div style="font-size: 11px; font-weight: bold; letter-spacing: 0.5px; text-transform: uppercase;">BADAN PENGEMBANGAN SUMBER DAYA MANUSIA PERHUBUNGAN</div>
+                    <div style="font-size: 12px; font-weight: bold; letter-spacing: 0.5px; text-transform: uppercase; color: #1e3a8a;">POLITEKNIK PELAYARAN BAROMBONG</div>
+                    <div style="font-size: 8px; color: #64748b; margin-top: 2px;">
+                        Jl. Permandian Alam No. 1, Barombong, Kec. Tamalate, Kota Makassar | Telp: (0411) 889722 | Email: poltekpel.barombong@dephub.go.id
+                    </div>
                 </td>
             </tr>
         </table>
+    </div>
+
+    <div style="text-align: center; margin-bottom: 20px;">
+        <div style="font-size: 14px; font-weight: bold; text-decoration: underline; text-transform: uppercase;">LAPORAN MONITORING & EVALUASI KINERJA (MONEV)</div>
+        <div style="font-size: 9px; color: #64748b; margin-top: 2px;">Sistem Terintegrasi SIM-PPK | Dicetak pada: {{ now()->format('d M Y H:i') }}</div>
     </div>
 
     <div class="section-title">Informasi Laporan Monev</div>

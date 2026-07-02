@@ -22,10 +22,18 @@ class BudgetRealization extends Model
 {
     protected $fillable = [
         'activity_budget_id',
+        'realization_type',
         'amount',
         'realization_date',
         'description',
         'receipt_number',
+        'vendor_name',
+        'vendor_address',
+        'vendor_npwp',
+        'procurement_number',
+        'procurement_date',
+        'sp2d_number',
+        'sp2d_date',
         'verified_by',
         'verified_at',
     ];
@@ -38,6 +46,8 @@ class BudgetRealization extends Model
         return [
             'amount' => 'decimal:2',
             'realization_date' => 'date',
+            'procurement_date' => 'date',
+            'sp2d_date' => 'date',
             'verified_at' => 'datetime',
         ];
     }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Activity;
+use App\Models\BudgetRealization;
 use App\Models\FiscalYear;
 use App\Models\Program;
 use App\Models\Unit;
@@ -511,6 +512,43 @@ class ReportController extends Controller
         $pdf = Pdf::loadView('pdf.quarterly-report', compact('activity', 'report', 'quarter'));
 
         return $pdf->download("laporan-monev-{$activity->code}-{$quarter}.pdf");
+    }
+
+    public function downloadPdfRealization(BudgetRealization $realization): \Illuminate\Http\Response
+    {
+        $realization->load([
+            'activityBudget.activity.program',
+            'activityBudget.activity.unit',
+            'activityBudget.activity.fiscalYear',
+        ]);
+
+        $pdf = Pdf::loadView('pdf.surat-pesanan', compact('realization'));
+
+        return $pdf->download("surat-pesanan-{$realization->receipt_number}.pdf");
+    }
+
+    public function downloadPdfNonProcurement(Request $request): \Illuminate\Http\Response
+    {
+        $realizations = BudgetRealization::where('realization_type', 'non_pengadaan')
+            ->with(['activityBudget.activity.program', 'activityBudget.activity.unit'])
+            ->get();
+
+        $pdf = Pdf::loadView('pdf.laporan-non-pengadaan', compact('realizations'));
+
+        return $pdf->download('laporan-realisasi-non-pengadaan.pdf');
+    }
+
+    public function downloadPdfVendor(Request $request): \Illuminate\Http\Response
+    {
+        $realizations = BudgetRealization::where('realization_type', 'surat_pesanan')
+            ->whereNotNull('vendor_name')
+            ->with(['activityBudget.activity.program', 'activityBudget.activity.unit'])
+            ->get()
+            ->groupBy('vendor_name');
+
+        $pdf = Pdf::loadView('pdf.laporan-vendor', compact('realizations'));
+
+        return $pdf->download('laporan-realisasi-per-vendor.pdf');
     }
 
     public function calendar(Request $request): Response
