@@ -51,6 +51,8 @@
             data: Array<{
                 id: number;
                 budget_category: string;
+                account_code: string | null;
+                account_name: string | null;
                 description: string;
                 amount: number;
                 fiscal_year_id: number;
@@ -65,6 +67,14 @@
                     realization_date: string;
                     description: string;
                     receipt_number: string | null;
+                    realization_type: string;
+                    vendor_name: string | null;
+                    vendor_address: string | null;
+                    vendor_npwp: string | null;
+                    procurement_number: string | null;
+                    procurement_date: string | null;
+                    sp2d_number: string | null;
+                    sp2d_date: string | null;
                     verified_at: string | null;
                     verified_by: number | null;
                 }>;
@@ -120,10 +130,18 @@
 
     const form = useForm({
         activity_budget_id: '',
+        realization_type: 'non_pengadaan',
         amount: 0,
         realization_date: new Date().toISOString().split('T')[0],
         description: '',
         receipt_number: '',
+        vendor_name: '',
+        vendor_address: '',
+        vendor_npwp: '',
+        procurement_number: '',
+        procurement_date: '',
+        sp2d_number: '',
+        sp2d_date: '',
     });
 
     function openRealizationModal(budget: any) {
@@ -166,6 +184,8 @@
 
     const editForm = useForm({
         budget_category: '',
+        account_code: '',
+        account_name: '',
         description: '',
         amount: 0,
     });
@@ -173,6 +193,8 @@
     function openEditBudgetModal(budget: any) {
         selectedBudgetToEdit = budget;
         editForm.budget_category = budget.budget_category;
+        editForm.account_code = budget.account_code || '';
+        editForm.account_name = budget.account_name || '';
         editForm.description = budget.description;
         editForm.amount = budget.amount;
         editBudgetModalOpen = true;
@@ -192,9 +214,29 @@
 <AppHead title="Pagu & Realisasi" />
 
 <div class="p-6 space-y-6">
+    {#snippet actions()}
+        <div class="flex flex-wrap items-center gap-2">
+            <a
+                href="/reports/non-procurement/pdf"
+                target="_blank"
+                class="inline-flex h-9 items-center justify-center rounded-md border border-zinc-200 dark:border-zinc-800 bg-background hover:bg-accent px-3 py-1.5 text-xs font-semibold text-foreground cursor-pointer transition-colors"
+            >
+                Cetak Non-Pengadaan
+            </a>
+            <a
+                href="/reports/vendor/pdf"
+                target="_blank"
+                class="inline-flex h-9 items-center justify-center rounded-md border border-zinc-200 dark:border-zinc-800 bg-background hover:bg-accent px-3 py-1.5 text-xs font-semibold text-foreground cursor-pointer transition-colors"
+            >
+                Cetak Realisasi Vendor
+            </a>
+        </div>
+    {/snippet}
+
     <PageHeader
         title="Pagu & Realisasi Anggaran"
         description="Kelola anggaran DIPA BLU dan pantau realisasi belanja operasional"
+        {actions}
     />
 
     <!-- Summary cards -->
@@ -285,13 +327,29 @@
                         class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-sidebar-border/30 pb-4"
                     >
                         <div class="space-y-1">
-                            <span
-                                class="text-xs uppercase font-bold px-2 py-0.5 rounded bg-primary/10 text-primary"
-                            >
-                                {bud.budget_category.replace('_', ' ')}
-                            </span>
+                            <div class="flex flex-wrap gap-2 items-center">
+                                <span
+                                    class="text-xs uppercase font-bold px-2 py-0.5 rounded bg-primary/10 text-primary"
+                                >
+                                    {bud.budget_category.replace('_', ' ')}
+                                </span>
+                                {#if bud.account_code}
+                                    <span
+                                        class="text-xs font-semibold px-2 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-muted-foreground"
+                                    >
+                                        Kode: {bud.account_code}
+                                    </span>
+                                {/if}
+                            </div>
                             <h3 class="text-base font-bold text-foreground">
                                 {bud.description}
+                                {#if bud.account_name}
+                                    <span
+                                        class="text-xs text-muted-foreground font-medium block mt-0.5"
+                                    >
+                                        Akun: {bud.account_name}
+                                    </span>
+                                {/if}
                             </h3>
                             <p class="text-xs text-muted-foreground">
                                 Kegiatan: <strong class="text-foreground"
@@ -392,12 +450,25 @@
                                     >
                                         <div class="space-y-0.5">
                                             <div
-                                                class="flex items-center gap-2"
+                                                class="flex items-center flex-wrap gap-2"
                                             >
                                                 <span
                                                     class="font-bold text-foreground"
                                                     >{real.description}</span
                                                 >
+                                                {#if real.realization_type === 'surat_pesanan'}
+                                                    <span
+                                                        class="px-1.5 py-0.5 bg-emerald-100 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 rounded font-semibold text-[9px] uppercase tracking-wider"
+                                                    >
+                                                        Surat Pesanan
+                                                    </span>
+                                                {:else}
+                                                    <span
+                                                        class="px-1.5 py-0.5 bg-zinc-150 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 rounded font-semibold text-[9px] uppercase tracking-wider"
+                                                    >
+                                                        Non-Pengadaan
+                                                    </span>
+                                                {/if}
                                                 {#if real.receipt_number}
                                                     <span
                                                         class="px-1.5 py-0.5 bg-zinc-200 dark:bg-zinc-800 rounded font-mono text-[10px] text-muted-foreground"
@@ -409,12 +480,40 @@
                                                 class="text-[10px] text-muted-foreground"
                                             >
                                                 Tanggal Transaksi: {real.realization_date}
+                                                {#if real.vendor_name}
+                                                    | Vendor: <strong
+                                                        class="text-foreground"
+                                                        >{real.vendor_name}</strong
+                                                    >
+                                                {/if}
+                                                {#if real.procurement_number}
+                                                    | SP: <strong
+                                                        class="text-foreground"
+                                                        >{real.procurement_number}</strong
+                                                    >
+                                                {/if}
+                                                {#if real.sp2d_number}
+                                                    | SP2D: <strong
+                                                        class="text-foreground"
+                                                        >{real.sp2d_number}</strong
+                                                    >
+                                                {/if}
                                             </p>
                                         </div>
 
                                         <div
                                             class="flex items-center gap-4 shrink-0"
                                         >
+                                            {#if real.realization_type === 'surat_pesanan'}
+                                                <a
+                                                    href={`/reports/realization/${real.id}/pdf`}
+                                                    target="_blank"
+                                                    class="inline-flex items-center gap-1 text-[10px] font-semibold text-primary hover:text-white bg-primary/10 hover:bg-primary px-2 py-1 rounded transition-colors cursor-pointer"
+                                                >
+                                                    Cetak SP
+                                                </a>
+                                            {/if}
+
                                             <span
                                                 class="font-bold text-emerald-600 dark:text-emerald-400"
                                                 >{formatRupiah(
@@ -508,7 +607,7 @@
         class="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/30 backdrop-blur-sm"
     >
         <div
-            class="bg-card/95 border border-sidebar-border/50 p-6 rounded-xl shadow-xl w-full max-w-md space-y-4 text-foreground"
+            class="bg-card/95 border border-sidebar-border/50 p-6 rounded-xl shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto scrollbar-thin space-y-4 text-foreground"
         >
             <h3 class="text-lg font-bold">Catat Realisasi Belanja</h3>
             <p class="text-xs text-muted-foreground">
@@ -518,6 +617,20 @@
             </p>
 
             <form onsubmit={handleRealizationSubmit} class="space-y-3">
+                <div class="space-y-1">
+                    <label class="text-xs font-semibold">Tipe Realisasi</label>
+                    <select
+                        bind:value={form.realization_type}
+                        class="w-full px-3 py-1.5 text-sm bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary cursor-pointer"
+                        required
+                    >
+                        <option value="non_pengadaan">Non-Pengadaan</option>
+                        <option value="surat_pesanan"
+                            >Surat Pesanan (Pihak Ketiga/Vendor)</option
+                        >
+                    </select>
+                </div>
+
                 <div class="space-y-1">
                     <label class="text-xs font-semibold"
                         >Jumlah Realisasi (IDR)</label
@@ -530,6 +643,106 @@
                         required
                     />
                 </div>
+
+                {#if form.realization_type === 'surat_pesanan'}
+                    <div
+                        class="space-y-3 p-3 bg-zinc-50 dark:bg-zinc-900/50 rounded-lg border border-zinc-150 dark:border-zinc-800/80"
+                    >
+                        <p class="text-xs font-bold text-primary">
+                            Informasi Vendor & Surat Pesanan
+                        </p>
+
+                        <div class="space-y-1">
+                            <label class="text-xs font-semibold"
+                                >Nama Penyedia / Vendor</label
+                            >
+                            <input
+                                type="text"
+                                bind:value={form.vendor_name}
+                                placeholder="E.g., CV. Media Pratama"
+                                class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary"
+                                required
+                            />
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2">
+                            <div class="space-y-1">
+                                <label class="text-xs font-semibold"
+                                    >NPWP Vendor</label
+                                >
+                                <input
+                                    type="text"
+                                    bind:value={form.vendor_npwp}
+                                    placeholder="00.000.000.0-000.000"
+                                    class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary"
+                                />
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-xs font-semibold"
+                                    >Nomor SP / SPK</label
+                                >
+                                <input
+                                    type="text"
+                                    bind:value={form.procurement_number}
+                                    placeholder="SP/XXXX/2026"
+                                    class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary"
+                                    required
+                                />
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2">
+                            <div class="space-y-1">
+                                <label class="text-xs font-semibold"
+                                    >Tanggal SP / SPK</label
+                                >
+                                <input
+                                    type="date"
+                                    bind:value={form.procurement_date}
+                                    class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary"
+                                    required
+                                />
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-xs font-semibold"
+                                    >Nomor SP2D</label
+                                >
+                                <input
+                                    type="text"
+                                    bind:value={form.sp2d_number}
+                                    placeholder="SP2D/XXX/2026"
+                                    class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary"
+                                />
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2">
+                            <div class="space-y-1">
+                                <label class="text-xs font-semibold"
+                                    >Tanggal SP2D</label
+                                >
+                                <input
+                                    type="date"
+                                    bind:value={form.sp2d_date}
+                                    class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary"
+                                />
+                            </div>
+                        </div>
+
+                        <div class="space-y-1">
+                            <label class="text-xs font-semibold"
+                                >Alamat Vendor</label
+                            >
+                            <textarea
+                                bind:value={form.vendor_address}
+                                placeholder="Alamat lengkap vendor..."
+                                rows="2"
+                                class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary resize-none"
+                            ></textarea>
+                        </div>
+                    </div>
+                {/if}
+
                 <div class="space-y-1">
                     <label class="text-xs font-semibold"
                         >Tanggal Realisasi</label
@@ -619,7 +832,26 @@
                         <option value="other">Other</option>
                     </select>
                 </div>
-
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="space-y-1">
+                        <label class="text-xs font-semibold">Kode Akun</label>
+                        <input
+                            type="text"
+                            bind:value={editForm.account_code}
+                            placeholder="Contoh: 521811"
+                            class="w-full px-3 py-1.5 text-sm bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary"
+                        />
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-xs font-semibold">Nama Akun</label>
+                        <input
+                            type="text"
+                            bind:value={editForm.account_name}
+                            placeholder="Contoh: Belanja Barang"
+                            class="w-full px-3 py-1.5 text-sm bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary"
+                        />
+                    </div>
+                </div>
                 <div class="space-y-1">
                     <label class="text-xs font-semibold">Deskripsi Pagu</label>
                     <input

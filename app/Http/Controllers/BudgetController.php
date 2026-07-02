@@ -64,6 +64,8 @@ class BudgetController extends Controller
         $validated = $request->validate([
             'activity_id' => 'required|exists:activities,id',
             'budget_category' => 'required|string|in:personnel,goods_services,capital,other',
+            'account_code' => 'nullable|string|max:50',
+            'account_name' => 'nullable|string|max:255',
             'description' => 'required|string|max:255',
             'amount' => 'required|numeric|min:0',
             'fiscal_year_id' => 'required|exists:fiscal_years,id',
@@ -78,6 +80,8 @@ class BudgetController extends Controller
     {
         $validated = $request->validate([
             'budget_category' => 'required|string|in:personnel,goods_services,capital,other',
+            'account_code' => 'nullable|string|max:50',
+            'account_name' => 'nullable|string|max:255',
             'description' => 'required|string|max:255',
             'amount' => 'required|numeric|min:0',
         ]);
@@ -105,10 +109,18 @@ class BudgetController extends Controller
     {
         $validated = $request->validate([
             'activity_budget_id' => 'required|exists:activity_budgets,id',
+            'realization_type' => 'required|string|in:surat_pesanan,non_pengadaan',
             'amount' => 'required|numeric|min:0',
             'realization_date' => 'required|date',
             'description' => 'required|string|max:255',
             'receipt_number' => 'nullable|string|max:50',
+            'vendor_name' => 'nullable|required_if:realization_type,surat_pesanan|string|max:255',
+            'vendor_address' => 'nullable|string',
+            'vendor_npwp' => 'nullable|string|max:50',
+            'procurement_number' => 'nullable|required_if:realization_type,surat_pesanan|string|max:100',
+            'procurement_date' => 'nullable|required_if:realization_type,surat_pesanan|date',
+            'sp2d_number' => 'nullable|string|max:100',
+            'sp2d_date' => 'nullable|date',
         ]);
 
         BudgetRealization::create([

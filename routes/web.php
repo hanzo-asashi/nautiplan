@@ -84,6 +84,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('reports/import/excel', [ReportController::class, 'importExcel'])->name('reports.import.excel');
     Route::get('reports/activity/{activity}/pdf', [ReportController::class, 'downloadPdfActivity'])->name('reports.activity.pdf');
     Route::get('reports/quarterly/{activity}/{quarter}/pdf', [ReportController::class, 'downloadPdfQuarterly'])->name('reports.quarterly.pdf');
+    Route::get('reports/realization/{realization}/pdf', [ReportController::class, 'downloadPdfRealization'])->name('reports.realization.pdf');
+    Route::get('reports/non-procurement/pdf', [ReportController::class, 'downloadPdfNonProcurement'])->name('reports.non-procurement.pdf');
+    Route::get('reports/vendor/pdf', [ReportController::class, 'downloadPdfVendor'])->name('reports.vendor.pdf');
 
     // Notifications Workflow
     Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
