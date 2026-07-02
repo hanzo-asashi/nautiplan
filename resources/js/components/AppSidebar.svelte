@@ -145,6 +145,7 @@
 
     const systemItems = $derived.by((): NavItem[] => {
         const items: NavItem[] = [];
+
         if (isAdmin) {
             items.push(
                 {
@@ -159,6 +160,7 @@
                 },
             );
         }
+
         return items;
     });
 
