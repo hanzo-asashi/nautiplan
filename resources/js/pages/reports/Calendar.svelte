@@ -415,7 +415,11 @@
                             {isSelected
                             ? 'bg-primary/5 ring-1 ring-primary'
                             : ''}"
-                        aria-label="{day.date.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}. Ada {dayEvents.length} kegiatan."
+                        aria-label="{day.date.toLocaleDateString('id-ID', {
+                            day: 'numeric',
+                            month: 'long',
+                            year: 'numeric',
+                        })}. Ada {dayEvents.length} kegiatan."
                         aria-current={isSelected ? 'date' : undefined}
                     >
                         <!-- Day Number -->
