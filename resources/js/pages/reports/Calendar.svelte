@@ -432,28 +432,25 @@
                             {day.dayNumber}
                         </span>
 
-                        <!-- Event mini indicators -->
-                        <div class="space-y-1 w-full overflow-hidden">
-                            {#each dayEvents.slice(0, 3) as event}
-                                <div
-                                    class="h-1.5 w-full rounded-full truncate text-[8px] px-1 font-bold flex items-center justify-center leading-none text-white
+                        <!-- Event mini indicators (Dots style) -->
+                        <div class="flex flex-wrap gap-1.5 w-full mt-auto pt-2">
+                            {#each dayEvents.slice(0, 5) as event}
+                                <span
+                                    class="size-2 rounded-full shrink-0
                                     {event.type === 'activity'
                                         ? 'bg-primary'
                                         : 'bg-amber-500'}"
-                                >
-                                    <span class="hidden sm:inline truncate"
-                                        >{event.type === 'activity'
-                                            ? event.code
-                                            : event.name}</span
-                                    >
-                                </div>
+                                    title={event.type === 'activity'
+                                        ? event.code
+                                        : event.name}
+                                ></span>
                             {/each}
-                            {#if dayEvents.length > 3}
-                                <div
-                                    class="text-[8px] text-muted-foreground text-center font-bold"
+                            {#if dayEvents.length > 5}
+                                <span
+                                    class="text-[9px] text-muted-foreground font-bold leading-none self-center"
                                 >
-                                    +{dayEvents.length - 3} agenda
-                                </div>
+                                    +{dayEvents.length - 5}
+                                </span>
                             {/if}
                         </div>
                     </button>

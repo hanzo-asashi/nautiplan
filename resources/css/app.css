@@ -168,7 +168,7 @@
 
 @layer base {
     * {
-        @apply border-border outline-ring/50 scrollbar-thin scrollbar-thumb-zinc-300 dark:scrollbar-thumb-zinc-800 scrollbar-track-transparent;
+        @apply scrollbar-thin scrollbar-thumb-zinc-300 scrollbar-track-transparent border-border outline-ring/50 dark:scrollbar-thumb-zinc-800;
     }
     body {
         @apply bg-background text-foreground transition-colors duration-200;
