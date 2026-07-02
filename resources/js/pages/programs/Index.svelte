@@ -217,7 +217,7 @@
                                 >
                                 <td
                                     class="py-3 pr-4 text-right font-bold text-foreground"
-                                    >{formatRupiah(prog.total_budget)}</td
+                                    >{formatRupiah(prog.total_budget, true)}</td
                                 >
                                 <td class="py-3 pr-4 text-center">
                                     <StatusBadge status={prog.status} />

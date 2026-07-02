@@ -309,7 +309,7 @@
                                 >
                                 <span
                                     class="font-extrabold text-lg text-foreground"
-                                    >{formatRupiah(bud.amount)}</span
+                                    >{formatRupiah(bud.amount, true)}</span
                                 >
                             </div>
                             <div class="text-right">
@@ -319,7 +319,7 @@
                                 >
                                 <span
                                     class="font-extrabold text-lg text-emerald-600 dark:text-emerald-400"
-                                    >{formatRupiah(totalSpent)}</span
+                                    >{formatRupiah(totalSpent, true)}</span
                                 >
                             </div>
                             <div class="text-right">
@@ -329,7 +329,7 @@
                                 >
                                 <span
                                     class="font-extrabold text-lg text-muted-foreground"
-                                    >{formatRupiah(remaining)}</span
+                                    >{formatRupiah(remaining, true)}</span
                                 >
                             </div>
 
@@ -419,6 +419,7 @@
                                                 class="font-bold text-emerald-600 dark:text-emerald-400"
                                                 >{formatRupiah(
                                                     real.amount,
+                                                    true,
                                                 )}</span
                                             >
 

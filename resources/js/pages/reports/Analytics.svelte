@@ -265,11 +265,11 @@
                                     >
                                     <td
                                         class="p-3 text-right font-medium text-foreground"
-                                        >{formatRupiah(row.pagu)}</td
+                                        >{formatRupiah(row.pagu, true)}</td
                                     >
                                     <td
                                         class="p-3 text-right font-medium text-emerald-600 dark:text-emerald-400"
-                                        >{formatRupiah(row.realisasi)}</td
+                                        >{formatRupiah(row.realisasi, true)}</td
                                     >
                                     <td
                                         class="p-3 text-center font-bold text-primary"

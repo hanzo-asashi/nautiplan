@@ -210,7 +210,7 @@
                                 >
                                 <td
                                     class="py-3 pr-4 text-right font-bold text-foreground"
-                                    >{formatRupiah(ren.total_budget)}</td
+                                    >{formatRupiah(ren.total_budget, true)}</td
                                 >
                                 <td class="py-3 pr-4 text-center">
                                     <StatusBadge status={ren.status} />

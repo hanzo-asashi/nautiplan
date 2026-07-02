@@ -143,7 +143,7 @@
                                 >
                                 <span
                                     class="text-sm font-bold text-emerald-600 dark:text-emerald-400 shrink-0"
-                                    >{formatRupiah(item.amount)}</span
+                                    >{formatRupiah(item.amount, true)}</span
                                 >
                             </div>
                             <div
@@ -200,15 +200,15 @@
                                 >{prog.name}</td
                             >
                             <td class="py-3 pr-4 text-right"
-                                >{formatRupiah(prog.pagu)}</td
+                                >{formatRupiah(prog.pagu, true)}</td
                             >
                             <td
                                 class="py-3 pr-4 text-right text-emerald-600 dark:text-emerald-400 font-semibold"
-                                >{formatRupiah(prog.realisasi)}</td
+                                >{formatRupiah(prog.realisasi, true)}</td
                             >
                             <td
                                 class="py-3 pr-4 text-right text-muted-foreground"
-                                >{formatRupiah(prog.sisa)}</td
+                                >{formatRupiah(prog.sisa, true)}</td
                             >
                             <td class="py-3 text-right font-bold text-primary"
                                 >{prog.persen}%</td
