@@ -84,13 +84,13 @@
         />
         <StatsCard
             title="Total Pagu"
-            value={formatRupiah(stats.total_pagu)}
+            value={formatRupiah(stats.total_pagu, true)}
             icon={Landmark}
             description="Pagu DIPA BLU"
         />
         <StatsCard
             title="Total Realisasi"
-            value={formatRupiah(stats.total_realisasi)}
+            value={formatRupiah(stats.total_realisasi, true)}
             icon={Coins}
             trend={`${stats.persen_realisasi}%`}
             trendType="up"
@@ -98,7 +98,7 @@
         />
         <StatsCard
             title="Sisa Anggaran"
-            value={formatRupiah(stats.sisa_anggaran)}
+            value={formatRupiah(stats.sisa_anggaran, true)}
             icon={PiggyBank}
             description="Sisa sisa pagu anggaran"
         />

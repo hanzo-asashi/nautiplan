@@ -31,11 +31,11 @@
                     >
                     <div class="flex space-x-4 text-xs shrink-0">
                         <span class="text-primary font-semibold"
-                            >Pagu: {formatRupiah(item.value1)}</span
+                            >Pagu: {formatRupiah(item.value1, true)}</span
                         >
                         <span
                             class="text-amber-500 dark:text-amber-400 font-semibold"
-                            >Realisasi: {formatRupiah(item.value2)}</span
+                            >Realisasi: {formatRupiah(item.value2, true)}</span
                         >
                     </div>
                 </div>

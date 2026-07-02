@@ -201,17 +201,17 @@
     <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatsCard
             title="Total Pagu"
-            value={formatRupiah(summary.total_pagu)}
+            value={formatRupiah(summary.total_pagu, true)}
             icon={Landmark}
         />
         <StatsCard
             title="Total Realisasi"
-            value={formatRupiah(summary.total_realisasi)}
+            value={formatRupiah(summary.total_realisasi, true)}
             icon={Coins}
         />
         <StatsCard
             title="Sisa Anggaran"
-            value={formatRupiah(summary.sisa_anggaran)}
+            value={formatRupiah(summary.sisa_anggaran, true)}
             icon={PiggyBank}
         />
         <StatsCard
