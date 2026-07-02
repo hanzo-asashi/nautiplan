@@ -45,7 +45,7 @@
                                 {#if item.icon}
                                     <item.icon class="size-4 shrink-0" />
                                 {/if}
-                                <span class="font-medium text-xs"
+                                <span class="font-medium text-sm"
                                     >{item.title}</span
                                 >
                             </Link>
