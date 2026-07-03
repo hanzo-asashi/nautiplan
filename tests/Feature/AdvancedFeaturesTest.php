@@ -209,18 +209,36 @@ it('can log realization with type and vendor details', function () {
         'vendor_name' => 'CV. Media Pratama',
         'vendor_address' => 'Jl. Pendidikan No. 5',
         'vendor_npwp' => '01.222.333.4-555.000',
+        'procurement_type' => 'surat_pesanan',
+        'procurement_title' => 'Pembayaran vendor modul',
         'procurement_number' => 'SP/2026/001',
         'procurement_date' => '2026-03-01',
         'sp2d_number' => 'SP2D-999',
         'sp2d_date' => '2026-03-10',
+        'items' => [
+            [
+                'name' => 'Modul Diklat',
+                'volume' => 1,
+                'unit' => 'Paket',
+                'unit_price' => 20000000.0,
+            ],
+        ],
     ];
 
     $response = $this->actingAs($this->user)->post(route('budgets.realizations.store'), $realizationData);
     $response->assertRedirect();
 
+    $this->assertDatabaseHas('vendors', [
+        'name' => 'CV. Media Pratama',
+        'npwp' => '01.222.333.4-555.000',
+    ]);
+
+    $this->assertDatabaseHas('procurements', [
+        'document_number' => 'SP/2026/001',
+    ]);
+
     $this->assertDatabaseHas('budget_realizations', [
         'realization_type' => 'surat_pesanan',
-        'vendor_name' => 'CV. Media Pratama',
-        'procurement_number' => 'SP/2026/001',
+        'amount' => 20000000.0,
     ]);
 });

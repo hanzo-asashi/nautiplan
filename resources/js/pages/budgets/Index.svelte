@@ -44,6 +44,8 @@
         budgets,
         units = [],
         fiscalYears = [],
+        vendors = [],
+        officers = [],
         summary,
         filters,
     }: {
@@ -61,23 +63,7 @@
                     name: string;
                     unit?: { name: string; code: string } | null;
                 } | null;
-                realizations: Array<{
-                    id: number;
-                    amount: number;
-                    realization_date: string;
-                    description: string;
-                    receipt_number: string | null;
-                    realization_type: string;
-                    vendor_name: string | null;
-                    vendor_address: string | null;
-                    vendor_npwp: string | null;
-                    procurement_number: string | null;
-                    procurement_date: string | null;
-                    sp2d_number: string | null;
-                    sp2d_date: string | null;
-                    verified_at: string | null;
-                    verified_by: number | null;
-                }>;
+                realizations: Array<any>;
             }>;
             links: Array<{
                 url: string | null;
@@ -87,6 +73,8 @@
         };
         units: Array<{ id: number; name: string; code: string }>;
         fiscalYears: Array<{ id: number; year: number }>;
+        vendors: Array<any>;
+        officers: Array<any>;
         summary: {
             total_pagu: number;
             total_realisasi: number;
@@ -127,6 +115,18 @@
     // Realization modal form
     let realizationModalOpen = $state(false);
     let selectedBudget = $state<any>(null);
+    let activeModalTab = $state('dasar');
+    let activeDropdownRealId = $state<number | null>(null);
+
+    const remainingBudget = $derived(
+        selectedBudget
+            ? selectedBudget.amount -
+                  selectedBudget.realizations.reduce(
+                      (sum: number, r: any) => sum + Number(r.amount),
+                      0,
+                  )
+            : 0,
+    );
 
     const form = useForm({
         activity_budget_id: '',
@@ -135,23 +135,152 @@
         realization_date: new Date().toISOString().split('T')[0],
         description: '',
         receipt_number: '',
-        vendor_name: '',
-        vendor_address: '',
-        vendor_npwp: '',
-        procurement_number: '',
-        procurement_date: '',
+        // Dokumen pencairan
+        bast_number: '',
+        bast_date: '',
+        bap_number: '',
+        bap_date: '',
+        ba_penyerahan_number: '',
+        ba_penyerahan_date: '',
         sp2d_number: '',
         sp2d_date: '',
+        // Pengadaan
+        procurement_type: 'surat_pesanan',
+        procurement_title: '',
+        procurement_number: '',
+        procurement_date: '',
+        work_duration: '',
+        nota_dinas_number: '',
+        nota_dinas_date: '',
+        ba_pl_number: '',
+        ba_pl_date: '',
+        ppk_id: '',
+        kpa_id: '',
+        // Vendor
+        vendor_name: '',
+        vendor_npwp: '',
+        vendor_address: '',
+        bank_name: '',
+        bank_account_number: '',
+        bank_account_name: '',
+        // Items list
+        items: [] as Array<{
+            name: string;
+            volume: number;
+            unit: string;
+            unit_price: number;
+            tax_pph21: number;
+            tax_pph21_mixed: boolean;
+            remarks: string;
+        }>,
     });
+
+    function addItem() {
+        form.items = [
+            ...form.items,
+            {
+                name: '',
+                volume: 1,
+                unit: 'Pcs',
+                unit_price: 0,
+                tax_pph21: 0,
+                tax_pph21_mixed: false,
+                remarks: '',
+            },
+        ];
+        calculateTotal();
+    }
+
+    function removeItem(index: number) {
+        form.items = form.items.filter((_, i) => i !== index);
+        calculateTotal();
+    }
+
+    function calculateTotal() {
+        form.amount = form.items.reduce(
+            (sum, item) => sum + Number(item.volume) * Number(item.unit_price),
+            0,
+        );
+    }
+
+    function handleVendorSelect(e: Event) {
+        const target = e.target as HTMLSelectElement;
+        const selected = vendors.find((v) => v.id.toString() === target.value);
+
+        if (selected) {
+            form.vendor_name = selected.name;
+            form.vendor_npwp = selected.npwp || '';
+            form.vendor_address = selected.address || '';
+            form.bank_name = selected.bank_name || '';
+            form.bank_account_number = selected.bank_account_number || '';
+            form.bank_account_name = selected.bank_account_name || '';
+        }
+    }
 
     function openRealizationModal(budget: any) {
         selectedBudget = budget;
         form.activity_budget_id = budget.id.toString();
+        form.description = budget.description;
+        form.procurement_title = budget.description;
+        form.amount = 0;
+        form.items = [
+            {
+                name: budget.description,
+                volume: 1,
+                unit: 'Paket',
+                unit_price: 0,
+                tax_pph21: 0,
+                tax_pph21_mixed: false,
+                remarks: '',
+            },
+        ];
+
+        // Reset advanced fields
+        form.bast_number = '';
+        form.bast_date = '';
+        form.bap_number = '';
+        form.bap_date = '';
+        form.ba_penyerahan_number = '';
+        form.ba_penyerahan_date = '';
+        form.sp2d_number = '';
+        form.sp2d_date = '';
+        form.procurement_number = '';
+        form.procurement_date = '';
+        form.work_duration = '5 (lima) Hari Kalender';
+        form.nota_dinas_number = '';
+        form.nota_dinas_date = '';
+        form.ba_pl_number = '';
+        form.ba_pl_date = '';
+        form.ppk_id =
+            officers
+                .find((o) => o.name.toLowerCase().includes('arnaldy'))
+                ?.id?.toString() || '';
+        form.kpa_id =
+            officers
+                .find((o) => o.name.toLowerCase().includes('sidrotul'))
+                ?.id?.toString() || '';
+        form.vendor_name = '';
+        form.vendor_npwp = '';
+        form.vendor_address = '';
+        form.bank_name = '';
+        form.bank_account_number = '';
+        form.bank_account_name = '';
+
+        activeModalTab = 'dasar';
         realizationModalOpen = true;
     }
 
     function handleRealizationSubmit(e: Event) {
         e.preventDefault();
+
+        if (form.amount > remainingBudget + 1) {
+            alert(
+                'Peringatan: Nominal realisasi belanja melebihi sisa pagu anggaran yang tersedia!',
+            );
+
+            return;
+        }
+
         form.post(toUrl(storeReal()), {
             onSuccess: () => {
                 realizationModalOpen = false;
@@ -210,6 +339,8 @@
         });
     }
 </script>
+
+<svelte:window onclick={() => (activeDropdownRealId = null)} />
 
 <AppHead title="Pagu & Realisasi" />
 
@@ -505,12 +636,91 @@
                                             class="flex items-center gap-4 shrink-0"
                                         >
                                             {#if real.realization_type === 'surat_pesanan'}
-                                                <a
-                                                    href={`/reports/realization/${real.id}/pdf`}
-                                                    target="_blank"
-                                                    class="inline-flex items-center gap-1 text-[10px] font-semibold text-primary hover:text-white bg-primary/10 hover:bg-primary px-2 py-1 rounded transition-colors cursor-pointer"
+                                                <div
+                                                    class="relative inline-block text-left"
                                                 >
-                                                    Cetak SP
+                                                    <button
+                                                        onclick={(e) => {
+                                                            e.stopPropagation();
+                                                            activeDropdownRealId =
+                                                                activeDropdownRealId ===
+                                                                real.id
+                                                                    ? null
+                                                                    : real.id;
+                                                        }}
+                                                        class="inline-flex items-center gap-1 text-[10px] font-semibold text-primary hover:text-white bg-primary/10 hover:bg-primary px-2 py-1 rounded transition-colors cursor-pointer"
+                                                    >
+                                                        📄 Cetak Dokumen ▾
+                                                    </button>
+                                                    {#if activeDropdownRealId === real.id}
+                                                        <div
+                                                            class="absolute right-0 mt-1 w-44 rounded-md shadow-lg bg-card border border-zinc-200 dark:border-zinc-800 z-50 py-1 text-xs"
+                                                        >
+                                                            <a
+                                                                href={`/reports/realization/${real.id}/pdf`}
+                                                                target="_blank"
+                                                                onclick={() =>
+                                                                    (activeDropdownRealId =
+                                                                        null)}
+                                                                class="block px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-foreground transition-colors"
+                                                            >
+                                                                📄 Cetak Surat
+                                                                Pesanan (SP)
+                                                            </a>
+                                                            <a
+                                                                href={`/reports/realization/${real.id}/spk`}
+                                                                target="_blank"
+                                                                onclick={() =>
+                                                                    (activeDropdownRealId =
+                                                                        null)}
+                                                                class="block px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-foreground transition-colors"
+                                                            >
+                                                                🛠️ Cetak Kontrak
+                                                                (SPK)
+                                                            </a>
+                                                            <a
+                                                                href={`/reports/realization/${real.id}/bast`}
+                                                                target="_blank"
+                                                                onclick={() =>
+                                                                    (activeDropdownRealId =
+                                                                        null)}
+                                                                class="block px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-foreground transition-colors"
+                                                            >
+                                                                🤝 Cetak Serah
+                                                                Terima (BAST)
+                                                            </a>
+                                                            <a
+                                                                href={`/reports/realization/${real.id}/bap`}
+                                                                target="_blank"
+                                                                onclick={() =>
+                                                                    (activeDropdownRealId =
+                                                                        null)}
+                                                                class="block px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-foreground transition-colors"
+                                                            >
+                                                                💰 Cetak BAP
+                                                                Pembayaran
+                                                            </a>
+                                                            <a
+                                                                href={`/reports/realization/${real.id}/kwitansi`}
+                                                                target="_blank"
+                                                                onclick={() =>
+                                                                    (activeDropdownRealId =
+                                                                        null)}
+                                                                class="block px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-foreground transition-colors"
+                                                            >
+                                                                🏷️ Cetak
+                                                                Kwitansi Resmi
+                                                            </a>
+                                                        </div>
+                                                    {/if}
+                                                </div>
+                                            {:else}
+                                                <a
+                                                    href={`/reports/realization/${real.id}/kwitansi`}
+                                                    target="_blank"
+                                                    class="inline-flex items-center gap-1 text-[10px] font-semibold text-zinc-600 hover:text-white bg-zinc-100 hover:bg-zinc-650 px-2 py-1 rounded transition-colors cursor-pointer dark:bg-zinc-800 dark:text-zinc-350 dark:hover:bg-zinc-700"
+                                                >
+                                                    🏷️ Kwitansi
                                                 </a>
                                             {/if}
 
@@ -602,81 +812,302 @@
 <!-- Modal Realisasi Form -->
 <!-- Let's write the custom HTML5 dialog form directly in Index.svelte for maximum robust form binding -->
 {#if realizationModalOpen}
-    <!-- dialog block -->
     <div
         class="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/30 backdrop-blur-sm"
     >
         <div
-            class="bg-card/95 border border-sidebar-border/50 p-6 rounded-xl shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto scrollbar-thin space-y-4 text-foreground"
+            class="bg-card border border-sidebar-border/50 p-6 rounded-xl shadow-xl w-full max-w-2xl max-h-[92vh] overflow-y-auto scrollbar-thin space-y-4 text-foreground"
         >
-            <h3 class="text-lg font-bold">Catat Realisasi Belanja</h3>
-            <p class="text-xs text-muted-foreground">
-                Pagu: {selectedBudget?.description} ({formatRupiah(
-                    selectedBudget?.amount,
-                )})
-            </p>
-
-            <form onsubmit={handleRealizationSubmit} class="space-y-3">
-                <div class="space-y-1">
-                    <label class="text-xs font-semibold">Tipe Realisasi</label>
-                    <select
-                        bind:value={form.realization_type}
-                        class="w-full px-3 py-1.5 text-sm bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary cursor-pointer"
-                        required
-                    >
-                        <option value="non_pengadaan">Non-Pengadaan</option>
-                        <option value="surat_pesanan"
-                            >Surat Pesanan (Pihak Ketiga/Vendor)</option
+            <div
+                class="flex items-center justify-between border-b border-sidebar-border/20 pb-2"
+            >
+                <div>
+                    <h3 class="text-lg font-bold">Catat Realisasi Belanja</h3>
+                    <p class="text-xs text-muted-foreground">
+                        Pagu: <span class="font-bold text-foreground"
+                            >{selectedBudget?.description}</span
                         >
-                    </select>
+                        (Sisa Pagu:
+                        <span
+                            class="font-bold text-emerald-600 dark:text-emerald-400"
+                            >{formatRupiah(remainingBudget)}</span
+                        >)
+                    </p>
                 </div>
+                <button
+                    type="button"
+                    onclick={() => {
+                        realizationModalOpen = false;
+                        form.reset();
+                    }}
+                    class="text-muted-foreground hover:text-foreground text-sm cursor-pointer"
+                >
+                    ✕
+                </button>
+            </div>
 
-                <div class="space-y-1">
-                    <label class="text-xs font-semibold"
-                        >Jumlah Realisasi (IDR)</label
-                    >
-                    <input
-                        type="number"
-                        bind:value={form.amount}
-                        class="w-full px-3 py-1.5 text-sm bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary"
-                        min="1"
-                        required
-                    />
-                </div>
-
+            <!-- TAB MENU -->
+            <div
+                class="flex border-b border-zinc-200 dark:border-zinc-800 text-xs font-semibold gap-1"
+            >
+                <button
+                    type="button"
+                    onclick={() => (activeModalTab = 'dasar')}
+                    class={`px-3 py-2 border-b-2 transition-all ${activeModalTab === 'dasar' ? 'border-primary text-primary font-bold' : 'border-transparent text-muted-foreground hover:text-foreground'}`}
+                >
+                    📁 Dasar & Rincian
+                </button>
                 {#if form.realization_type === 'surat_pesanan'}
-                    <div
-                        class="space-y-3 p-3 bg-zinc-50 dark:bg-zinc-900/50 rounded-lg border border-zinc-150 dark:border-zinc-800/80"
+                    <button
+                        type="button"
+                        onclick={() => (activeModalTab = 'kontrak')}
+                        class={`px-3 py-2 border-b-2 transition-all ${activeModalTab === 'kontrak' ? 'border-primary text-primary font-bold' : 'border-transparent text-muted-foreground hover:text-foreground'}`}
                     >
-                        <p class="text-xs font-bold text-primary">
-                            Informasi Vendor & Surat Pesanan
-                        </p>
+                        🛠️ Kontrak (SPK)
+                    </button>
+                    <button
+                        type="button"
+                        onclick={() => (activeModalTab = 'serah_terima')}
+                        class={`px-3 py-2 border-b-2 transition-all ${activeModalTab === 'serah_terima' ? 'border-primary text-primary font-bold' : 'border-transparent text-muted-foreground hover:text-foreground'}`}
+                    >
+                        🤝 Serah Terima (BAST)
+                    </button>
+                    <button
+                        type="button"
+                        onclick={() => (activeModalTab = 'pejabat')}
+                        class={`px-3 py-2 border-b-2 transition-all ${activeModalTab === 'pejabat' ? 'border-primary text-primary font-bold' : 'border-transparent text-muted-foreground hover:text-foreground'}`}
+                    >
+                        🏢 Pejabat & Vendor
+                    </button>
+                {/if}
+            </div>
 
-                        <div class="space-y-1">
-                            <label class="text-xs font-semibold"
-                                >Nama Penyedia / Vendor</label
-                            >
-                            <input
-                                type="text"
-                                bind:value={form.vendor_name}
-                                placeholder="E.g., CV. Media Pratama"
-                                class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary"
-                                required
-                            />
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-2">
+            <form onsubmit={handleRealizationSubmit} class="space-y-4">
+                <!-- TAB 1: DASAR & RINCIAN -->
+                {#if activeModalTab === 'dasar'}
+                    <div class="space-y-3">
+                        <div class="grid grid-cols-2 gap-3">
                             <div class="space-y-1">
                                 <label class="text-xs font-semibold"
-                                    >NPWP Vendor</label
+                                    >Tipe Realisasi</label
+                                >
+                                <select
+                                    bind:value={form.realization_type}
+                                    class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary cursor-pointer"
+                                    required
+                                >
+                                    <option value="non_pengadaan"
+                                        >Non-Pengadaan</option
+                                    >
+                                    <option value="surat_pesanan"
+                                        >Surat Pesanan (Pihak Ketiga/Vendor)</option
+                                    >
+                                </select>
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-xs font-semibold"
+                                    >Tanggal Realisasi</label
+                                >
+                                <input
+                                    type="date"
+                                    bind:value={form.realization_date}
+                                    class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary"
+                                    required
+                                />
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="space-y-1">
+                                <label class="text-xs font-semibold"
+                                    >Nomor Bukti Kuitansi / Receipt</label
                                 >
                                 <input
                                     type="text"
-                                    bind:value={form.vendor_npwp}
-                                    placeholder="00.000.000.0-000.000"
+                                    bind:value={form.receipt_number}
+                                    placeholder="E.g., KUITANSI-012"
                                     class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary"
                                 />
                             </div>
+                            <div class="space-y-1">
+                                <label class="text-xs font-semibold"
+                                    >Deskripsi Ringkas Belanja</label
+                                >
+                                <input
+                                    type="text"
+                                    bind:value={form.description}
+                                    placeholder="E.g., Pembelian ATK Diklat..."
+                                    class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary"
+                                    required
+                                />
+                            </div>
+                        </div>
+
+                        <!-- DYNAMIC ITEMS TABLE -->
+                        <div class="space-y-2 pt-2">
+                            <div class="flex items-center justify-between">
+                                <label class="text-xs font-bold text-primary"
+                                    >Daftar Rincian Barang / Jasa</label
+                                >
+                                <button
+                                    type="button"
+                                    onclick={addItem}
+                                    class="px-2 py-1 text-[10px] bg-emerald-600 text-white rounded hover:bg-emerald-500 flex items-center gap-1 cursor-pointer font-semibold transition-colors"
+                                >
+                                    ＋ Tambah Item
+                                </button>
+                            </div>
+
+                            <div
+                                class="border border-zinc-200 dark:border-zinc-800 rounded-lg overflow-hidden text-xs max-h-60 overflow-y-auto scrollbar-thin"
+                            >
+                                <table class="w-full text-left border-collapse">
+                                    <thead
+                                        class="bg-zinc-50 dark:bg-zinc-900 font-semibold border-b border-zinc-200 dark:border-zinc-800 text-[10px] uppercase tracking-wider text-muted-foreground"
+                                    >
+                                        <tr>
+                                            <th class="p-2 w-[40%]"
+                                                >Nama Barang/Jasa & Spesifikasi</th
+                                            >
+                                            <th class="p-2 w-[15%] text-center"
+                                                >Vol</th
+                                            >
+                                            <th class="p-2 w-[15%] text-center"
+                                                >Satuan</th
+                                            >
+                                            <th class="p-2 w-[20%] text-right"
+                                                >Harga Satuan</th
+                                            >
+                                            <th class="p-2 w-[10%] text-center"
+                                                >Aksi</th
+                                            >
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {#each form.items as item, index}
+                                            <tr
+                                                class="border-b border-zinc-100 dark:border-zinc-900/50 last:border-0"
+                                            >
+                                                <td class="p-1.5">
+                                                    <input
+                                                        type="text"
+                                                        bind:value={item.name}
+                                                        placeholder="Nama barang..."
+                                                        class="w-full px-2 py-1 bg-background border border-zinc-200 dark:border-zinc-800 rounded outline-none focus:border-primary text-xs"
+                                                        required
+                                                    />
+                                                    <input
+                                                        type="text"
+                                                        bind:value={
+                                                            item.remarks
+                                                        }
+                                                        placeholder="Keterangan / spesifikasi (opsional)..."
+                                                        class="w-full px-2 py-0.5 mt-1 bg-background border border-transparent rounded text-[10px] text-muted-foreground outline-none focus:border-zinc-200 dark:focus:border-zinc-700"
+                                                    />
+                                                </td>
+                                                <td class="p-1.5">
+                                                    <input
+                                                        type="number"
+                                                        bind:value={item.volume}
+                                                        oninput={calculateTotal}
+                                                        min="0.01"
+                                                        step="any"
+                                                        class="w-full px-2 py-1 bg-background border border-zinc-200 dark:border-zinc-800 rounded outline-none focus:border-primary text-xs text-center"
+                                                        required
+                                                    />
+                                                </td>
+                                                <td class="p-1.5">
+                                                    <input
+                                                        type="text"
+                                                        bind:value={item.unit}
+                                                        placeholder="Pcs"
+                                                        class="w-full px-2 py-1 bg-background border border-zinc-200 dark:border-zinc-800 rounded outline-none focus:border-primary text-xs text-center"
+                                                        required
+                                                    />
+                                                </td>
+                                                <td class="p-1.5">
+                                                    <input
+                                                        type="number"
+                                                        bind:value={
+                                                            item.unit_price
+                                                        }
+                                                        oninput={calculateTotal}
+                                                        min="0"
+                                                        class="w-full px-2 py-1 bg-background border border-zinc-200 dark:border-zinc-800 rounded outline-none focus:border-primary text-xs text-right"
+                                                        required
+                                                    />
+                                                </td>
+                                                <td class="p-1.5 text-center">
+                                                    <button
+                                                        type="button"
+                                                        disabled={form.items
+                                                            .length <= 1}
+                                                        onclick={() =>
+                                                            removeItem(index)}
+                                                        class="text-rose-500 hover:text-rose-600 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer p-1 transition-colors"
+                                                    >
+                                                        🗑️
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        {/each}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- SUB-TOTAL AUTO-SUM CARD -->
+                            <div
+                                class="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 bg-zinc-50 dark:bg-zinc-900/50 rounded-lg border border-zinc-150 dark:border-zinc-850 text-xs font-semibold gap-2"
+                            >
+                                <div class="text-muted-foreground">
+                                    Total Nilai Rincian (Dihitung Otomatis):
+                                </div>
+                                <div
+                                    class="text-base font-extrabold text-foreground"
+                                >
+                                    {formatRupiah(form.amount)}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {/if}
+
+                <!-- TAB 2: KONTRAK (SPK) -->
+                {#if activeModalTab === 'kontrak'}
+                    <div class="space-y-3">
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="space-y-1">
+                                <label class="text-xs font-semibold"
+                                    >Tipe Dokumen</label
+                                >
+                                <select
+                                    bind:value={form.procurement_type}
+                                    class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary cursor-pointer"
+                                    required
+                                >
+                                    <option value="surat_pesanan"
+                                        >Surat Pesanan (SP)</option
+                                    >
+                                    <option value="spk"
+                                        >Surat Perintah Kerja (SPK)</option
+                                    >
+                                </select>
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-xs font-semibold"
+                                    >Nama Paket Pekerjaan</label
+                                >
+                                <input
+                                    type="text"
+                                    bind:value={form.procurement_title}
+                                    placeholder="Nama paket pengadaan..."
+                                    class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary"
+                                    required
+                                />
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
                             <div class="space-y-1">
                                 <label class="text-xs font-semibold"
                                     >Nomor SP / SPK</label
@@ -684,14 +1115,11 @@
                                 <input
                                     type="text"
                                     bind:value={form.procurement_number}
-                                    placeholder="SP/XXXX/2026"
+                                    placeholder="PL.107/67/7/POLTEKPEL..."
                                     class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary"
                                     required
                                 />
                             </div>
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-2">
                             <div class="space-y-1">
                                 <label class="text-xs font-semibold"
                                     >Tanggal SP / SPK</label
@@ -703,6 +1131,148 @@
                                     required
                                 />
                             </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="space-y-1">
+                                <label class="text-xs font-semibold"
+                                    >Waktu Pelaksanaan Pekerjaan</label
+                                >
+                                <input
+                                    type="text"
+                                    bind:value={form.work_duration}
+                                    placeholder="E.g., 5 (lima) Hari Kalender"
+                                    class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary"
+                                />
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-xs font-semibold"
+                                    >Nomor Nota Dinas PPK</label
+                                >
+                                <input
+                                    type="text"
+                                    bind:value={form.nota_dinas_number}
+                                    placeholder="ND/PPK/..."
+                                    class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary"
+                                />
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="space-y-1">
+                                <label class="text-xs font-semibold"
+                                    >Tanggal Nota Dinas</label
+                                >
+                                <input
+                                    type="date"
+                                    bind:value={form.nota_dinas_date}
+                                    class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary"
+                                />
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-xs font-semibold"
+                                    >Nomor BA Pengadaan Langsung (PL)</label
+                                >
+                                <input
+                                    type="text"
+                                    bind:value={form.ba_pl_number}
+                                    placeholder="BA-PL/..."
+                                    class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary"
+                                />
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="space-y-1">
+                                <label class="text-xs font-semibold"
+                                    >Tanggal BA Pengadaan Langsung</label
+                                >
+                                <input
+                                    type="date"
+                                    bind:value={form.ba_pl_date}
+                                    class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                {/if}
+
+                <!-- TAB 3: SERAH TERIMA -->
+                {#if activeModalTab === 'serah_terima'}
+                    <div class="space-y-3">
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="space-y-1">
+                                <label class="text-xs font-semibold"
+                                    >Nomor BAST Barang</label
+                                >
+                                <input
+                                    type="text"
+                                    bind:value={form.bast_number}
+                                    placeholder="PL.109/57/22/POLTEKPEL..."
+                                    class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary"
+                                />
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-xs font-semibold"
+                                    >Tanggal BAST Barang</label
+                                >
+                                <input
+                                    type="date"
+                                    bind:value={form.bast_date}
+                                    class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary"
+                                />
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="space-y-1">
+                                <label class="text-xs font-semibold"
+                                    >Nomor Berita Acara Pembayaran (BAP)</label
+                                >
+                                <input
+                                    type="text"
+                                    bind:value={form.bap_number}
+                                    placeholder="BAP/XXX/..."
+                                    class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary"
+                                />
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-xs font-semibold"
+                                    >Tanggal BAP</label
+                                >
+                                <input
+                                    type="date"
+                                    bind:value={form.bap_date}
+                                    class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary"
+                                />
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="space-y-1">
+                                <label class="text-xs font-semibold"
+                                    >Nomor BA Penyerahan</label
+                                >
+                                <input
+                                    type="text"
+                                    bind:value={form.ba_penyerahan_number}
+                                    placeholder="BA-PENYERAHAN/..."
+                                    class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary"
+                                />
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-xs font-semibold"
+                                    >Tanggal BA Penyerahan</label
+                                >
+                                <input
+                                    type="date"
+                                    bind:value={form.ba_penyerahan_date}
+                                    class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary"
+                                />
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
                             <div class="space-y-1">
                                 <label class="text-xs font-semibold"
                                     >Nomor SP2D</label
@@ -710,13 +1280,10 @@
                                 <input
                                     type="text"
                                     bind:value={form.sp2d_number}
-                                    placeholder="SP2D/XXX/2026"
+                                    placeholder="SP2D/XXX/..."
                                     class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary"
                                 />
                             </div>
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-2">
                             <div class="space-y-1">
                                 <label class="text-xs font-semibold"
                                     >Tanggal SP2D</label
@@ -728,58 +1295,171 @@
                                 />
                             </div>
                         </div>
+                    </div>
+                {/if}
 
-                        <div class="space-y-1">
-                            <label class="text-xs font-semibold"
-                                >Alamat Vendor</label
-                            >
-                            <textarea
-                                bind:value={form.vendor_address}
-                                placeholder="Alamat lengkap vendor..."
-                                rows="2"
-                                class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary resize-none"
-                            ></textarea>
+                <!-- TAB 4: PEJABAT & VENDOR -->
+                {#if activeModalTab === 'pejabat'}
+                    <div class="space-y-3">
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="space-y-1">
+                                <label class="text-xs font-semibold"
+                                    >Kuasa Pengguna Anggaran (KPA)</label
+                                >
+                                <select
+                                    bind:value={form.kpa_id}
+                                    class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary cursor-pointer"
+                                >
+                                    <option value="">-- Pilih KPA --</option>
+                                    {#each officers as off}
+                                        <option value={off.id.toString()}
+                                            >{off.name} (NIP: {off.employee_id})</option
+                                        >
+                                    {/each}
+                                </select>
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-xs font-semibold"
+                                    >Pejabat Pembuat Komitmen (PPK)</label
+                                >
+                                <select
+                                    bind:value={form.ppk_id}
+                                    class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary cursor-pointer"
+                                >
+                                    <option value="">-- Pilih PPK --</option>
+                                    {#each officers as off}
+                                        <option value={off.id.toString()}
+                                            >{off.name} (NIP: {off.employee_id})</option
+                                        >
+                                    {/each}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div
+                            class="p-3 bg-zinc-50 dark:bg-zinc-900/50 rounded-lg border border-zinc-150 dark:border-zinc-800/80 space-y-3"
+                        >
+                            <p class="text-xs font-bold text-primary">
+                                Informasi Penyedia (Vendor) & Perbankan
+                            </p>
+
+                            <div class="space-y-1">
+                                <label class="text-xs font-semibold"
+                                    >Pilih Vendor Terdaftar (Auto-fill)</label
+                                >
+                                <select
+                                    onchange={handleVendorSelect}
+                                    class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary cursor-pointer"
+                                >
+                                    <option value=""
+                                        >-- Tulis Baru / Edit Manual --</option
+                                    >
+                                    {#each vendors as v}
+                                        <option value={v.id}>{v.name}</option>
+                                    {/each}
+                                </select>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-2">
+                                <div class="space-y-1">
+                                    <label class="text-xs font-semibold"
+                                        >Nama Resmi Vendor</label
+                                    >
+                                    <input
+                                        type="text"
+                                        bind:value={form.vendor_name}
+                                        placeholder="E.g., CV. Media Utama"
+                                        class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary"
+                                        required
+                                    />
+                                </div>
+                                <div class="space-y-1">
+                                    <label class="text-xs font-semibold"
+                                        >NPWP Vendor</label
+                                    >
+                                    <input
+                                        type="text"
+                                        bind:value={form.vendor_npwp}
+                                        placeholder="00.000.000.0-000.000"
+                                        class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary"
+                                    />
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-3 gap-2">
+                                <div class="space-y-1">
+                                    <label class="text-xs font-semibold"
+                                        >Nama Bank</label
+                                    >
+                                    <input
+                                        type="text"
+                                        bind:value={form.bank_name}
+                                        placeholder="BTN / Mandiri / BRI"
+                                        class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary"
+                                    />
+                                </div>
+                                <div class="space-y-1">
+                                    <label class="text-xs font-semibold"
+                                        >Nomor Rekening</label
+                                    >
+                                    <input
+                                        type="text"
+                                        bind:value={form.bank_account_number}
+                                        placeholder="0021-01-..."
+                                        class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary"
+                                    />
+                                </div>
+                                <div class="space-y-1">
+                                    <label class="text-xs font-semibold"
+                                        >Pemilik Rekening (Direktur)</label
+                                    >
+                                    <input
+                                        type="text"
+                                        bind:value={form.bank_account_name}
+                                        placeholder="Nama direktur..."
+                                        class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary"
+                                    />
+                                </div>
+                            </div>
+
+                            <div class="space-y-1">
+                                <label class="text-xs font-semibold"
+                                    >Alamat Resmi Vendor</label
+                                >
+                                <textarea
+                                    bind:value={form.vendor_address}
+                                    placeholder="Jalan, RT/RW, Kota..."
+                                    rows="2"
+                                    class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary resize-none"
+                                ></textarea>
+                            </div>
                         </div>
                     </div>
                 {/if}
 
-                <div class="space-y-1">
-                    <label class="text-xs font-semibold"
-                        >Tanggal Realisasi</label
+                <!-- CEILING BUDGET WARNING ALERT -->
+                {#if form.amount > remainingBudget}
+                    <div
+                        class="p-3 bg-rose-50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-900/50 rounded-lg text-rose-700 dark:text-rose-350 text-xs flex items-start gap-2"
                     >
-                    <input
-                        type="date"
-                        bind:value={form.realization_date}
-                        class="w-full px-3 py-1.5 text-sm bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary"
-                        required
-                    />
-                </div>
-                <div class="space-y-1">
-                    <label class="text-xs font-semibold"
-                        >Nomor Bukti Kuitansi / Receipt</label
-                    >
-                    <input
-                        type="text"
-                        bind:value={form.receipt_number}
-                        placeholder="E.g., KUITANSI-0012, SP2D-0044"
-                        class="w-full px-3 py-1.5 text-sm bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary"
-                    />
-                </div>
-                <div class="space-y-1">
-                    <label class="text-xs font-semibold"
-                        >Deskripsi Belanja</label
-                    >
-                    <input
-                        type="text"
-                        bind:value={form.description}
-                        placeholder="E.g., Pembelian alat tulis dan fotokopi materi diklat..."
-                        class="w-full px-3 py-1.5 text-sm bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary"
-                        required
-                    />
-                </div>
+                        <span>⚠️</span>
+                        <div>
+                            <strong class="font-bold"
+                                >Over-Budget Warning:</strong
+                            >
+                            Total realisasi belanja (<strong
+                                >{formatRupiah(form.amount)}</strong
+                            >) melampaui sisa pagu anggaran (<strong
+                                >{formatRupiah(remainingBudget)}</strong
+                            >). Silakan kurangi volume atau harga item sebelum
+                            menyimpan.
+                        </div>
+                    </div>
+                {/if}
 
+                <!-- FOOTER BUTTONS -->
                 <div
-                    class="flex justify-end gap-3 pt-3 border-t border-sidebar-border/20 mt-4"
+                    class="flex justify-end gap-2 pt-3 border-t border-sidebar-border/20 mt-4"
                 >
                     <button
                         type="button"
@@ -787,16 +1467,18 @@
                             realizationModalOpen = false;
                             form.reset();
                         }}
-                        class="inline-flex h-9 items-center justify-center rounded-md border border-zinc-200 dark:border-zinc-800 bg-background px-4 py-2 text-sm font-medium hover:bg-accent cursor-pointer"
+                        class="inline-flex h-8 items-center justify-center rounded-md border border-zinc-200 dark:border-zinc-800 bg-background px-3 text-xs font-medium hover:bg-accent cursor-pointer transition-colors"
                     >
                         Batal
                     </button>
                     <button
                         type="submit"
-                        disabled={form.processing}
-                        class="inline-flex h-9 items-center justify-center rounded-md bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 text-sm font-medium cursor-pointer"
+                        disabled={form.processing || form.amount <= 0}
+                        class="inline-flex h-8 items-center justify-center rounded-md bg-emerald-600 hover:bg-emerald-500 text-white px-3 text-xs font-semibold cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                     >
-                        Simpan Belanja
+                        {form.processing
+                            ? 'Menyimpan...'
+                            : 'Simpan Realisasi Belanja'}
                     </button>
                 </div>
             </form>
