@@ -575,7 +575,7 @@
                                     </p>
                                 </div>
                                 <span class="font-bold text-foreground"
-                                    >{formatRupiah(budget.amount)}</span
+                                    >{formatRupiah(budget.amount, true)}</span
                                 >
                             </div>
 
@@ -641,6 +641,7 @@
                                                 <span
                                                     >{formatRupiah(
                                                         real.amount,
+                                                        true,
                                                     )}</span
                                                 >
                                                 {#if real.realization_type === 'surat_pesanan'}

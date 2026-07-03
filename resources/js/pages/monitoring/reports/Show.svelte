@@ -228,7 +228,7 @@
                     >
                     <span
                         class="font-bold text-foreground text-yellow-600 dark:text-yellow-500"
-                        >{formatRupiah(activity.total_budget)}</span
+                        >{formatRupiah(activity.total_budget, true)}</span
                     >
                 </div>
                 <div>
@@ -237,7 +237,7 @@
                     >
                     <span
                         class="font-bold text-foreground text-emerald-600 dark:text-emerald-400"
-                        >{formatRupiah(activity.total_realized)}</span
+                        >{formatRupiah(activity.total_realized, true)}</span
                     >
                 </div>
                 <div>

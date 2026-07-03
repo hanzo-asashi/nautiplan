@@ -283,7 +283,7 @@
                     <div class="flex justify-between items-center">
                         <span class="text-muted-foreground">Pagu Anggaran</span>
                         <span class="font-bold text-foreground"
-                            >{formatRupiah(program.total_budget)}</span
+                            >{formatRupiah(program.total_budget, true)}</span
                         >
                     </div>
                     <div class="flex justify-between items-center">

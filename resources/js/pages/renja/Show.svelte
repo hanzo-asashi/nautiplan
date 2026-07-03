@@ -106,7 +106,7 @@
                             >Pagu Anggaran Disetujui</span
                         >
                         <span class="font-bold text-lg text-primary"
-                            >{formatRupiah(renja.total_budget)}</span
+                            >{formatRupiah(renja.total_budget, true)}</span
                         >
                     </div>
                 </div>
