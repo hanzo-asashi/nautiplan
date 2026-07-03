@@ -21,10 +21,15 @@
     import ChevronDown from 'lucide-svelte/icons/chevron-down';
     import ChevronRight from 'lucide-svelte/icons/chevron-right';
     import FileSpreadsheet from 'lucide-svelte/icons/file-spreadsheet';
+    import FileText from 'lucide-svelte/icons/file-text';
     import AppHead from '@/components/AppHead.svelte';
     import PageHeader from '@/components/PageHeader.svelte';
     import { formatRupiah } from '@/lib/utils';
-    import { pokRealization as exportPokRealization } from '@/routes/reports/export';
+    import {
+        pokRealization as exportPokRealization,
+        rekapOutput,
+        rekapKomponen,
+    } from '@/routes/reports/export';
 
     let {
         tree = [],
@@ -53,6 +58,20 @@
 
     function handleExportExcel() {
         const url = exportPokRealization.url({
+            query: { fiscal_year_id: filters.fiscal_year_id },
+        });
+        window.open(url, '_blank');
+    }
+
+    function handleExportRekapOutput() {
+        const url = rekapOutput.url({
+            query: { fiscal_year_id: filters.fiscal_year_id },
+        });
+        window.open(url, '_blank');
+    }
+
+    function handleExportRekapKomponen() {
+        const url = rekapKomponen.url({
             query: { fiscal_year_id: filters.fiscal_year_id },
         });
         window.open(url, '_blank');
@@ -109,7 +128,7 @@
             description="Pantau penyerapan pagu anggaran belanja secara hirarkis dan unduh rekapitulasi data realisasi."
         />
 
-        <div class="flex items-center gap-3">
+        <div class="flex flex-wrap items-center gap-3">
             <select
                 value={filters.fiscal_year_id || ''}
                 onchange={handleYearChange}
@@ -128,6 +147,22 @@
             >
                 <FileSpreadsheet class="w-3.5 h-3.5" />
                 Ekspor Excel
+            </button>
+
+            <button
+                onclick={handleExportRekapOutput}
+                class="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-sm transition-colors cursor-pointer"
+            >
+                <FileText class="w-3.5 h-3.5" />
+                Rekap Output (PDF)
+            </button>
+
+            <button
+                onclick={handleExportRekapKomponen}
+                class="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm transition-colors cursor-pointer"
+            >
+                <FileText class="w-3.5 h-3.5" />
+                Rekap Komponen (PDF)
             </button>
         </div>
     </div>
