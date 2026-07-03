@@ -4,7 +4,7 @@
 
 ## Overview
 
-NautiPlan is an extremely large application (~18 modules, 30+ database tables, 50+ pages). To keep progress manageable and verifiable, the roadmap is structured into **6 phases** that build on each other. Each phase produces a working, testable increment.
+NautiPlan is an extremely large application (~18 modules, 30+ database tables, 50+ pages). To keep progress manageable and verifiable, the roadmap is structured into phases that build on each other. Each phase produces a working, testable increment.
 
 ---
 
@@ -97,6 +97,49 @@ NautiPlan is an extremely large application (~18 modules, 30+ database tables, 5
 - Production deployment config (Laravel Cloud) ✅ Complete
 - Security hardening ✅ Complete
 - User documentation ✅ Complete
+
+---
+
+## SIM-PPK Extension — POK & Pencairan Anggaran (New)
+
+Guna menyelaraskan sistem dengan kebutuhan administrasi Pejabat Pembuat Komitmen (PPK) Politeknik Pelayaran Barombong, dilakukan pengembangan fitur lanjutan yang terbagi dalam **3 Fase Baru**:
+
+### Extension Phase 1 — Perluasan Skema Hirarki DIPA & Item Budgeting (Current) 🔄 In Progress
+
+**Goal**: Membangun relasi hirarki terstruktur standar DIPA/POK dan rincian item rencana anggaran.
+
+#### Deliverables
+- **Database Migrations**:
+  - Tabel `outputs` (Kode, Nama, Kegiatan ID)
+  - Tabel `sub_outputs` (Kode, Nama, Output ID)
+  - Tabel `components` (Kode, Nama, Sub Output ID)
+  - Tabel `sub_components` (Kode, Nama, Komponen ID)
+  - Tabel `budget_items` (Volume, Satuan, Harga Satuan, Total, Akun/ActivityBudget ID)
+- **Eloquent Models & Relations**:
+  - Model baru: `Output`, `SubOutput`, `Component`, `SubComponent`, `BudgetItem`
+  - Relasi dari `Program` $\rightarrow$ `Activity` $\rightarrow$ `Output` $\rightarrow$ `SubOutput` $\rightarrow$ `Component` $\rightarrow$ `SubComponent` $\rightarrow$ `ActivityBudget` $\rightarrow$ `BudgetItem`
+- **Seeder Integration**:
+  - Parser/Seeder rill dari file `docs/MATRIKS REVSI - POK BLU 14 Mei 2025 (Saldo Awal).xlsx` sheet `BLU REV 5`.
+
+### Extension Phase 2 — Administrasi Pencairan SPP, SPM, SPTJB, & SSP Pajak ⏳ Planned
+
+**Goal**: Membuat formulir pengajuan pembayaran dan pemotongan pajak PPh 22/23 lengkap dengan bukti setoran.
+
+#### Deliverables
+- Input opsi pajak PPh 22 dan PPh 23 pada form realisasi item.
+- Template cetak PDF untuk:
+  - Surat Permintaan Pembayaran (SPP)
+  - Surat Perintah Membayar (SPM)
+  - Surat Pernyataan Tanggung Jawab Belanja (SPTJB)
+  - Surat Setoran Pajak (SSP)
+
+### Extension Phase 3 — Laporan Monev Struktur DIPA APBN ⏳ Planned
+
+**Goal**: Menghasilkan cetakan rekapitulasi realisasi per Output, Sub Output, Komponen, dan Sub Komponen.
+
+#### Deliverables
+- Cetak PDF Realisasi per Output & Sub Output.
+- Cetak PDF Realisasi per Komponen & Sub Komponen (baik rekapitulasi ringkas maupun detail rincian barang).
 
 ---
 

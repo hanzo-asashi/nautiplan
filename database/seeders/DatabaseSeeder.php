@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             UnitSeeder::class,
             FiscalYearSeeder::class,
             DemoDataSeeder::class,
+            PokDataSeeder::class,
         ]);
     }
 }
