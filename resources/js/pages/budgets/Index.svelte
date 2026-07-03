@@ -654,7 +654,7 @@
                                                     </button>
                                                     {#if activeDropdownRealId === real.id}
                                                         <div
-                                                            class="absolute right-0 mt-1 w-44 rounded-md shadow-lg bg-card border border-zinc-200 dark:border-zinc-800 z-50 py-1 text-xs"
+                                                            class="absolute right-0 bottom-full mb-1 w-44 rounded-md shadow-lg bg-card border border-zinc-200 dark:border-zinc-800 z-50 py-1 text-xs"
                                                         >
                                                             <a
                                                                 href={`/reports/realization/${real.id}/pdf`}
