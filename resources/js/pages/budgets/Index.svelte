@@ -144,6 +144,12 @@
         ba_penyerahan_date: '',
         sp2d_number: '',
         sp2d_date: '',
+        spp_number: '',
+        spp_date: '',
+        spm_number: '',
+        spm_date: '',
+        sptjb_number: '',
+        sptjb_date: '',
         // Pengadaan
         procurement_type: 'surat_pesanan',
         procurement_title: '',
@@ -171,6 +177,9 @@
             unit_price: number;
             tax_pph21: number;
             tax_pph21_mixed: boolean;
+            tax_pph22: number;
+            tax_pph23: number;
+            tax_ppn: number;
             remarks: string;
         }>,
     });
@@ -185,6 +194,9 @@
                 unit_price: 0,
                 tax_pph21: 0,
                 tax_pph21_mixed: false,
+                tax_pph22: 0,
+                tax_pph23: 0,
+                tax_ppn: 0,
                 remarks: '',
             },
         ];
@@ -231,6 +243,9 @@
                 unit_price: 0,
                 tax_pph21: 0,
                 tax_pph21_mixed: false,
+                tax_pph22: 0,
+                tax_pph23: 0,
+                tax_ppn: 0,
                 remarks: '',
             },
         ];
@@ -244,6 +259,12 @@
         form.ba_penyerahan_date = '';
         form.sp2d_number = '';
         form.sp2d_date = '';
+        form.spp_number = '';
+        form.spp_date = '';
+        form.spm_number = '';
+        form.spm_date = '';
+        form.sptjb_number = '';
+        form.sptjb_date = '';
         form.procurement_number = '';
         form.procurement_date = '';
         form.work_duration = '5 (lima) Hari Kalender';
@@ -711,6 +732,75 @@
                                                                 🏷️ Cetak
                                                                 Kwitansi Resmi
                                                             </a>
+                                                            <a
+                                                                href={`/reports/realization/${real.id}/spp`}
+                                                                target="_blank"
+                                                                onclick={() =>
+                                                                    (activeDropdownRealId =
+                                                                        null)}
+                                                                class="block px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-foreground transition-colors border-t border-zinc-100 dark:border-zinc-800"
+                                                            >
+                                                                📄 Cetak SPP
+                                                            </a>
+                                                            <a
+                                                                href={`/reports/realization/${real.id}/spm`}
+                                                                target="_blank"
+                                                                onclick={() =>
+                                                                    (activeDropdownRealId =
+                                                                        null)}
+                                                                class="block px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-foreground transition-colors"
+                                                            >
+                                                                🏛️ Cetak SPM
+                                                            </a>
+                                                            <a
+                                                                href={`/reports/realization/${real.id}/sptjb`}
+                                                                target="_blank"
+                                                                onclick={() =>
+                                                                    (activeDropdownRealId =
+                                                                        null)}
+                                                                class="block px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-foreground transition-colors"
+                                                            >
+                                                                🤝 Cetak SPTJB
+                                                            </a>
+                                                            {#if real.items && real.items.some((i) => Number(i.tax_ppn) > 0)}
+                                                                <a
+                                                                    href={`/reports/realization/${real.id}/ssp?type=ppn`}
+                                                                    target="_blank"
+                                                                    onclick={() =>
+                                                                        (activeDropdownRealId =
+                                                                            null)}
+                                                                    class="block px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-foreground transition-colors"
+                                                                >
+                                                                    🧾 Cetak SSP
+                                                                    (PPN)
+                                                                </a>
+                                                            {/if}
+                                                            {#if real.items && real.items.some((i) => Number(i.tax_pph22) > 0)}
+                                                                <a
+                                                                    href={`/reports/realization/${real.id}/ssp?type=pph22`}
+                                                                    target="_blank"
+                                                                    onclick={() =>
+                                                                        (activeDropdownRealId =
+                                                                            null)}
+                                                                    class="block px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-foreground transition-colors"
+                                                                >
+                                                                    🧾 Cetak SSP
+                                                                    (PPh 22)
+                                                                </a>
+                                                            {/if}
+                                                            {#if real.items && real.items.some((i) => Number(i.tax_pph23) > 0)}
+                                                                <a
+                                                                    href={`/reports/realization/${real.id}/ssp?type=pph23`}
+                                                                    target="_blank"
+                                                                    onclick={() =>
+                                                                        (activeDropdownRealId =
+                                                                            null)}
+                                                                    class="block px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-foreground transition-colors"
+                                                                >
+                                                                    🧾 Cetak SSP
+                                                                    (PPh 23)
+                                                                </a>
+                                                            {/if}
                                                         </div>
                                                     {/if}
                                                 </div>
@@ -879,6 +969,13 @@
                     >
                         🏢 Pejabat & Vendor
                     </button>
+                    <button
+                        type="button"
+                        onclick={() => (activeModalTab = 'pencairan')}
+                        class={`px-3 py-2 border-b-2 transition-all ${activeModalTab === 'pencairan' ? 'border-primary text-primary font-bold' : 'border-transparent text-muted-foreground hover:text-foreground'}`}
+                    >
+                        📄 Pencairan (SPP/SPM)
+                    </button>
                 {/if}
             </div>
 
@@ -1004,6 +1101,74 @@
                                                         placeholder="Keterangan / spesifikasi (opsional)..."
                                                         class="w-full px-2 py-0.5 mt-1 bg-background border border-transparent rounded text-[10px] text-muted-foreground outline-none focus:border-zinc-200 dark:focus:border-zinc-700"
                                                     />
+                                                    <div
+                                                        class="flex items-center gap-1.5 mt-1 text-[9px] bg-zinc-50 dark:bg-zinc-900/60 p-1 rounded border border-zinc-150 dark:border-zinc-800 w-full overflow-x-auto"
+                                                    >
+                                                        <div
+                                                            class="flex items-center gap-0.5"
+                                                        >
+                                                            <span
+                                                                class="font-semibold text-muted-foreground"
+                                                                >PPN:</span
+                                                            >
+                                                            <input
+                                                                type="number"
+                                                                bind:value={
+                                                                    item.tax_ppn
+                                                                }
+                                                                class="w-12 px-1 py-0.5 bg-background border border-zinc-200 dark:border-zinc-800 rounded text-[9px] text-right"
+                                                                placeholder="0"
+                                                            />
+                                                        </div>
+                                                        <div
+                                                            class="flex items-center gap-0.5"
+                                                        >
+                                                            <span
+                                                                class="font-semibold text-muted-foreground"
+                                                                >PPh21:</span
+                                                            >
+                                                            <input
+                                                                type="number"
+                                                                bind:value={
+                                                                    item.tax_pph21
+                                                                }
+                                                                class="w-12 px-1 py-0.5 bg-background border border-zinc-200 dark:border-zinc-800 rounded text-[9px] text-right"
+                                                                placeholder="0"
+                                                            />
+                                                        </div>
+                                                        <div
+                                                            class="flex items-center gap-0.5"
+                                                        >
+                                                            <span
+                                                                class="font-semibold text-muted-foreground"
+                                                                >PPh22:</span
+                                                            >
+                                                            <input
+                                                                type="number"
+                                                                bind:value={
+                                                                    item.tax_pph22
+                                                                }
+                                                                class="w-12 px-1 py-0.5 bg-background border border-zinc-200 dark:border-zinc-800 rounded text-[9px] text-right"
+                                                                placeholder="0"
+                                                            />
+                                                        </div>
+                                                        <div
+                                                            class="flex items-center gap-0.5"
+                                                        >
+                                                            <span
+                                                                class="font-semibold text-muted-foreground"
+                                                                >PPh23:</span
+                                                            >
+                                                            <input
+                                                                type="number"
+                                                                bind:value={
+                                                                    item.tax_pph23
+                                                                }
+                                                                class="w-12 px-1 py-0.5 bg-background border border-zinc-200 dark:border-zinc-800 rounded text-[9px] text-right"
+                                                                placeholder="0"
+                                                            />
+                                                        </div>
+                                                    </div>
                                                 </td>
                                                 <td class="p-1.5">
                                                     <input
@@ -1432,6 +1597,83 @@
                                     rows="2"
                                     class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary resize-none"
                                 ></textarea>
+                            </div>
+                        </div>
+                    </div>
+                {/if}
+
+                <!-- TAB 5: PENCAIRAN (SPP/SPM/SPTJB) -->
+                {#if activeModalTab === 'pencairan'}
+                    <div class="space-y-3">
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="space-y-1">
+                                <label class="text-xs font-semibold"
+                                    >Nomor SPP (Permintaan Pembayaran)</label
+                                >
+                                <input
+                                    type="text"
+                                    bind:value={form.spp_number}
+                                    placeholder="001/SPP-LS/..."
+                                    class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary"
+                                />
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-xs font-semibold"
+                                    >Tanggal SPP</label
+                                >
+                                <input
+                                    type="date"
+                                    bind:value={form.spp_date}
+                                    class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary"
+                                />
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="space-y-1">
+                                <label class="text-xs font-semibold"
+                                    >Nomor SPM (Perintah Membayar)</label
+                                >
+                                <input
+                                    type="text"
+                                    bind:value={form.spm_number}
+                                    placeholder="001/SPM-LS/..."
+                                    class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary"
+                                />
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-xs font-semibold"
+                                    >Tanggal SPM</label
+                                >
+                                <input
+                                    type="date"
+                                    bind:value={form.spm_date}
+                                    class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary"
+                                />
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="space-y-1">
+                                <label class="text-xs font-semibold"
+                                    >Nomor SPTJB</label
+                                >
+                                <input
+                                    type="text"
+                                    bind:value={form.sptjb_number}
+                                    placeholder="001/SPTJB/..."
+                                    class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary"
+                                />
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-xs font-semibold"
+                                    >Tanggal SPTJB</label
+                                >
+                                <input
+                                    type="date"
+                                    bind:value={form.sptjb_date}
+                                    class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary"
+                                />
                             </div>
                         </div>
                     </div>

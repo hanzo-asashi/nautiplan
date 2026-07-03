@@ -630,6 +630,90 @@ class ReportController extends Controller
         return $pdf->stream("kwitansi-{$realization->receipt_number}.pdf");
     }
 
+    public function downloadPdfSpp(BudgetRealization $realization): \Illuminate\Http\Response
+    {
+        $realization->load([
+            'activityBudget.activity.program',
+            'activityBudget.activity.unit',
+            'activityBudget.activity.fiscalYear',
+            'procurement.vendor',
+            'procurement.ppk',
+            'procurement.kpa',
+            'items',
+        ]);
+
+        $terbilang = self::terbilang($realization->amount).' rupiah';
+        $pdf = Pdf::loadView('pdf.spp', compact('realization', 'terbilang'));
+
+        return $pdf->stream('spp-'.($realization->spp_number ?? 'draft').'.pdf');
+    }
+
+    public function downloadPdfSpm(BudgetRealization $realization): \Illuminate\Http\Response
+    {
+        $realization->load([
+            'activityBudget.activity.program',
+            'activityBudget.activity.unit',
+            'activityBudget.activity.fiscalYear',
+            'procurement.vendor',
+            'procurement.ppk',
+            'procurement.kpa',
+            'items',
+        ]);
+
+        $terbilang = self::terbilang($realization->amount).' rupiah';
+        $pdf = Pdf::loadView('pdf.spm', compact('realization', 'terbilang'));
+
+        return $pdf->stream('spm-'.($realization->spm_number ?? 'draft').'.pdf');
+    }
+
+    public function downloadPdfSptjb(BudgetRealization $realization): \Illuminate\Http\Response
+    {
+        $realization->load([
+            'activityBudget.activity.program',
+            'activityBudget.activity.unit',
+            'activityBudget.activity.fiscalYear',
+            'procurement.vendor',
+            'procurement.ppk',
+            'procurement.kpa',
+            'items',
+        ]);
+
+        $terbilang = self::terbilang($realization->amount).' rupiah';
+        $pdf = Pdf::loadView('pdf.sptjb', compact('realization', 'terbilang'));
+
+        return $pdf->stream('sptjb-'.($realization->sptjb_number ?? 'draft').'.pdf');
+    }
+
+    public function downloadPdfSsp(BudgetRealization $realization, Request $request): \Illuminate\Http\Response
+    {
+        $realization->load([
+            'activityBudget.activity.program',
+            'activityBudget.activity.unit',
+            'activityBudget.activity.fiscalYear',
+            'procurement.vendor',
+            'procurement.ppk',
+            'procurement.kpa',
+            'items',
+        ]);
+
+        $taxType = $request->query('type', 'ppn');
+        $taxAmount = 0.0;
+        foreach ($realization->items as $item) {
+            if ($taxType === 'ppn') {
+                $taxAmount += (float) $item->tax_ppn;
+            } elseif ($taxType === 'pph22') {
+                $taxAmount += (float) $item->tax_pph22;
+            } elseif ($taxType === 'pph23') {
+                $taxAmount += (float) $item->tax_pph23;
+            }
+        }
+
+        $terbilang = self::terbilang($taxAmount).' rupiah';
+        $pdf = Pdf::loadView('pdf.ssp', compact('realization', 'taxType', 'taxAmount', 'terbilang'));
+
+        return $pdf->stream("ssp-{$taxType}-".($realization->receipt_number ?? 'draft').'.pdf');
+    }
+
     /**
      * Konversi angka nominal menjadi ejaan kalimat Terbilang Bahasa Indonesia
      */
