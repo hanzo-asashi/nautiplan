@@ -116,6 +116,14 @@ class Activity extends Model
     }
 
     /**
+     * @return HasMany<Output, $this>
+     */
+    public function outputs(): HasMany
+    {
+        return $this->hasMany(Output::class);
+    }
+
+    /**
      * @return HasMany<ActivityBudget, $this>
      */
     public function budgets(): HasMany

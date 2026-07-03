@@ -803,4 +803,248 @@ class ReportController extends Controller
             ],
         ]);
     }
+
+    public function pokMonitoring(Request $request): Response
+    {
+        $fiscalYears = FiscalYear::orderBy('year', 'desc')->get(['id', 'year', 'is_active']);
+        $activeYear = FiscalYear::where('is_active', true)->first() ?? FiscalYear::orderBy('year', 'desc')->first();
+
+        $selectedYearId = $request->input('fiscal_year_id', $activeYear?->id);
+
+        // Fetch Program tree
+        $programs = Program::where('fiscal_year_id', $selectedYearId)
+            ->with([
+                'activities.outputs.subOutputs.components.subComponents.activityBudgets.realizations',
+            ])
+            ->get();
+
+        $tree = [];
+        foreach ($programs as $prog) {
+            $activities = [];
+            foreach ($prog->activities as $act) {
+                $outputs = [];
+                foreach ($act->outputs as $out) {
+                    $subOutputs = [];
+                    foreach ($out->subOutputs as $subOut) {
+                        $components = [];
+                        foreach ($subOut->components as $comp) {
+                            $subComponents = [];
+                            foreach ($comp->subComponents as $subComp) {
+                                $budgets = [];
+                                foreach ($subComp->activityBudgets as $budget) {
+                                    $pagu = (float) $budget->amount;
+                                    $realisasi = (float) $budget->realizations->sum('amount');
+                                    $budgets[] = [
+                                        'id' => $budget->id,
+                                        'type' => 'budget',
+                                        'code' => $budget->account_code,
+                                        'name' => $budget->account_name,
+                                        'pagu' => $pagu,
+                                        'realisasi' => $realisasi,
+                                        'sisa' => $pagu - $realisasi,
+                                        'children' => [],
+                                    ];
+                                }
+
+                                $pagu = (float) array_sum(array_column($budgets, 'pagu'));
+                                $realisasi = (float) array_sum(array_column($budgets, 'realisasi'));
+
+                                $subComponents[] = [
+                                    'id' => $subComp->id,
+                                    'type' => 'sub_component',
+                                    'code' => $subComp->code,
+                                    'name' => $subComp->name,
+                                    'pagu' => $pagu,
+                                    'realisasi' => $realisasi,
+                                    'sisa' => $pagu - $realisasi,
+                                    'children' => $budgets,
+                                ];
+                            }
+
+                            $pagu = (float) array_sum(array_column($subComponents, 'pagu'));
+                            $realisasi = (float) array_sum(array_column($subComponents, 'realisasi'));
+
+                            $components[] = [
+                                'id' => $comp->id,
+                                'type' => 'component',
+                                'code' => $comp->code,
+                                'name' => $comp->name,
+                                'pagu' => $pagu,
+                                'realisasi' => $realisasi,
+                                'sisa' => $pagu - $realisasi,
+                                'children' => $subComponents,
+                            ];
+                        }
+
+                        $pagu = (float) array_sum(array_column($components, 'pagu'));
+                        $realisasi = (float) array_sum(array_column($components, 'realisasi'));
+
+                        $subOutputs[] = [
+                            'id' => $subOut->id,
+                            'type' => 'sub_output',
+                            'code' => $subOut->code,
+                            'name' => $subOut->name,
+                            'pagu' => $pagu,
+                            'realisasi' => $realisasi,
+                            'sisa' => $pagu - $realisasi,
+                            'children' => $components,
+                        ];
+                    }
+
+                    $pagu = (float) array_sum(array_column($subOutputs, 'pagu'));
+                    $realisasi = (float) array_sum(array_column($subOutputs, 'realisasi'));
+
+                    $outputs[] = [
+                        'id' => $out->id,
+                        'type' => 'output',
+                        'code' => $out->code,
+                        'name' => $out->name,
+                        'pagu' => $pagu,
+                        'realisasi' => $realisasi,
+                        'sisa' => $pagu - $realisasi,
+                        'children' => $subOutputs,
+                    ];
+                }
+
+                $pagu = (float) array_sum(array_column($outputs, 'pagu'));
+                $realisasi = (float) array_sum(array_column($outputs, 'realisasi'));
+
+                $activities[] = [
+                    'id' => $act->id,
+                    'type' => 'activity',
+                    'code' => $act->code,
+                    'name' => $act->name,
+                    'pagu' => $pagu,
+                    'realisasi' => $realisasi,
+                    'sisa' => $pagu - $realisasi,
+                    'children' => $outputs,
+                ];
+            }
+
+            $pagu = (float) array_sum(array_column($activities, 'pagu'));
+            $realisasi = (float) array_sum(array_column($activities, 'realisasi'));
+
+            $tree[] = [
+                'id' => $prog->id,
+                'type' => 'program',
+                'code' => $prog->code,
+                'name' => $prog->name,
+                'pagu' => $pagu,
+                'realisasi' => $realisasi,
+                'sisa' => $pagu - $realisasi,
+                'children' => $activities,
+            ];
+        }
+
+        return Inertia::render('reports/PokMonitoring', [
+            'tree' => $tree,
+            'fiscalYears' => $fiscalYears,
+            'filters' => [
+                'fiscal_year_id' => $selectedYearId ? (int) $selectedYearId : null,
+            ],
+        ]);
+    }
+
+    public function exportPokRealizationExcel(Request $request): StreamedResponse
+    {
+        $selectedYearId = $request->input('fiscal_year_id');
+        $query = BudgetRealization::with([
+            'activityBudget.activity.program',
+            'activityBudget.subComponent.component.subOutput.output',
+            'procurement.vendor',
+            'items',
+        ]);
+
+        if ($selectedYearId) {
+            $query->whereHas('activityBudget', function ($q) use ($selectedYearId) {
+                $q->where('fiscal_year_id', $selectedYearId);
+            });
+        }
+
+        $realizations = $query->orderBy('realization_date', 'asc')->get();
+
+        return response()->streamDownload(function () use ($realizations) {
+            $writer = new Writer;
+            $writer->openToFile('php://output');
+
+            $writer->addRow(Row::fromValues([
+                'No',
+                'Tanggal Realisasi',
+                'Nomor Kuitansi',
+                'Uraian Realisasi',
+                'Kode MAK',
+                'Akun Belanja',
+                'Vendor/Penyedia',
+                'Nomor SP/SPK',
+                'Nomor BAST',
+                'Nomor SPP',
+                'Nomor SPM',
+                'Nomor SP2D',
+                'Item Barang/Jasa',
+                'Vol',
+                'Satuan',
+                'Harga Satuan',
+                'Subtotal (Bruto)',
+                'PPN',
+                'PPh 21',
+                'PPh 22',
+                'PPh 23',
+                'Bersih (Netto)',
+            ]));
+
+            $no = 1;
+            foreach ($realizations as $real) {
+                $makCode = '';
+                $act = $real->activityBudget->activity;
+                if ($act) {
+                    $makCode = ($act->program ? $act->program->code : '').'.'.$act->code;
+                    $subc = $real->activityBudget->subComponent;
+                    if ($subc) {
+                        $comp = $subc->component;
+                        $subo = $comp ? $comp->subOutput : null;
+                        $out = $subo ? $subo->output : null;
+                        if ($out) {
+                            $makCode = $out->code.'.'.$subo->code.'.'.$comp->code.'.'.$subc->code;
+                        }
+                    }
+                    $makCode .= '.'.$real->activityBudget->account_code;
+                }
+
+                foreach ($real->items as $item) {
+                    $bruto = $item->volume * $item->unit_price;
+                    $taxes = (float) $item->tax_ppn + (float) $item->tax_pph21 + (float) $item->tax_pph22 + (float) $item->tax_pph23;
+                    $netto = $bruto - $taxes;
+
+                    $writer->addRow(Row::fromValues([
+                        $no++,
+                        $real->realization_date->format('Y-m-d'),
+                        $real->receipt_number ?? '',
+                        $real->description ?? '',
+                        $makCode,
+                        $real->activityBudget->account_name,
+                        $real->procurement && $real->procurement->vendor ? $real->procurement->vendor->name : ($real->vendor_name ?? ''),
+                        $real->procurement ? $real->procurement->document_number : '',
+                        $real->bast_number ?? '',
+                        $real->spp_number ?? '',
+                        $real->spm_number ?? '',
+                        $real->sp2d_number ?? '',
+                        $item->name,
+                        $item->volume,
+                        $item->unit,
+                        $item->unit_price,
+                        $bruto,
+                        $item->tax_ppn,
+                        $item->tax_pph21,
+                        $item->tax_pph22,
+                        $item->tax_pph23,
+                        $netto,
+                    ]));
+                }
+            }
+
+            $writer->close();
+        }, 'laporan-realisasi-pok.xlsx', [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        ]);
+    }
 }

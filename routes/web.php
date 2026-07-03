@@ -93,6 +93,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('reports/realization/{realization}/spm', [ReportController::class, 'downloadPdfSpm'])->name('reports.realization.spm');
     Route::get('reports/realization/{realization}/sptjb', [ReportController::class, 'downloadPdfSptjb'])->name('reports.realization.sptjb');
     Route::get('reports/realization/{realization}/ssp', [ReportController::class, 'downloadPdfSsp'])->name('reports.realization.ssp');
+    Route::get('reports/pok-monitoring', [ReportController::class, 'pokMonitoring'])->name('reports.pok-monitoring');
+    Route::get('reports/export/pok-realization', [ReportController::class, 'exportPokRealizationExcel'])->name('reports.export.pok-realization');
     Route::get('reports/non-procurement/pdf', [ReportController::class, 'downloadPdfNonProcurement'])->name('reports.non-procurement.pdf');
     Route::get('reports/vendor/pdf', [ReportController::class, 'downloadPdfVendor'])->name('reports.vendor.pdf');
 
