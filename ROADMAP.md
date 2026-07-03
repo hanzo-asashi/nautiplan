@@ -104,7 +104,7 @@ NautiPlan is an extremely large application (~18 modules, 30+ database tables, 5
 
 Guna menyelaraskan sistem dengan kebutuhan administrasi Pejabat Pembuat Komitmen (PPK) Politeknik Pelayaran Barombong, dilakukan pengembangan fitur lanjutan yang terbagi dalam **3 Fase Baru**:
 
-### Extension Phase 1 — Perluasan Skema Hirarki DIPA & Item Budgeting (Current) 🔄 In Progress
+### Extension Phase 1 — Perluasan Skema Hirarki DIPA & Item Budgeting ✅ Complete
 
 **Goal**: Membangun relasi hirarki terstruktur standar DIPA/POK dan rincian item rencana anggaran.
 
@@ -121,7 +121,7 @@ Guna menyelaraskan sistem dengan kebutuhan administrasi Pejabat Pembuat Komitmen
 - **Seeder Integration**:
   - Parser/Seeder rill dari file `docs/MATRIKS REVSI - POK BLU 14 Mei 2025 (Saldo Awal).xlsx` sheet `BLU REV 5`.
 
-### Extension Phase 2 — Administrasi Pencairan SPP, SPM, SPTJB, & SSP Pajak ⏳ Planned
+### Extension Phase 2 — Administrasi Pencairan SPP, SPM, SPTJB, & SSP Pajak ✅ Complete
 
 **Goal**: Membuat formulir pengajuan pembayaran dan pemotongan pajak PPh 22/23 lengkap dengan bukti setoran.
 
@@ -133,7 +133,7 @@ Guna menyelaraskan sistem dengan kebutuhan administrasi Pejabat Pembuat Komitmen
   - Surat Pernyataan Tanggung Jawab Belanja (SPTJB)
   - Surat Setoran Pajak (SSP)
 
-### Extension Phase 3 — Laporan Monev Struktur DIPA APBN ⏳ Planned
+### Extension Phase 3 — Laporan Monev Struktur DIPA APBN (Current) 🔄 In Progress
 
 **Goal**: Menghasilkan cetakan rekapitulasi realisasi per Output, Sub Output, Komponen, dan Sub Komponen.
 

@@ -804,12 +804,14 @@ class ReportController extends Controller
         ]);
     }
 
-    public function pokMonitoring(Request $request): Response
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    private function buildPokTree(?int $selectedYearId): array
     {
-        $fiscalYears = FiscalYear::orderBy('year', 'desc')->get(['id', 'year', 'is_active']);
-        $activeYear = FiscalYear::where('is_active', true)->first() ?? FiscalYear::orderBy('year', 'desc')->first();
-
-        $selectedYearId = $request->input('fiscal_year_id', $activeYear?->id);
+        if (! $selectedYearId) {
+            return [];
+        }
 
         // Fetch Program tree
         $programs = Program::where('fiscal_year_id', $selectedYearId)
@@ -936,6 +938,18 @@ class ReportController extends Controller
             ];
         }
 
+        return $tree;
+    }
+
+    public function pokMonitoring(Request $request): Response
+    {
+        $fiscalYears = FiscalYear::orderBy('year', 'desc')->get(['id', 'year', 'is_active']);
+        $activeYear = FiscalYear::where('is_active', true)->first() ?? FiscalYear::orderBy('year', 'desc')->first();
+
+        $selectedYearId = $request->input('fiscal_year_id', $activeYear?->id);
+
+        $tree = $this->buildPokTree($selectedYearId ? (int) $selectedYearId : null);
+
         return Inertia::render('reports/PokMonitoring', [
             'tree' => $tree,
             'fiscalYears' => $fiscalYears,
@@ -1046,5 +1060,45 @@ class ReportController extends Controller
         }, 'laporan-realisasi-pok.xlsx', [
             'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         ]);
+    }
+
+    public function downloadPdfRekapOutput(Request $request): \Illuminate\Http\Response
+    {
+        $activeYear = FiscalYear::where('is_active', true)->first() ?? FiscalYear::orderBy('year', 'desc')->first();
+        $selectedYearId = $request->input('fiscal_year_id', $activeYear?->id);
+        $fiscalYear = FiscalYear::where('id', $selectedYearId)->first();
+
+        $tree = $this->buildPokTree($selectedYearId ? (int) $selectedYearId : null);
+
+        $totalPagu = (float) array_sum(array_column($tree, 'pagu'));
+        $totalRealisasi = (float) array_sum(array_column($tree, 'realisasi'));
+        $totalSisa = $totalPagu - $totalRealisasi;
+
+        $pdf = Pdf::loadView('pdf.rekap-output', compact('tree', 'fiscalYear', 'totalPagu', 'totalRealisasi', 'totalSisa'))
+            ->setPaper('a4', 'landscape');
+
+        $yearName = $fiscalYear !== null ? (string) $fiscalYear->year : '';
+
+        return $pdf->stream('laporan-rekap-output-'.$yearName.'.pdf');
+    }
+
+    public function downloadPdfRekapKomponen(Request $request): \Illuminate\Http\Response
+    {
+        $activeYear = FiscalYear::where('is_active', true)->first() ?? FiscalYear::orderBy('year', 'desc')->first();
+        $selectedYearId = $request->input('fiscal_year_id', $activeYear?->id);
+        $fiscalYear = FiscalYear::where('id', $selectedYearId)->first();
+
+        $tree = $this->buildPokTree($selectedYearId ? (int) $selectedYearId : null);
+
+        $totalPagu = (float) array_sum(array_column($tree, 'pagu'));
+        $totalRealisasi = (float) array_sum(array_column($tree, 'realisasi'));
+        $totalSisa = $totalPagu - $totalRealisasi;
+
+        $pdf = Pdf::loadView('pdf.rekap-komponen', compact('tree', 'fiscalYear', 'totalPagu', 'totalRealisasi', 'totalSisa'))
+            ->setPaper('a4', 'landscape');
+
+        $yearName = $fiscalYear !== null ? (string) $fiscalYear->year : '';
+
+        return $pdf->stream('laporan-rekap-komponen-'.$yearName.'.pdf');
     }
 }
