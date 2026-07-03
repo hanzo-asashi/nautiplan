@@ -15,6 +15,9 @@ use Illuminate\Support\Carbon;
  * @property float $unit_price
  * @property float $tax_pph21
  * @property bool $tax_pph21_mixed
+ * @property float $tax_pph22
+ * @property float $tax_pph23
+ * @property float $tax_ppn
  * @property string|null $remarks
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -29,6 +32,9 @@ class RealizationItem extends Model
         'unit_price',
         'tax_pph21',
         'tax_pph21_mixed',
+        'tax_pph22',
+        'tax_pph23',
+        'tax_ppn',
         'remarks',
     ];
 
@@ -42,6 +48,9 @@ class RealizationItem extends Model
             'unit_price' => 'decimal:2',
             'tax_pph21' => 'decimal:2',
             'tax_pph21_mixed' => 'boolean',
+            'tax_pph22' => 'decimal:2',
+            'tax_pph23' => 'decimal:2',
+            'tax_ppn' => 'decimal:2',
         ];
     }
 

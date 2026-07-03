@@ -139,6 +139,12 @@ class BudgetController extends Controller
             'ba_penyerahan_date' => 'nullable|date',
             'sp2d_number' => 'nullable|string|max:100',
             'sp2d_date' => 'nullable|date',
+            'spp_number' => 'nullable|string|max:100',
+            'spp_date' => 'nullable|date',
+            'spm_number' => 'nullable|string|max:100',
+            'spm_date' => 'nullable|date',
+            'sptjb_number' => 'nullable|string|max:100',
+            'sptjb_date' => 'nullable|date',
 
             // Pengadaan
             'procurement_type' => 'nullable|required_if:realization_type,surat_pesanan|string|in:surat_pesanan,spk',
@@ -169,6 +175,9 @@ class BudgetController extends Controller
             'items.*.unit_price' => 'required|numeric|min:0',
             'items.*.tax_pph21' => 'nullable|numeric|min:0',
             'items.*.tax_pph21_mixed' => 'nullable|boolean',
+            'items.*.tax_pph22' => 'nullable|numeric|min:0',
+            'items.*.tax_pph23' => 'nullable|numeric|min:0',
+            'items.*.tax_ppn' => 'nullable|numeric|min:0',
             'items.*.remarks' => 'nullable|string',
         ]);
 
@@ -229,6 +238,12 @@ class BudgetController extends Controller
                 'ba_penyerahan_date' => $validated['ba_penyerahan_date'] ?? null,
                 'sp2d_number' => $validated['sp2d_number'] ?? null,
                 'sp2d_date' => $validated['sp2d_date'] ?? null,
+                'spp_number' => $validated['spp_number'] ?? null,
+                'spp_date' => $validated['spp_date'] ?? null,
+                'spm_number' => $validated['spm_number'] ?? null,
+                'spm_date' => $validated['spm_date'] ?? null,
+                'sptjb_number' => $validated['sptjb_number'] ?? null,
+                'sptjb_date' => $validated['sptjb_date'] ?? null,
                 'verified_by' => null,
                 'verified_at' => null,
             ]);
@@ -242,6 +257,9 @@ class BudgetController extends Controller
                     'unit_price' => $item['unit_price'],
                     'tax_pph21' => $item['tax_pph21'] ?? 0,
                     'tax_pph21_mixed' => $item['tax_pph21_mixed'] ?? false,
+                    'tax_pph22' => $item['tax_pph22'] ?? 0,
+                    'tax_pph23' => $item['tax_pph23'] ?? 0,
+                    'tax_ppn' => $item['tax_ppn'] ?? 0,
                     'remarks' => $item['remarks'] ?? null,
                 ]);
             }

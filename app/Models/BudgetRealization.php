@@ -27,6 +27,12 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $ba_penyerahan_date
  * @property string|null $sp2d_number
  * @property Carbon|null $sp2d_date
+ * @property string|null $spp_number
+ * @property Carbon|null $spp_date
+ * @property string|null $spm_number
+ * @property Carbon|null $spm_date
+ * @property string|null $sptjb_number
+ * @property Carbon|null $sptjb_date
  * @property int|null $verified_by
  * @property Carbon|null $verified_at
  * @property Carbon|null $created_at
@@ -50,6 +56,12 @@ class BudgetRealization extends Model
         'ba_penyerahan_date',
         'sp2d_number',
         'sp2d_date',
+        'spp_number',
+        'spp_date',
+        'spm_number',
+        'spm_date',
+        'sptjb_number',
+        'sptjb_date',
         'verified_by',
         'verified_at',
     ];
@@ -66,6 +78,9 @@ class BudgetRealization extends Model
             'bap_date' => 'date',
             'ba_penyerahan_date' => 'date',
             'sp2d_date' => 'date',
+            'spp_date' => 'date',
+            'spm_date' => 'date',
+            'sptjb_date' => 'date',
             'verified_at' => 'datetime',
         ];
     }

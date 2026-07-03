@@ -89,6 +89,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('reports/realization/{realization}/bast', [ReportController::class, 'downloadPdfBast'])->name('reports.realization.bast');
     Route::get('reports/realization/{realization}/bap', [ReportController::class, 'downloadPdfBap'])->name('reports.realization.bap');
     Route::get('reports/realization/{realization}/kwitansi', [ReportController::class, 'downloadPdfKwitansi'])->name('reports.realization.kwitansi');
+    Route::get('reports/realization/{realization}/spp', [ReportController::class, 'downloadPdfSpp'])->name('reports.realization.spp');
+    Route::get('reports/realization/{realization}/spm', [ReportController::class, 'downloadPdfSpm'])->name('reports.realization.spm');
+    Route::get('reports/realization/{realization}/sptjb', [ReportController::class, 'downloadPdfSptjb'])->name('reports.realization.sptjb');
+    Route::get('reports/realization/{realization}/ssp', [ReportController::class, 'downloadPdfSsp'])->name('reports.realization.ssp');
     Route::get('reports/non-procurement/pdf', [ReportController::class, 'downloadPdfNonProcurement'])->name('reports.non-procurement.pdf');
     Route::get('reports/vendor/pdf', [ReportController::class, 'downloadPdfVendor'])->name('reports.vendor.pdf');
 
