@@ -9,6 +9,7 @@ use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
+ * @property int|null $sub_component_id
  * @property int $activity_id
  * @property string $budget_category
  * @property string $description
@@ -22,6 +23,7 @@ class ActivityBudget extends Model
 {
     protected $fillable = [
         'activity_id',
+        'sub_component_id',
         'budget_category',
         'account_code',
         'account_name',
@@ -48,6 +50,22 @@ class ActivityBudget extends Model
     public function activity(): BelongsTo
     {
         return $this->belongsTo(Activity::class);
+    }
+
+    /**
+     * @return BelongsTo<SubComponent, $this>
+     */
+    public function subComponent(): BelongsTo
+    {
+        return $this->belongsTo(SubComponent::class);
+    }
+
+    /**
+     * @return HasMany<BudgetItem, $this>
+     */
+    public function budgetItems(): HasMany
+    {
+        return $this->hasMany(BudgetItem::class);
     }
 
     /**
