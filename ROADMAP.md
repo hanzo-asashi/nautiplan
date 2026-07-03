@@ -109,37 +109,56 @@ Guna menyelaraskan sistem dengan kebutuhan administrasi Pejabat Pembuat Komitmen
 **Goal**: Membangun relasi hirarki terstruktur standar DIPA/POK dan rincian item rencana anggaran.
 
 #### Deliverables
+
 - **Database Migrations**:
-  - Tabel `outputs` (Kode, Nama, Kegiatan ID)
-  - Tabel `sub_outputs` (Kode, Nama, Output ID)
-  - Tabel `components` (Kode, Nama, Sub Output ID)
-  - Tabel `sub_components` (Kode, Nama, Komponen ID)
-  - Tabel `budget_items` (Volume, Satuan, Harga Satuan, Total, Akun/ActivityBudget ID)
+    - Tabel `outputs` (Kode, Nama, Kegiatan ID)
+    - Tabel `sub_outputs` (Kode, Nama, Output ID)
+    - Tabel `components` (Kode, Nama, Sub Output ID)
+    - Tabel `sub_components` (Kode, Nama, Komponen ID)
+    - Tabel `budget_items` (Volume, Satuan, Harga Satuan, Total, Akun/ActivityBudget ID)
 - **Eloquent Models & Relations**:
-  - Model baru: `Output`, `SubOutput`, `Component`, `SubComponent`, `BudgetItem`
-  - Relasi dari `Program` $\rightarrow$ `Activity` $\rightarrow$ `Output` $\rightarrow$ `SubOutput` $\rightarrow$ `Component` $\rightarrow$ `SubComponent` $\rightarrow$ `ActivityBudget` $\rightarrow$ `BudgetItem`
+    - Model baru: `Output`, `SubOutput`, `Component`, `SubComponent`, `BudgetItem`
+    - Relasi dari `Program` $\rightarrow$ `Activity` $\rightarrow$ `Output` $\rightarrow$ `SubOutput` $\rightarrow$ `Component` $\rightarrow$ `SubComponent` $\rightarrow$ `ActivityBudget` $\rightarrow$ `BudgetItem`
 - **Seeder Integration**:
-  - Parser/Seeder rill dari file `docs/MATRIKS REVSI - POK BLU 14 Mei 2025 (Saldo Awal).xlsx` sheet `BLU REV 5`.
+    - Parser/Seeder rill dari file `docs/MATRIKS REVSI - POK BLU 14 Mei 2025 (Saldo Awal).xlsx` sheet `BLU REV 5`.
 
 ### Extension Phase 2 — Administrasi Pencairan SPP, SPM, SPTJB, & SSP Pajak ✅ Complete
 
 **Goal**: Membuat formulir pengajuan pembayaran dan pemotongan pajak PPh 22/23 lengkap dengan bukti setoran.
 
 #### Deliverables
+
 - Input opsi pajak PPh 22 dan PPh 23 pada form realisasi item.
 - Template cetak PDF untuk:
-  - Surat Permintaan Pembayaran (SPP)
-  - Surat Perintah Membayar (SPM)
-  - Surat Pernyataan Tanggung Jawab Belanja (SPTJB)
-  - Surat Setoran Pajak (SSP)
+    - Surat Permintaan Pembayaran (SPP)
+    - Surat Perintah Membayar (SPM)
+    - Surat Pernyataan Tanggung Jawab Belanja (SPTJB)
+    - Surat Setoran Pajak (SSP)
 
-### Extension Phase 3 — Laporan Monev Struktur DIPA APBN (Current) 🔄 In Progress
+### Extension Phase 3 — Laporan Monev Struktur DIPA APBN ✅ Complete
 
 **Goal**: Menghasilkan cetakan rekapitulasi realisasi per Output, Sub Output, Komponen, dan Sub Komponen.
 
 #### Deliverables
+
 - Cetak PDF Realisasi per Output & Sub Output.
 - Cetak PDF Realisasi per Komponen & Sub Komponen (baik rekapitulasi ringkas maupun detail rincian barang).
+
+### Extension Phase 4 — Pengembangan Lanjutan & Perbaikan Celah (Gaps) 🔄 Planned
+
+**Goal**: Menyempurnakan sistem monitoring dengan audit preventif, pelacakan histori revisi anggaran, dan visualisasi analisis penyerapan.
+
+#### Deliverables
+
+- **Pelacakan Revisi POK (Semula vs Menjadi)**:
+    - Membuat tabel `budget_revisions` dan `budget_revision_details` untuk merekam snapshot data pagu lama ("Semula") dan data setelah direvisi ("Menjadi").
+    - Menghasilkan laporan komparatif revisi POK per Akun/Kegiatan untuk mempermudah audit pergeseran anggaran.
+- **Validasi Item-Level Budgeting (Audit Preventif)**:
+    - Menambahkan validasi ketat saat pembuatan realisasi baru agar membandingkan realisasi rincian belanja (`realization_items`) dengan rencana standar di POK (`budget_items`).
+    - Menolak transaksi secara preventif jika harga satuan melebihi standard rencana (_mark-up_ prevention) atau jika volume kuantitas melebihi sisa rencana.
+- **Visualisasi Tren Realisasi & Dashboard Monev**:
+    - Menyediakan widget grafik interaktif (tren bulanan/triwulanan, diagram penyerapan per unit kerja).
+    - Sistem peringatan dini (_early warning system_) untuk pagu kritis atau penyerapan di bawah target.
 
 ---
 
