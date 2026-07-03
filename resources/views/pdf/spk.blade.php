@@ -159,33 +159,33 @@
         <tr>
             <td class="spk-title-box">
                 <div class="font-bold">Paket Pekerjaan :</div>
-                <div style="margin-bottom: 10px;">{{ $realization->procurement->title ?? $realization->description }}</div>
+                <div style="margin-bottom: 10px;">{{ $realization->procurement?->title ?? $realization->description }}</div>
                 <div class="spk-title">SURAT PERINTAH KERJA (SPK)</div>
             </td>
             <td>
                 <div class="spk-meta-row">
                     <span class="spk-meta-label">Memperhatikan Nota Dinas Nomor</span>
-                    <span>: {{ $realization->procurement->nota_dinas_number ?? '-' }}</span>
+                    <span>: {{ $realization->procurement?->nota_dinas_number ?? '-' }}</span>
                 </div>
                 <div class="spk-meta-row" style="margin-bottom: 8px;">
                     <span class="spk-meta-label">Tanggal Nota Dinas</span>
-                    <span>: {{ $realization->procurement->nota_dinas_date ? \Carbon\Carbon::parse($realization->procurement->nota_dinas_date)->format('d December Y') : '-' }}</span>
+                    <span>: {{ $realization->procurement?->nota_dinas_date ? \Carbon\Carbon::parse($realization->procurement->nota_dinas_date)->format('d December Y') : '-' }}</span>
                 </div>
                 <div class="spk-meta-row">
                     <span class="spk-meta-label">Dan berdasarkan BA HP Langsung</span>
-                    <span>: {{ $realization->procurement->ba_pl_number ?? '-' }}</span>
+                    <span>: {{ $realization->procurement?->ba_pl_number ?? '-' }}</span>
                 </div>
                 <div class="spk-meta-row" style="margin-bottom: 8px;">
                     <span class="spk-meta-label">Tanggal BA HP Langsung</span>
-                    <span>: {{ $realization->procurement->ba_pl_date ? \Carbon\Carbon::parse($realization->procurement->ba_pl_date)->format('d December Y') : '-' }}</span>
+                    <span>: {{ $realization->procurement?->ba_pl_date ? \Carbon\Carbon::parse($realization->procurement->ba_pl_date)->format('d December Y') : '-' }}</span>
                 </div>
                 <div class="spk-meta-row">
                     <span class="spk-meta-label font-bold">SURAT PERINTAH KERJA (SPK)</span>
-                    <span class="font-bold">: {{ $realization->procurement->document_number ?? '-' }}</span>
+                    <span class="font-bold">: {{ $realization->procurement?->document_number ?? '-' }}</span>
                 </div>
                 <div class="spk-meta-row">
                     <span class="spk-meta-label">Tanggal SPK</span>
-                    <span>: {{ $realization->procurement->document_date ? \Carbon\Carbon::parse($realization->procurement->document_date)->format('d December Y') : '-' }}</span>
+                    <span>: {{ $realization->procurement?->document_date ? \Carbon\Carbon::parse($realization->procurement->document_date)->format('d December Y') : '-' }}</span>
                 </div>
             </td>
         </tr>
@@ -198,7 +198,7 @@
         </div>
         <div class="spk-meta-row">
             <span style="display: inline-block; width: 100px;" class="font-bold">Waktu Pelaksanaan :</span>
-            <span>{{ $realization->procurement->work_duration ?? '-' }}</span>
+            <span>{{ $realization->procurement?->work_duration ?? '-' }}</span>
         </div>
     </div>
 
@@ -282,15 +282,15 @@
                 <div>Untuk dan atas nama Poltekpel Barombong</div>
                 <div class="font-bold">Pejabat Pembuat Komitmen (PPK) BLU</div>
                 <div class="signature-space"></div>
-                <div class="font-bold" style="text-decoration: underline;">{{ $realization->procurement->ppk->name ?? 'ARNALDY ACHMADITA A., S.T., M.T' }}</div>
-                <div>NIP. {{ $realization->procurement->ppk->employee_id ?? '19800123 200912 1 002' }}</div>
-                <div style="font-size: 8px; color: #555;">{{ $realization->procurement->ppk->rank ?? 'Penata (III/c)' }}</div>
+                <div class="font-bold" style="text-decoration: underline;">{{ $realization->procurement?->ppk?->name ?? 'ARNALDY ACHMADITA A., S.T., M.T' }}</div>
+                <div>NIP. {{ $realization->procurement?->ppk?->employee_id ?? '19800123 200912 1 002' }}</div>
+                <div style="font-size: 8px; color: #555;">{{ $realization->procurement?->ppk?->rank ?? 'Penata (III/c)' }}</div>
             </td>
             <td>
                 <div>Untuk dan atas nama Penyedia</div>
-                <div class="font-bold">{{ $realization->procurement->vendor->name ?? 'CV. YUSHAR' }}</div>
+                <div class="font-bold">{{ $realization->procurement?->vendor?->name ?? 'CV. YUSHAR' }}</div>
                 <div class="signature-space"></div>
-                <div class="font-bold" style="text-decoration: underline;">{{ $realization->procurement->vendor->bank_account_name ?? 'HARUDDIN' }}</div>
+                <div class="font-bold" style="text-decoration: underline;">{{ $realization->procurement?->vendor?->bank_account_name ?? 'HARUDDIN' }}</div>
                 <div style="font-size: 9px; color: #555;">Direktur / Penanggung Jawab</div>
             </td>
         </tr>

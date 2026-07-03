@@ -171,13 +171,13 @@
             <td style="width: 5%;">I.</td>
             <td style="width: 15%;" class="font-bold">Nama</td>
             <td style="width: 3%;">:</td>
-            <td style="width: 77%; font-bold">{{ $realization->procurement->ppk->name ?? 'ARNALDY ACHMADITA A., S.T., M.T' }}</td>
+            <td style="width: 77%; font-bold">{{ $realization->procurement?->ppk?->name ?? 'ARNALDY ACHMADITA A., S.T., M.T' }}</td>
         </tr>
         <tr>
             <td></td>
             <td class="font-bold">NIP</td>
             <td>:</td>
-            <td>{{ $realization->procurement->ppk->employee_id ?? '19800123 200912 1 002' }}</td>
+            <td>{{ $realization->procurement?->ppk?->employee_id ?? '19800123 200912 1 002' }}</td>
         </tr>
         <tr>
             <td></td>
@@ -194,19 +194,19 @@
             <td style="padding-top: 8px;">II.</td>
             <td style="width: 15%; padding-top: 8px;" class="font-bold">Nama</td>
             <td style="width: 3%; padding-top: 8px;">:</td>
-            <td style="width: 77%; font-bold; padding-top: 8px;">{{ $realization->procurement->vendor->bank_account_name ?? 'HARUDDIN' }}</td>
+            <td style="width: 77%; font-bold; padding-top: 8px;">{{ $realization->procurement?->vendor?->bank_account_name ?? 'HARUDDIN' }}</td>
         </tr>
         <tr>
             <td></td>
             <td class="font-bold">Jabatan</td>
             <td>:</td>
-            <td>Direktur / Penyedia {{ $realization->procurement->vendor->name ?? 'CV. YUSHAR' }}</td>
+            <td>Direktur / Penyedia {{ $realization->procurement?->vendor?->name ?? 'CV. YUSHAR' }}</td>
         </tr>
         <tr>
             <td></td>
             <td class="font-bold">Alamat</td>
             <td>:</td>
-            <td>{{ $realization->procurement->vendor->address ?? '-' }}</td>
+            <td>{{ $realization->procurement?->vendor?->address ?? '-' }}</td>
         </tr>
         <tr>
             <td></td>
@@ -215,7 +215,7 @@
     </table>
 
     <div class="paragraph" style="text-indent: 0;">
-        Kedua belah pihak menyetujui untuk menerima/menyerahkan barang-barang sesuai {{ strtoupper($realization->procurement->procurement_type ?? 'Surat Pesanan') }} Nomor {{ $realization->procurement->document_number ?? '-' }} tanggal {{ $realization->procurement->document_date ? \Carbon\Carbon::parse($realization->procurement->document_date)->format('d December Y') : '-' }} sebagai berikut :
+        Kedua belah pihak menyetujui untuk menerima/menyerahkan barang-barang sesuai {{ strtoupper($realization->procurement?->procurement_type ?? 'Surat Pesanan') }} Nomor {{ $realization->procurement?->document_number ?? '-' }} tanggal {{ ($realization->procurement?->document_date) ? \Carbon\Carbon::parse($realization->procurement->document_date)->format('d December Y') : '-' }} sebagai berikut :
     </div>
 
     <!-- Items Table -->
@@ -257,16 +257,16 @@
             <td class="text-center">
                 <div>PIHAK PERTAMA</div>
                 <div class="signature-space"></div>
-                <div class="font-bold" style="text-decoration: underline;">{{ $realization->procurement->ppk->name ?? 'ARNALDY ACHMADITA A., S.T., M.T' }}</div>
-                <div>NIP. {{ $realization->procurement->ppk->employee_id ?? '19800123 200912 1 002' }}</div>
-                <div style="font-size: 8px; color: #555;">{{ $realization->procurement->ppk->rank ?? 'Penata (III/c)' }}</div>
+                <div class="font-bold" style="text-decoration: underline;">{{ $realization->procurement?->ppk?->name ?? 'ARNALDY ACHMADITA A., S.T., M.T' }}</div>
+                <div>NIP. {{ $realization->procurement?->ppk?->employee_id ?? '19800123 200912 1 002' }}</div>
+                <div style="font-size: 8px; color: #555;">{{ $realization->procurement?->ppk?->rank ?? 'Penata (III/c)' }}</div>
             </td>
             <td class="text-center">
                 <div>Makassar, {{ $bastDate->format('d M Y') }}</div>
                 <div>PIHAK KEDUA</div>
                 <div class="signature-space"></div>
-                <div class="font-bold" style="text-decoration: underline;">{{ $realization->procurement->vendor->bank_account_name ?? 'HARUDDIN' }}</div>
-                <div>Direktur {{ $realization->procurement->vendor->name ?? 'CV. YUSHAR' }}</div>
+                <div class="font-bold" style="text-decoration: underline;">{{ $realization->procurement?->vendor?->bank_account_name ?? 'HARUDDIN' }}</div>
+                <div>Direktur {{ $realization->procurement?->vendor?->name ?? 'CV. YUSHAR' }}</div>
             </td>
         </tr>
     </table>

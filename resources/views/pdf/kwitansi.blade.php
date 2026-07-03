@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <title>Kwitansi Pembayaran - {{ $realization->receipt_number }}</title>
@@ -8,6 +9,7 @@
             size: A4 landscape;
             margin: 40px;
         }
+
         body {
             font-family: Arial, sans-serif;
             font-size: 11px;
@@ -16,11 +18,13 @@
             margin: 0;
             padding: 0;
         }
+
         .kwitansi-header-table {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 20px;
         }
+
         .kwitansi-title {
             font-size: 16px;
             font-weight: bold;
@@ -29,35 +33,43 @@
             letter-spacing: 0.5px;
             width: 60%;
         }
+
         .kwitansi-meta {
             width: 40%;
             font-size: 10.5px;
             border-collapse: collapse;
         }
+
         .kwitansi-meta td {
             padding: 3px 6px;
             vertical-align: top;
         }
+
         .main-form-table {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 25px;
         }
+
         .main-form-table td {
             padding: 6px 8px;
             vertical-align: top;
         }
+
         .main-form-table td.label {
             width: 18%;
             font-weight: bold;
         }
+
         .main-form-table td.colon {
             width: 2%;
             text-align: center;
         }
+
         .main-form-table td.val {
             width: 80%;
         }
+
         .amount-box {
             font-size: 14px;
             font-weight: bold;
@@ -66,46 +78,52 @@
             padding: 5px 12px;
             display: inline-block;
         }
+
         .terbilang-text {
             font-style: italic;
             font-weight: bold;
             text-transform: capitalize;
         }
+
         .signature-table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 30px;
         }
+
         .signature-table td {
             width: 50%;
             text-align: center;
             vertical-align: top;
             padding: 5px;
         }
+
         .signature-space {
             height: 60px;
         }
+
         .font-bold {
             font-weight: bold;
         }
     </style>
 </head>
+
 <body>
 
     @php
         $realDate = \Carbon\Carbon::parse($realization->realization_date);
         $fiscalYear = $realization->activityBudget->activity->fiscalYear->year ?? '2026';
-        
-        $kpaName = $realization->procurement->kpa->name ?? 'Capt. SIDROTUL MUNTAHA, M.Si., M.Mar';
-        $kpaNip = $realization->procurement->kpa->employee_id ?? '19670712 199808 1 001';
-        $kpaRank = $realization->procurement->kpa->rank ?? 'Pembina Tk.I (IV/b)';
-        
-        $vendorDirector = $realization->procurement->vendor->bank_account_name ?? 'M. SUTANTO IDRIS, S.Pd';
-        $vendorName = $realization->procurement->vendor->name ?? 'CV. TEKSAS JAYA PERKASA';
-        
-        $spNumber = $realization->procurement->document_number ?? 'PL.107/67/7/POLTEKPEL.B/2024';
-        $spDate = $realization->procurement->document_date ? \Carbon\Carbon::parse($realization->procurement->document_date)->format('d December Y') : '12 Desember 2024';
-        
+
+        $kpaName = $realization->procurement?->kpa?->name ?? 'Capt. SIDROTUL MUNTAHA, M.Si., M.Mar';
+        $kpaNip = $realization->procurement?->kpa?->employee_id ?? '19670712 199808 1 001';
+        $kpaRank = $realization->procurement?->kpa?->rank ?? 'Pembina Tk.I (IV/b)';
+
+        $vendorDirector = $realization->procurement?->vendor?->bank_account_name ?? 'M. SUTANTO IDRIS, S.Pd';
+        $vendorName = $realization->procurement?->vendor?->name ?? 'CV. TEKSAS JAYA PERKASA';
+
+        $spNumber = $realization->procurement?->document_number ?? 'PL.107/67/7/POLTEKPEL.B/2024';
+        $spDate = ($realization->procurement?->document_date) ? \Carbon\Carbon::parse($realization->procurement->document_date)->format('d December Y') : '12 Desember 2024';
+
         $bastNumber = $realization->bast_number ?? 'PL.109/57/22/POLTEKPEL.B-2024';
         $bastDate = $realization->bast_date ? \Carbon\Carbon::parse($realization->bast_date)->format('d December Y') : '16 Desember 2024';
 
@@ -167,7 +185,10 @@
             <td class="label">Untuk Pembayaran</td>
             <td class="colon">:</td>
             <td class="val" style="text-align: justify;">
-                {{ $realization->description }} pada Politeknik Pelayaran Barombong, sesuai {{ strtoupper($realization->procurement->procurement_type ?? 'Surat Pesanan') }} No. {{ $spNumber }} tanggal {{ $spDate }} dan Berita Acara Serah Terima Barang No. {{ $bastNumber }} tanggal {{ $bastDate }} pada tahun anggaran {{ $fiscalYear }}.
+                {{ $realization->description }} pada Politeknik Pelayaran Barombong, sesuai
+                {{ strtoupper($realization->procurement?->procurement_type ?? 'Surat Pesanan') }} No. {{ $spNumber }}
+                tanggal {{ $spDate }} dan Berita Acara Serah Terima Barang No. {{ $bastNumber }} tanggal {{ $bastDate }}
+                pada tahun anggaran {{ $fiscalYear }}.
             </td>
         </tr>
     </table>
@@ -193,9 +214,12 @@
         </tr>
     </table>
 
-    <div style="margin-top: 50px; border-top: 1px dashed #cbd5e1; padding-top: 8px; text-align: center; font-size: 8px; color: #64748b;">
-        Dokumen kwitansi ini dibuat dan diverifikasi secara digital melalui **Sistem Informasi & Monitoring Realisasi PPK (SIM-PPK) Politeknik Pelayaran Barombong**.
+    <div
+        style="margin-top: 50px; border-top: 1px dashed #cbd5e1; padding-top: 8px; text-align: center; font-size: 8px; color: #64748b;">
+        Dokumen kwitansi ini dibuat dan diverifikasi secara digital melalui **Sistem Informasi & Monitoring Realisasi
+        PPK (NAUTIPLAN) Politeknik Pelayaran Barombong**.
     </div>
 
 </body>
+
 </html>

@@ -232,3 +232,35 @@ test('user can download normalized PDFs', function () {
     $response->assertSuccessful();
     $response->assertHeader('content-type', 'application/pdf');
 });
+
+test('user can download PDFs even if the realization has no procurement', function () {
+    $realization = BudgetRealization::create([
+        'activity_budget_id' => $this->budget->id,
+        'procurement_id' => null,
+        'realization_type' => 'non_pengadaan',
+        'amount' => 1500000,
+        'realization_date' => '2026-07-02',
+        'description' => 'Pembelian ATK Swakelola',
+        'receipt_number' => 'KWT-999-SW',
+    ]);
+
+    // Test SPK
+    $response = $this->actingAs($this->user)->get(route('reports.realization.spk', $realization));
+    $response->assertSuccessful();
+    $response->assertHeader('content-type', 'application/pdf');
+
+    // Test BAST
+    $response = $this->actingAs($this->user)->get(route('reports.realization.bast', $realization));
+    $response->assertSuccessful();
+    $response->assertHeader('content-type', 'application/pdf');
+
+    // Test BAP
+    $response = $this->actingAs($this->user)->get(route('reports.realization.bap', $realization));
+    $response->assertSuccessful();
+    $response->assertHeader('content-type', 'application/pdf');
+
+    // Test Kwitansi
+    $response = $this->actingAs($this->user)->get(route('reports.realization.kwitansi', $realization));
+    $response->assertSuccessful();
+    $response->assertHeader('content-type', 'application/pdf');
+});

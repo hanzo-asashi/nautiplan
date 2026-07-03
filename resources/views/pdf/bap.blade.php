@@ -140,13 +140,13 @@
         
         $dateSpelled = trim("{$daySpelled} bulan {$monthName} tahun {$yearSpelled}");
         
-        $kpaName = $realization->procurement->kpa->name ?? 'Capt. SIDROTUL MUNTAHA, M.Si., M.Mar';
-        $kpaNip = $realization->procurement->kpa->employee_id ?? '19670712 199808 1 001';
-        $kpaRank = $realization->procurement->kpa->rank ?? 'Pembina Tk.I (IV/b)';
+        $kpaName = $realization->procurement?->kpa?->name ?? 'Capt. SIDROTUL MUNTAHA, M.Si., M.Mar';
+        $kpaNip = $realization->procurement?->kpa?->employee_id ?? '19670712 199808 1 001';
+        $kpaRank = $realization->procurement?->kpa?->rank ?? 'Pembina Tk.I (IV/b)';
         
-        $vendorDirector = $realization->procurement->vendor->bank_account_name ?? 'M. SUTANTO IDRIS, S.Pd';
-        $vendorName = $realization->procurement->vendor->name ?? 'CV. TEKSAS JAYA PERKASA';
-        $vendorAddress = $realization->procurement->vendor->address ?? 'JL. TIDUNG IV SETAPAK 2 NO. 96 MAKASSAR';
+        $vendorDirector = $realization->procurement?->vendor?->bank_account_name ?? 'M. SUTANTO IDRIS, S.Pd';
+        $vendorName = $realization->procurement?->vendor?->name ?? 'CV. TEKSAS JAYA PERKASA';
+        $vendorAddress = $realization->procurement?->vendor?->address ?? 'JL. TIDUNG IV SETAPAK 2 NO. 96 MAKASSAR';
         
         $baPenyerahanNumber = $realization->ba_penyerahan_number ?? 'PL.109/57/22/POLTEKPEL.B-2024';
         $baPenyerahanDate = $realization->ba_penyerahan_date ? \Carbon\Carbon::parse($realization->ba_penyerahan_date)->format('d M Y') : '16 Desember 2024';
@@ -231,7 +231,7 @@
     </table>
 
     <div class="paragraph" style="text-indent: 0;">
-        Berdasarkan Berita Acara Penyerahan Barang Nomor : {{ $baPenyerahanNumber }} tanggal {{ $baPenyerahanDate }} tentang {{ $realization->procurement->title ?? $realization->description }} yang dilaksanakan PIHAK KEDUA dan telah memenuhi syarat untuk menerima pembayaran sekaligus sebesar Rp. {{ number_format($realization->amount, 0, ',', '.') }} (<span style="font-style: italic;">{{ $terbilang }}</span>).
+        Berdasarkan Berita Acara Penyerahan Barang Nomor : {{ $baPenyerahanNumber }} tanggal {{ $baPenyerahanDate }} tentang {{ $realization->procurement?->title ?? $realization->description }} yang dilaksanakan PIHAK KEDUA dan telah memenuhi syarat untuk menerima pembayaran sekaligus sebesar Rp. {{ number_format($realization->amount, 0, ',', '.') }} (<span style="font-style: italic;">{{ $terbilang }}</span>).
     </div>
 
     <!-- Calculations Table -->
@@ -254,7 +254,7 @@
     </table>
 
     <div class="paragraph" style="text-indent: 0; margin-top: 10px;">
-        Yakni dibayarkan sekaligus melalui Bank {{ $realization->procurement->vendor->bank_name ?? 'BTN' }} dengan Norek {{ $realization->procurement->vendor->bank_account_number ?? '00000192-01-30-0002078' }} setelah pekerjaan tersebut mencapai 100% (seratus persen) selesai dan disertai berita acara.
+        Yakni dibayarkan sekaligus melalui Bank {{ $realization->procurement?->vendor?->bank_name ?? 'BTN' }} dengan Norek {{ $realization->procurement?->vendor?->bank_account_number ?? '00000192-01-30-0002078' }} setelah pekerjaan tersebut mencapai 100% (seratus persen) selesai dan disertai berita acara.
     </div>
     
     <div class="paragraph" style="text-indent: 0;">
