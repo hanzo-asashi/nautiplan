@@ -35,17 +35,17 @@
     import { formatRupiah } from '@/lib/utils';
     import { deleteMethod, update } from '@/routes/budgets';
     import {
-        store as storeReal,
         verify as verifyReal,
         deleteMethod as deleteReal,
+        create as realizationCreate,
     } from '@/routes/budgets/realizations';
 
     let {
         budgets,
         units = [],
         fiscalYears = [],
-        vendors = [],
-        officers = [],
+        vendors: _vendors = [],
+        officers: _officers = [],
         summary,
         filters,
     }: {
@@ -112,202 +112,14 @@
         );
     }
 
-    // Realization modal form
-    let realizationModalOpen = $state(false);
-    let selectedBudget = $state<any>(null);
-    let activeModalTab = $state('dasar');
+    // Realization dropdown state
     let activeDropdownRealId = $state<number | null>(null);
 
-    const remainingBudget = $derived(
-        selectedBudget
-            ? selectedBudget.amount -
-                  selectedBudget.realizations.reduce(
-                      (sum: number, r: any) => sum + Number(r.amount),
-                      0,
-                  )
-            : 0,
-    );
+    // Collapsible realizations state
+    let expandedBudgets = $state<Record<number, boolean>>({});
 
-    const form = useForm({
-        activity_budget_id: '',
-        realization_type: 'non_pengadaan',
-        amount: 0,
-        realization_date: new Date().toISOString().split('T')[0],
-        description: '',
-        receipt_number: '',
-        // Dokumen pencairan
-        bast_number: '',
-        bast_date: '',
-        bap_number: '',
-        bap_date: '',
-        ba_penyerahan_number: '',
-        ba_penyerahan_date: '',
-        sp2d_number: '',
-        sp2d_date: '',
-        spp_number: '',
-        spp_date: '',
-        spm_number: '',
-        spm_date: '',
-        sptjb_number: '',
-        sptjb_date: '',
-        // Pengadaan
-        procurement_type: 'surat_pesanan',
-        procurement_title: '',
-        procurement_number: '',
-        procurement_date: '',
-        work_duration: '',
-        nota_dinas_number: '',
-        nota_dinas_date: '',
-        ba_pl_number: '',
-        ba_pl_date: '',
-        ppk_id: '',
-        kpa_id: '',
-        // Vendor
-        vendor_name: '',
-        vendor_npwp: '',
-        vendor_address: '',
-        bank_name: '',
-        bank_account_number: '',
-        bank_account_name: '',
-        // Items list
-        items: [] as Array<{
-            name: string;
-            volume: number;
-            unit: string;
-            unit_price: number;
-            tax_pph21: number;
-            tax_pph21_mixed: boolean;
-            tax_pph22: number;
-            tax_pph23: number;
-            tax_ppn: number;
-            remarks: string;
-        }>,
-    });
-
-    function addItem() {
-        form.items = [
-            ...form.items,
-            {
-                name: '',
-                volume: 1,
-                unit: 'Pcs',
-                unit_price: 0,
-                tax_pph21: 0,
-                tax_pph21_mixed: false,
-                tax_pph22: 0,
-                tax_pph23: 0,
-                tax_ppn: 0,
-                remarks: '',
-            },
-        ];
-        calculateTotal();
-    }
-
-    function removeItem(index: number) {
-        form.items = form.items.filter((_, i) => i !== index);
-        calculateTotal();
-    }
-
-    function calculateTotal() {
-        form.amount = form.items.reduce(
-            (sum, item) => sum + Number(item.volume) * Number(item.unit_price),
-            0,
-        );
-    }
-
-    function handleVendorSelect(e: Event) {
-        const target = e.target as HTMLSelectElement;
-        const selected = vendors.find((v) => v.id.toString() === target.value);
-
-        if (selected) {
-            form.vendor_name = selected.name;
-            form.vendor_npwp = selected.npwp || '';
-            form.vendor_address = selected.address || '';
-            form.bank_name = selected.bank_name || '';
-            form.bank_account_number = selected.bank_account_number || '';
-            form.bank_account_name = selected.bank_account_name || '';
-        }
-    }
-
-    function openRealizationModal(budget: any) {
-        selectedBudget = budget;
-        form.activity_budget_id = budget.id.toString();
-        form.description = budget.description;
-        form.procurement_title = budget.description;
-        form.amount = 0;
-        form.items = [
-            {
-                name: budget.description,
-                volume: 1,
-                unit: 'Paket',
-                unit_price: 0,
-                tax_pph21: 0,
-                tax_pph21_mixed: false,
-                tax_pph22: 0,
-                tax_pph23: 0,
-                tax_ppn: 0,
-                remarks: '',
-            },
-        ];
-
-        // Reset advanced fields
-        form.bast_number = '';
-        form.bast_date = '';
-        form.bap_number = '';
-        form.bap_date = '';
-        form.ba_penyerahan_number = '';
-        form.ba_penyerahan_date = '';
-        form.sp2d_number = '';
-        form.sp2d_date = '';
-        form.spp_number = '';
-        form.spp_date = '';
-        form.spm_number = '';
-        form.spm_date = '';
-        form.sptjb_number = '';
-        form.sptjb_date = '';
-        form.procurement_number = '';
-        form.procurement_date = '';
-        form.work_duration = '5 (lima) Hari Kalender';
-        form.nota_dinas_number = '';
-        form.nota_dinas_date = '';
-        form.ba_pl_number = '';
-        form.ba_pl_date = '';
-        form.ppk_id =
-            officers
-                .find((o) => o.name.toLowerCase().includes('arnaldy'))
-                ?.id?.toString() || '';
-        form.kpa_id =
-            officers
-                .find((o) => o.name.toLowerCase().includes('sidrotul'))
-                ?.id?.toString() || '';
-        form.vendor_name = '';
-        form.vendor_npwp = '';
-        form.vendor_address = '';
-        form.bank_name = '';
-        form.bank_account_number = '';
-        form.bank_account_name = '';
-
-        activeModalTab = 'dasar';
-        realizationModalOpen = true;
-    }
-
-    function handleRealizationSubmit(e: Event) {
-        e.preventDefault();
-
-        if (form.amount > remainingBudget + 1) {
-            alert(
-                'Peringatan: Nominal realisasi belanja melebihi sisa pagu anggaran yang tersedia!',
-            );
-
-            return;
-        }
-
-        form.post(toUrl(storeReal()), {
-            onSuccess: () => {
-                realizationModalOpen = false;
-                form.reset();
-            },
-        });
+    function toggleBudgetRealizations(budgetId: number) {
+        expandedBudgets[budgetId] = !expandedBudgets[budgetId];
     }
 
     function handleVerifyRealization(realId: number) {
@@ -472,7 +284,11 @@
                 {@const remaining = bud.amount - totalSpent}
 
                 <div
-                    class="rounded-xl border border-sidebar-border/50 bg-card/45 backdrop-blur-md p-6 shadow-sm space-y-4"
+                    class="rounded-xl border border-sidebar-border/50 bg-card/45 backdrop-blur-md p-6 shadow-sm space-y-4 transition-all duration-200 {bud.realizations.some(
+                        (r) => r.id === activeDropdownRealId,
+                    )
+                        ? 'relative z-50'
+                        : ''}"
                 >
                     <!-- Budget Ceiling Info -->
                     <div
@@ -547,14 +363,17 @@
                                 <div
                                     class="flex gap-2 pl-2 border-l border-sidebar-border/30"
                                 >
-                                    <button
-                                        onclick={() =>
-                                            openRealizationModal(bud)}
+                                    <Link
+                                        href={toUrl(
+                                            realizationCreate({
+                                                budget: bud.id,
+                                            }),
+                                        )}
                                         class="inline-flex h-8 items-center justify-center rounded-md bg-emerald-600 hover:bg-emerald-500 text-white px-3 text-xs font-semibold shadow-sm cursor-pointer gap-1"
                                     >
                                         <Plus class="size-3.5" />
                                         Realisasi
-                                    </button>
+                                    </Link>
                                     <button
                                         onclick={() => openEditBudgetModal(bud)}
                                         class="inline-flex h-8 w-8 items-center justify-center rounded-md border border-zinc-200/50 dark:border-zinc-800 bg-background text-primary hover:bg-primary/10 cursor-pointer"
@@ -593,279 +412,352 @@
                                 Belum ada realisasi belanja anggaran.
                             </p>
                         {:else}
-                            <div
-                                class="pl-4 border-l-2 border-emerald-500/20 space-y-3 pt-1"
+                            <button
+                                type="button"
+                                onclick={() => toggleBudgetRealizations(bud.id)}
+                                class="flex items-center justify-between w-full px-3 py-2 text-xs font-semibold text-muted-foreground hover:text-foreground bg-zinc-55 dark:bg-zinc-900/35 rounded-lg border border-zinc-200/50 dark:border-zinc-800 transition-all cursor-pointer group"
                             >
-                                {#each bud.realizations as real}
-                                    <div
-                                        class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-xs border-b border-sidebar-border/20 pb-2 last:border-0 last:pb-0"
-                                    >
-                                        <div class="space-y-0.5">
-                                            <div
-                                                class="flex items-center flex-wrap gap-2"
-                                            >
-                                                <span
-                                                    class="font-bold text-foreground"
-                                                    >{real.description}</span
+                                <span class="flex items-center gap-1.5">
+                                    <History
+                                        class="size-3.5 text-emerald-600 dark:text-emerald-500"
+                                    />
+                                    Riwayat Realisasi Anggaran ({bud
+                                        .realizations.length} Transaksi)
+                                </span>
+                                <span
+                                    class="text-[10px] text-muted-foreground group-hover:text-primary transition-colors font-medium"
+                                >
+                                    {expandedBudgets[bud.id]
+                                        ? 'Sembunyikan ▲'
+                                        : 'Tampilkan Rincian ▼'}
+                                </span>
+                            </button>
+
+                            {#if expandedBudgets[bud.id]}
+                                <div
+                                    class="pl-4 border-l-2 border-emerald-500/20 space-y-3 pt-2 mt-1 animate-in fade-in slide-in-from-top-1 duration-200"
+                                >
+                                    {#each bud.realizations as real}
+                                        <div
+                                            class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-xs border-b border-sidebar-border/20 pb-2 last:border-0 last:pb-0"
+                                        >
+                                            <div class="space-y-0.5">
+                                                <div
+                                                    class="flex items-center flex-wrap gap-2"
                                                 >
-                                                {#if real.realization_type === 'surat_pesanan'}
                                                     <span
-                                                        class="px-1.5 py-0.5 bg-emerald-100 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 rounded font-semibold text-[9px] uppercase tracking-wider"
+                                                        class="font-bold text-foreground"
+                                                        >{real.description}</span
                                                     >
-                                                        Surat Pesanan
+                                                    {#if real.realization_type === 'surat_pesanan'}
+                                                        <span
+                                                            class="px-1.5 py-0.5 bg-emerald-100 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 rounded font-semibold text-[9px] uppercase tracking-wider"
+                                                        >
+                                                            Surat Pesanan
+                                                        </span>
+                                                    {:else}
+                                                        <span
+                                                            class="px-1.5 py-0.5 bg-zinc-150 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 rounded font-semibold text-[9px] uppercase tracking-wider"
+                                                        >
+                                                            Non-Pengadaan
+                                                        </span>
+                                                    {/if}
+                                                    {#if real.receipt_number}
+                                                        <span
+                                                            class="px-1.5 py-0.5 bg-zinc-200 dark:bg-zinc-800 rounded font-mono text-[10px] text-muted-foreground"
+                                                            >Kuitansi: {real.receipt_number}</span
+                                                        >
+                                                    {/if}
+                                                </div>
+                                                <p
+                                                    class="text-[10px] text-muted-foreground"
+                                                >
+                                                    Tanggal Transaksi: {real.realization_date}
+                                                    {#if real.vendor_name}
+                                                        | Vendor: <strong
+                                                            class="text-foreground"
+                                                            >{real.vendor_name}</strong
+                                                        >
+                                                    {/if}
+                                                    {#if real.procurement_number}
+                                                        | SP: <strong
+                                                            class="text-foreground"
+                                                            >{real.procurement_number}</strong
+                                                        >
+                                                    {/if}
+                                                    {#if real.sp2d_number}
+                                                        | SP2D: <strong
+                                                            class="text-foreground"
+                                                            >{real.sp2d_number}</strong
+                                                        >
+                                                    {/if}
+                                                </p>
+                                            </div>
+
+                                            <div
+                                                class="flex items-center gap-4 shrink-0"
+                                            >
+                                                {#if real.realization_type === 'surat_pesanan'}
+                                                    <div
+                                                        class="relative inline-block text-left {activeDropdownRealId ===
+                                                        real.id
+                                                            ? 'z-50'
+                                                            : ''}"
+                                                    >
+                                                        <button
+                                                            onclick={(e) => {
+                                                                e.stopPropagation();
+                                                                activeDropdownRealId =
+                                                                    activeDropdownRealId ===
+                                                                    real.id
+                                                                        ? null
+                                                                        : real.id;
+                                                            }}
+                                                            class="inline-flex items-center gap-1 text-[10px] font-semibold text-primary hover:text-white bg-primary/10 hover:bg-primary px-2 py-1 rounded transition-colors cursor-pointer"
+                                                        >
+                                                            📄 Cetak Dokumen ▾
+                                                        </button>
+                                                        {#if activeDropdownRealId === real.id}
+                                                            <div
+                                                                class="absolute right-0 top-full mt-1 w-64 rounded-xl shadow-xl bg-card border border-zinc-200 dark:border-zinc-800 z-50 py-1.5 text-xs text-foreground divide-y divide-zinc-100 dark:divide-zinc-800/60 transition-all duration-150 origin-top-right select-none animate-in fade-in zoom-in-95"
+                                                            >
+                                                                <!-- Group 1: Pengadaan -->
+                                                                <div
+                                                                    class="py-1"
+                                                                >
+                                                                    <div
+                                                                        class="px-3 py-1 text-[9px] uppercase tracking-wider font-extrabold text-muted-foreground/80"
+                                                                    >
+                                                                        Dokumen
+                                                                        Pengadaan
+                                                                    </div>
+                                                                    <a
+                                                                        href={`/reports/realization/${real.id}/pdf`}
+                                                                        target="_blank"
+                                                                        onclick={() =>
+                                                                            (activeDropdownRealId =
+                                                                                null)}
+                                                                        class="flex items-center gap-2 px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-foreground transition-colors font-medium"
+                                                                    >
+                                                                        <span
+                                                                            >📄</span
+                                                                        > Surat Pesanan
+                                                                        (SP)
+                                                                    </a>
+                                                                    <a
+                                                                        href={`/reports/realization/${real.id}/spk`}
+                                                                        target="_blank"
+                                                                        onclick={() =>
+                                                                            (activeDropdownRealId =
+                                                                                null)}
+                                                                        class="flex items-center gap-2 px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-foreground transition-colors font-medium"
+                                                                    >
+                                                                        <span
+                                                                            >🛠️</span
+                                                                        > Surat Perintah
+                                                                        Kerja (SPK)
+                                                                    </a>
+                                                                    <a
+                                                                        href={`/reports/realization/${real.id}/bast`}
+                                                                        target="_blank"
+                                                                        onclick={() =>
+                                                                            (activeDropdownRealId =
+                                                                                null)}
+                                                                        class="flex items-center gap-2 px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-foreground transition-colors font-medium"
+                                                                    >
+                                                                        <span
+                                                                            >🤝</span
+                                                                        > BA Serah
+                                                                        Terima (BAST)
+                                                                    </a>
+                                                                    <a
+                                                                        href={`/reports/realization/${real.id}/bap`}
+                                                                        target="_blank"
+                                                                        onclick={() =>
+                                                                            (activeDropdownRealId =
+                                                                                null)}
+                                                                        class="flex items-center gap-2 px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-foreground transition-colors font-medium"
+                                                                    >
+                                                                        <span
+                                                                            >💰</span
+                                                                        > BA Pembayaran
+                                                                        (BAP)
+                                                                    </a>
+                                                                    <a
+                                                                        href={`/reports/realization/${real.id}/kwitansi`}
+                                                                        target="_blank"
+                                                                        onclick={() =>
+                                                                            (activeDropdownRealId =
+                                                                                null)}
+                                                                        class="flex items-center gap-2 px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-foreground transition-colors font-medium"
+                                                                    >
+                                                                        <span
+                                                                            >🏷️</span
+                                                                        > Kwitansi
+                                                                        Resmi
+                                                                    </a>
+                                                                </div>
+
+                                                                <!-- Group 2: Pencairan -->
+                                                                <div
+                                                                    class="py-1"
+                                                                >
+                                                                    <div
+                                                                        class="px-3 py-1 text-[9px] uppercase tracking-wider font-extrabold text-muted-foreground/80"
+                                                                    >
+                                                                        Pencairan
+                                                                        & Pajak
+                                                                    </div>
+                                                                    <a
+                                                                        href={`/reports/realization/${real.id}/spp`}
+                                                                        target="_blank"
+                                                                        onclick={() =>
+                                                                            (activeDropdownRealId =
+                                                                                null)}
+                                                                        class="flex items-center gap-2 px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-foreground transition-colors font-medium"
+                                                                    >
+                                                                        <span
+                                                                            >📄</span
+                                                                        > Cetak SPP
+                                                                    </a>
+                                                                    <a
+                                                                        href={`/reports/realization/${real.id}/spm`}
+                                                                        target="_blank"
+                                                                        onclick={() =>
+                                                                            (activeDropdownRealId =
+                                                                                null)}
+                                                                        class="flex items-center gap-2 px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-foreground transition-colors font-medium"
+                                                                    >
+                                                                        <span
+                                                                            >🏛️</span
+                                                                        > Cetak SPM
+                                                                    </a>
+                                                                    <a
+                                                                        href={`/reports/realization/${real.id}/sptjb`}
+                                                                        target="_blank"
+                                                                        onclick={() =>
+                                                                            (activeDropdownRealId =
+                                                                                null)}
+                                                                        class="flex items-center gap-2 px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-foreground transition-colors font-medium"
+                                                                    >
+                                                                        <span
+                                                                            >🤝</span
+                                                                        > Cetak SPTJB
+                                                                    </a>
+                                                                    {#if real.items && real.items.some((i) => Number(i.tax_ppn) > 0)}
+                                                                        <a
+                                                                            href={`/reports/realization/${real.id}/ssp?type=ppn`}
+                                                                            target="_blank"
+                                                                            onclick={() =>
+                                                                                (activeDropdownRealId =
+                                                                                    null)}
+                                                                            class="flex items-center gap-2 px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-foreground transition-colors font-medium"
+                                                                        >
+                                                                            <span
+                                                                                >🧾</span
+                                                                            > SSP
+                                                                            (PPN)
+                                                                        </a>
+                                                                    {/if}
+                                                                    {#if real.items && real.items.some((i) => Number(i.tax_pph22) > 0)}
+                                                                        <a
+                                                                            href={`/reports/realization/${real.id}/ssp?type=pph22`}
+                                                                            target="_blank"
+                                                                            onclick={() =>
+                                                                                (activeDropdownRealId =
+                                                                                    null)}
+                                                                            class="flex items-center gap-2 px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-foreground transition-colors font-medium"
+                                                                        >
+                                                                            <span
+                                                                                >🧾</span
+                                                                            > SSP
+                                                                            (PPh 22)
+                                                                        </a>
+                                                                    {/if}
+                                                                    {#if real.items && real.items.some((i) => Number(i.tax_pph23) > 0)}
+                                                                        <a
+                                                                            href={`/reports/realization/${real.id}/ssp?type=pph23`}
+                                                                            target="_blank"
+                                                                            onclick={() =>
+                                                                                (activeDropdownRealId =
+                                                                                    null)}
+                                                                            class="flex items-center gap-2 px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-foreground transition-colors font-medium"
+                                                                        >
+                                                                            <span
+                                                                                >🧾</span
+                                                                            > SSP
+                                                                            (PPh 23)
+                                                                        </a>
+                                                                    {/if}
+                                                                </div>
+                                                            </div>
+                                                        {/if}
+                                                    </div>
+                                                {:else}
+                                                    <a
+                                                        href={`/reports/realization/${real.id}/kwitansi`}
+                                                        target="_blank"
+                                                        class="inline-flex items-center gap-1 text-[10px] font-semibold text-zinc-600 hover:text-white bg-zinc-100 hover:bg-zinc-650 px-2 py-1 rounded transition-colors cursor-pointer dark:bg-zinc-800 dark:text-zinc-350 dark:hover:bg-zinc-700"
+                                                    >
+                                                        🏷️ Kwitansi
+                                                    </a>
+                                                {/if}
+
+                                                <span
+                                                    class="font-bold text-emerald-600 dark:text-emerald-400"
+                                                    >{formatRupiah(
+                                                        real.amount,
+                                                        true,
+                                                    )}</span
+                                                >
+
+                                                {#if real.verified_at}
+                                                    <span
+                                                        class="inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full"
+                                                    >
+                                                        <CheckCircle
+                                                            class="size-3"
+                                                        />
+                                                        Verified
                                                     </span>
                                                 {:else}
                                                     <span
-                                                        class="px-1.5 py-0.5 bg-zinc-150 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 rounded font-semibold text-[9px] uppercase tracking-wider"
+                                                        class="inline-flex items-center text-[10px] font-semibold text-amber-600 dark:text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-full"
                                                     >
-                                                        Non-Pengadaan
+                                                        Pending
                                                     </span>
-                                                {/if}
-                                                {#if real.receipt_number}
-                                                    <span
-                                                        class="px-1.5 py-0.5 bg-zinc-200 dark:bg-zinc-800 rounded font-mono text-[10px] text-muted-foreground"
-                                                        >Kuitansi: {real.receipt_number}</span
-                                                    >
-                                                {/if}
-                                            </div>
-                                            <p
-                                                class="text-[10px] text-muted-foreground"
-                                            >
-                                                Tanggal Transaksi: {real.realization_date}
-                                                {#if real.vendor_name}
-                                                    | Vendor: <strong
-                                                        class="text-foreground"
-                                                        >{real.vendor_name}</strong
-                                                    >
-                                                {/if}
-                                                {#if real.procurement_number}
-                                                    | SP: <strong
-                                                        class="text-foreground"
-                                                        >{real.procurement_number}</strong
-                                                    >
-                                                {/if}
-                                                {#if real.sp2d_number}
-                                                    | SP2D: <strong
-                                                        class="text-foreground"
-                                                        >{real.sp2d_number}</strong
-                                                    >
-                                                {/if}
-                                            </p>
-                                        </div>
-
-                                        <div
-                                            class="flex items-center gap-4 shrink-0"
-                                        >
-                                            {#if real.realization_type === 'surat_pesanan'}
-                                                <div
-                                                    class="relative inline-block text-left"
-                                                >
-                                                    <button
-                                                        onclick={(e) => {
-                                                            e.stopPropagation();
-                                                            activeDropdownRealId =
-                                                                activeDropdownRealId ===
-                                                                real.id
-                                                                    ? null
-                                                                    : real.id;
-                                                        }}
-                                                        class="inline-flex items-center gap-1 text-[10px] font-semibold text-primary hover:text-white bg-primary/10 hover:bg-primary px-2 py-1 rounded transition-colors cursor-pointer"
-                                                    >
-                                                        📄 Cetak Dokumen ▾
-                                                    </button>
-                                                    {#if activeDropdownRealId === real.id}
-                                                        <div
-                                                            class="absolute right-0 bottom-full mb-1 w-44 rounded-md shadow-lg bg-card border border-zinc-200 dark:border-zinc-800 z-50 py-1 text-xs"
+                                                    {#if isFinanceOrAdmin}
+                                                        <button
+                                                            onclick={() =>
+                                                                handleVerifyRealization(
+                                                                    real.id,
+                                                                )}
+                                                            class="text-[10px] font-semibold text-primary hover:underline cursor-pointer"
                                                         >
-                                                            <a
-                                                                href={`/reports/realization/${real.id}/pdf`}
-                                                                target="_blank"
-                                                                onclick={() =>
-                                                                    (activeDropdownRealId =
-                                                                        null)}
-                                                                class="block px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-foreground transition-colors"
-                                                            >
-                                                                📄 Cetak Surat
-                                                                Pesanan (SP)
-                                                            </a>
-                                                            <a
-                                                                href={`/reports/realization/${real.id}/spk`}
-                                                                target="_blank"
-                                                                onclick={() =>
-                                                                    (activeDropdownRealId =
-                                                                        null)}
-                                                                class="block px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-foreground transition-colors"
-                                                            >
-                                                                🛠️ Cetak Kontrak
-                                                                (SPK)
-                                                            </a>
-                                                            <a
-                                                                href={`/reports/realization/${real.id}/bast`}
-                                                                target="_blank"
-                                                                onclick={() =>
-                                                                    (activeDropdownRealId =
-                                                                        null)}
-                                                                class="block px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-foreground transition-colors"
-                                                            >
-                                                                🤝 Cetak Serah
-                                                                Terima (BAST)
-                                                            </a>
-                                                            <a
-                                                                href={`/reports/realization/${real.id}/bap`}
-                                                                target="_blank"
-                                                                onclick={() =>
-                                                                    (activeDropdownRealId =
-                                                                        null)}
-                                                                class="block px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-foreground transition-colors"
-                                                            >
-                                                                💰 Cetak BAP
-                                                                Pembayaran
-                                                            </a>
-                                                            <a
-                                                                href={`/reports/realization/${real.id}/kwitansi`}
-                                                                target="_blank"
-                                                                onclick={() =>
-                                                                    (activeDropdownRealId =
-                                                                        null)}
-                                                                class="block px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-foreground transition-colors"
-                                                            >
-                                                                🏷️ Cetak
-                                                                Kwitansi Resmi
-                                                            </a>
-                                                            <a
-                                                                href={`/reports/realization/${real.id}/spp`}
-                                                                target="_blank"
-                                                                onclick={() =>
-                                                                    (activeDropdownRealId =
-                                                                        null)}
-                                                                class="block px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-foreground transition-colors border-t border-zinc-100 dark:border-zinc-800"
-                                                            >
-                                                                📄 Cetak SPP
-                                                            </a>
-                                                            <a
-                                                                href={`/reports/realization/${real.id}/spm`}
-                                                                target="_blank"
-                                                                onclick={() =>
-                                                                    (activeDropdownRealId =
-                                                                        null)}
-                                                                class="block px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-foreground transition-colors"
-                                                            >
-                                                                🏛️ Cetak SPM
-                                                            </a>
-                                                            <a
-                                                                href={`/reports/realization/${real.id}/sptjb`}
-                                                                target="_blank"
-                                                                onclick={() =>
-                                                                    (activeDropdownRealId =
-                                                                        null)}
-                                                                class="block px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-foreground transition-colors"
-                                                            >
-                                                                🤝 Cetak SPTJB
-                                                            </a>
-                                                            {#if real.items && real.items.some((i) => Number(i.tax_ppn) > 0)}
-                                                                <a
-                                                                    href={`/reports/realization/${real.id}/ssp?type=ppn`}
-                                                                    target="_blank"
-                                                                    onclick={() =>
-                                                                        (activeDropdownRealId =
-                                                                            null)}
-                                                                    class="block px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-foreground transition-colors"
-                                                                >
-                                                                    🧾 Cetak SSP
-                                                                    (PPN)
-                                                                </a>
-                                                            {/if}
-                                                            {#if real.items && real.items.some((i) => Number(i.tax_pph22) > 0)}
-                                                                <a
-                                                                    href={`/reports/realization/${real.id}/ssp?type=pph22`}
-                                                                    target="_blank"
-                                                                    onclick={() =>
-                                                                        (activeDropdownRealId =
-                                                                            null)}
-                                                                    class="block px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-foreground transition-colors"
-                                                                >
-                                                                    🧾 Cetak SSP
-                                                                    (PPh 22)
-                                                                </a>
-                                                            {/if}
-                                                            {#if real.items && real.items.some((i) => Number(i.tax_pph23) > 0)}
-                                                                <a
-                                                                    href={`/reports/realization/${real.id}/ssp?type=pph23`}
-                                                                    target="_blank"
-                                                                    onclick={() =>
-                                                                        (activeDropdownRealId =
-                                                                            null)}
-                                                                    class="block px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-foreground transition-colors"
-                                                                >
-                                                                    🧾 Cetak SSP
-                                                                    (PPh 23)
-                                                                </a>
-                                                            {/if}
-                                                        </div>
+                                                            Verifikasi
+                                                        </button>
                                                     {/if}
-                                                </div>
-                                            {:else}
-                                                <a
-                                                    href={`/reports/realization/${real.id}/kwitansi`}
-                                                    target="_blank"
-                                                    class="inline-flex items-center gap-1 text-[10px] font-semibold text-zinc-600 hover:text-white bg-zinc-100 hover:bg-zinc-650 px-2 py-1 rounded transition-colors cursor-pointer dark:bg-zinc-800 dark:text-zinc-350 dark:hover:bg-zinc-700"
-                                                >
-                                                    🏷️ Kwitansi
-                                                </a>
-                                            {/if}
+                                                {/if}
 
-                                            <span
-                                                class="font-bold text-emerald-600 dark:text-emerald-400"
-                                                >{formatRupiah(
-                                                    real.amount,
-                                                    true,
-                                                )}</span
-                                            >
-
-                                            {#if real.verified_at}
-                                                <span
-                                                    class="inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full"
-                                                >
-                                                    <CheckCircle
-                                                        class="size-3"
-                                                    />
-                                                    Verified
-                                                </span>
-                                            {:else}
-                                                <span
-                                                    class="inline-flex items-center text-[10px] font-semibold text-amber-600 dark:text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-full"
-                                                >
-                                                    Pending
-                                                </span>
                                                 {#if isFinanceOrAdmin}
                                                     <button
                                                         onclick={() =>
-                                                            handleVerifyRealization(
+                                                            handleDeleteRealization(
                                                                 real.id,
                                                             )}
-                                                        class="text-[10px] font-semibold text-primary hover:underline cursor-pointer"
+                                                        class="text-rose-500 hover:text-rose-600 p-1 hover:bg-rose-500/10 rounded cursor-pointer"
+                                                        title="Hapus Transaksi"
                                                     >
-                                                        Verifikasi
+                                                        <Trash2
+                                                            class="size-3.5"
+                                                        />
                                                     </button>
                                                 {/if}
-                                            {/if}
-
-                                            {#if isFinanceOrAdmin}
-                                                <button
-                                                    onclick={() =>
-                                                        handleDeleteRealization(
-                                                            real.id,
-                                                        )}
-                                                    class="text-rose-500 hover:text-rose-600 p-1 hover:bg-rose-500/10 rounded cursor-pointer"
-                                                    title="Hapus Transaksi"
-                                                >
-                                                    <Trash2 class="size-3.5" />
-                                                </button>
-                                            {/if}
+                                            </div>
                                         </div>
-                                    </div>
-                                {/each}
-                            </div>
+                                    {/each}
+                                </div>
+                            {/if}
                         {/if}
                     </div>
                 </div>
@@ -898,835 +790,6 @@
         </div>
     {/if}
 </div>
-
-<!-- Modal Realisasi Form -->
-<!-- Let's write the custom HTML5 dialog form directly in Index.svelte for maximum robust form binding -->
-{#if realizationModalOpen}
-    <div
-        class="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/30 backdrop-blur-sm"
-    >
-        <div
-            class="bg-card border border-sidebar-border/50 p-6 rounded-xl shadow-xl w-full max-w-2xl max-h-[92vh] overflow-y-auto scrollbar-thin space-y-4 text-foreground"
-        >
-            <div
-                class="flex items-center justify-between border-b border-sidebar-border/20 pb-2"
-            >
-                <div>
-                    <h3 class="text-lg font-bold">Catat Realisasi Belanja</h3>
-                    <p class="text-xs text-muted-foreground">
-                        Pagu: <span class="font-bold text-foreground"
-                            >{selectedBudget?.description}</span
-                        >
-                        (Sisa Pagu:
-                        <span
-                            class="font-bold text-emerald-600 dark:text-emerald-400"
-                            >{formatRupiah(remainingBudget)}</span
-                        >)
-                    </p>
-                </div>
-                <button
-                    type="button"
-                    onclick={() => {
-                        realizationModalOpen = false;
-                        form.reset();
-                    }}
-                    class="text-muted-foreground hover:text-foreground text-sm cursor-pointer"
-                >
-                    ✕
-                </button>
-            </div>
-
-            <!-- TAB MENU -->
-            <div
-                class="flex border-b border-zinc-200 dark:border-zinc-800 text-xs font-semibold gap-1"
-            >
-                <button
-                    type="button"
-                    onclick={() => (activeModalTab = 'dasar')}
-                    class={`px-3 py-2 border-b-2 transition-all ${activeModalTab === 'dasar' ? 'border-primary text-primary font-bold' : 'border-transparent text-muted-foreground hover:text-foreground'}`}
-                >
-                    📁 Dasar & Rincian
-                </button>
-                {#if form.realization_type === 'surat_pesanan'}
-                    <button
-                        type="button"
-                        onclick={() => (activeModalTab = 'kontrak')}
-                        class={`px-3 py-2 border-b-2 transition-all ${activeModalTab === 'kontrak' ? 'border-primary text-primary font-bold' : 'border-transparent text-muted-foreground hover:text-foreground'}`}
-                    >
-                        🛠️ Kontrak (SPK)
-                    </button>
-                    <button
-                        type="button"
-                        onclick={() => (activeModalTab = 'serah_terima')}
-                        class={`px-3 py-2 border-b-2 transition-all ${activeModalTab === 'serah_terima' ? 'border-primary text-primary font-bold' : 'border-transparent text-muted-foreground hover:text-foreground'}`}
-                    >
-                        🤝 Serah Terima (BAST)
-                    </button>
-                    <button
-                        type="button"
-                        onclick={() => (activeModalTab = 'pejabat')}
-                        class={`px-3 py-2 border-b-2 transition-all ${activeModalTab === 'pejabat' ? 'border-primary text-primary font-bold' : 'border-transparent text-muted-foreground hover:text-foreground'}`}
-                    >
-                        🏢 Pejabat & Vendor
-                    </button>
-                    <button
-                        type="button"
-                        onclick={() => (activeModalTab = 'pencairan')}
-                        class={`px-3 py-2 border-b-2 transition-all ${activeModalTab === 'pencairan' ? 'border-primary text-primary font-bold' : 'border-transparent text-muted-foreground hover:text-foreground'}`}
-                    >
-                        📄 Pencairan (SPP/SPM)
-                    </button>
-                {/if}
-            </div>
-
-            <form onsubmit={handleRealizationSubmit} class="space-y-4">
-                <!-- TAB 1: DASAR & RINCIAN -->
-                {#if activeModalTab === 'dasar'}
-                    <div class="space-y-3">
-                        <div class="grid grid-cols-2 gap-3">
-                            <div class="space-y-1">
-                                <label class="text-xs font-semibold"
-                                    >Tipe Realisasi</label
-                                >
-                                <select
-                                    bind:value={form.realization_type}
-                                    class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary cursor-pointer"
-                                    required
-                                >
-                                    <option value="non_pengadaan"
-                                        >Non-Pengadaan</option
-                                    >
-                                    <option value="surat_pesanan"
-                                        >Surat Pesanan (Pihak Ketiga/Vendor)</option
-                                    >
-                                </select>
-                            </div>
-                            <div class="space-y-1">
-                                <label class="text-xs font-semibold"
-                                    >Tanggal Realisasi</label
-                                >
-                                <input
-                                    type="date"
-                                    bind:value={form.realization_date}
-                                    class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary"
-                                    required
-                                />
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-3">
-                            <div class="space-y-1">
-                                <label class="text-xs font-semibold"
-                                    >Nomor Bukti Kuitansi / Receipt</label
-                                >
-                                <input
-                                    type="text"
-                                    bind:value={form.receipt_number}
-                                    placeholder="E.g., KUITANSI-012"
-                                    class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary"
-                                />
-                            </div>
-                            <div class="space-y-1">
-                                <label class="text-xs font-semibold"
-                                    >Deskripsi Ringkas Belanja</label
-                                >
-                                <input
-                                    type="text"
-                                    bind:value={form.description}
-                                    placeholder="E.g., Pembelian ATK Diklat..."
-                                    class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary"
-                                    required
-                                />
-                            </div>
-                        </div>
-
-                        <!-- DYNAMIC ITEMS TABLE -->
-                        <div class="space-y-2 pt-2">
-                            <div class="flex items-center justify-between">
-                                <label class="text-xs font-bold text-primary"
-                                    >Daftar Rincian Barang / Jasa</label
-                                >
-                                <button
-                                    type="button"
-                                    onclick={addItem}
-                                    class="px-2 py-1 text-[10px] bg-emerald-600 text-white rounded hover:bg-emerald-500 flex items-center gap-1 cursor-pointer font-semibold transition-colors"
-                                >
-                                    ＋ Tambah Item
-                                </button>
-                            </div>
-
-                            <div
-                                class="border border-zinc-200 dark:border-zinc-800 rounded-lg overflow-hidden text-xs max-h-60 overflow-y-auto scrollbar-thin"
-                            >
-                                <table class="w-full text-left border-collapse">
-                                    <thead
-                                        class="bg-zinc-50 dark:bg-zinc-900 font-semibold border-b border-zinc-200 dark:border-zinc-800 text-[10px] uppercase tracking-wider text-muted-foreground"
-                                    >
-                                        <tr>
-                                            <th class="p-2 w-[40%]"
-                                                >Nama Barang/Jasa & Spesifikasi</th
-                                            >
-                                            <th class="p-2 w-[15%] text-center"
-                                                >Vol</th
-                                            >
-                                            <th class="p-2 w-[15%] text-center"
-                                                >Satuan</th
-                                            >
-                                            <th class="p-2 w-[20%] text-right"
-                                                >Harga Satuan</th
-                                            >
-                                            <th class="p-2 w-[10%] text-center"
-                                                >Aksi</th
-                                            >
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {#each form.items as item, index}
-                                            <tr
-                                                class="border-b border-zinc-100 dark:border-zinc-900/50 last:border-0"
-                                            >
-                                                <td class="p-1.5">
-                                                    <input
-                                                        type="text"
-                                                        bind:value={item.name}
-                                                        placeholder="Nama barang..."
-                                                        class="w-full px-2 py-1 bg-background border border-zinc-200 dark:border-zinc-800 rounded outline-none focus:border-primary text-xs"
-                                                        required
-                                                    />
-                                                    <input
-                                                        type="text"
-                                                        bind:value={
-                                                            item.remarks
-                                                        }
-                                                        placeholder="Keterangan / spesifikasi (opsional)..."
-                                                        class="w-full px-2 py-0.5 mt-1 bg-background border border-transparent rounded text-[10px] text-muted-foreground outline-none focus:border-zinc-200 dark:focus:border-zinc-700"
-                                                    />
-                                                    <div
-                                                        class="flex items-center gap-1.5 mt-1 text-[9px] bg-zinc-50 dark:bg-zinc-900/60 p-1 rounded border border-zinc-150 dark:border-zinc-800 w-full overflow-x-auto"
-                                                    >
-                                                        <div
-                                                            class="flex items-center gap-0.5"
-                                                        >
-                                                            <span
-                                                                class="font-semibold text-muted-foreground"
-                                                                >PPN:</span
-                                                            >
-                                                            <input
-                                                                type="number"
-                                                                bind:value={
-                                                                    item.tax_ppn
-                                                                }
-                                                                class="w-12 px-1 py-0.5 bg-background border border-zinc-200 dark:border-zinc-800 rounded text-[9px] text-right"
-                                                                placeholder="0"
-                                                            />
-                                                        </div>
-                                                        <div
-                                                            class="flex items-center gap-0.5"
-                                                        >
-                                                            <span
-                                                                class="font-semibold text-muted-foreground"
-                                                                >PPh21:</span
-                                                            >
-                                                            <input
-                                                                type="number"
-                                                                bind:value={
-                                                                    item.tax_pph21
-                                                                }
-                                                                class="w-12 px-1 py-0.5 bg-background border border-zinc-200 dark:border-zinc-800 rounded text-[9px] text-right"
-                                                                placeholder="0"
-                                                            />
-                                                        </div>
-                                                        <div
-                                                            class="flex items-center gap-0.5"
-                                                        >
-                                                            <span
-                                                                class="font-semibold text-muted-foreground"
-                                                                >PPh22:</span
-                                                            >
-                                                            <input
-                                                                type="number"
-                                                                bind:value={
-                                                                    item.tax_pph22
-                                                                }
-                                                                class="w-12 px-1 py-0.5 bg-background border border-zinc-200 dark:border-zinc-800 rounded text-[9px] text-right"
-                                                                placeholder="0"
-                                                            />
-                                                        </div>
-                                                        <div
-                                                            class="flex items-center gap-0.5"
-                                                        >
-                                                            <span
-                                                                class="font-semibold text-muted-foreground"
-                                                                >PPh23:</span
-                                                            >
-                                                            <input
-                                                                type="number"
-                                                                bind:value={
-                                                                    item.tax_pph23
-                                                                }
-                                                                class="w-12 px-1 py-0.5 bg-background border border-zinc-200 dark:border-zinc-800 rounded text-[9px] text-right"
-                                                                placeholder="0"
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td class="p-1.5">
-                                                    <input
-                                                        type="number"
-                                                        bind:value={item.volume}
-                                                        oninput={calculateTotal}
-                                                        min="0.01"
-                                                        step="any"
-                                                        class="w-full px-2 py-1 bg-background border border-zinc-200 dark:border-zinc-800 rounded outline-none focus:border-primary text-xs text-center"
-                                                        required
-                                                    />
-                                                </td>
-                                                <td class="p-1.5">
-                                                    <input
-                                                        type="text"
-                                                        bind:value={item.unit}
-                                                        placeholder="Pcs"
-                                                        class="w-full px-2 py-1 bg-background border border-zinc-200 dark:border-zinc-800 rounded outline-none focus:border-primary text-xs text-center"
-                                                        required
-                                                    />
-                                                </td>
-                                                <td class="p-1.5">
-                                                    <input
-                                                        type="number"
-                                                        bind:value={
-                                                            item.unit_price
-                                                        }
-                                                        oninput={calculateTotal}
-                                                        min="0"
-                                                        class="w-full px-2 py-1 bg-background border border-zinc-200 dark:border-zinc-800 rounded outline-none focus:border-primary text-xs text-right"
-                                                        required
-                                                    />
-                                                </td>
-                                                <td class="p-1.5 text-center">
-                                                    <button
-                                                        type="button"
-                                                        disabled={form.items
-                                                            .length <= 1}
-                                                        onclick={() =>
-                                                            removeItem(index)}
-                                                        class="text-rose-500 hover:text-rose-600 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer p-1 transition-colors"
-                                                    >
-                                                        🗑️
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        {/each}
-                                    </tbody>
-                                </table>
-                            </div>
-
-                            <!-- SUB-TOTAL AUTO-SUM CARD -->
-                            <div
-                                class="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 bg-zinc-50 dark:bg-zinc-900/50 rounded-lg border border-zinc-150 dark:border-zinc-850 text-xs font-semibold gap-2"
-                            >
-                                <div class="text-muted-foreground">
-                                    Total Nilai Rincian (Dihitung Otomatis):
-                                </div>
-                                <div
-                                    class="text-base font-extrabold text-foreground"
-                                >
-                                    {formatRupiah(form.amount)}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                {/if}
-
-                <!-- TAB 2: KONTRAK (SPK) -->
-                {#if activeModalTab === 'kontrak'}
-                    <div class="space-y-3">
-                        <div class="grid grid-cols-2 gap-3">
-                            <div class="space-y-1">
-                                <label class="text-xs font-semibold"
-                                    >Tipe Dokumen</label
-                                >
-                                <select
-                                    bind:value={form.procurement_type}
-                                    class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary cursor-pointer"
-                                    required
-                                >
-                                    <option value="surat_pesanan"
-                                        >Surat Pesanan (SP)</option
-                                    >
-                                    <option value="spk"
-                                        >Surat Perintah Kerja (SPK)</option
-                                    >
-                                </select>
-                            </div>
-                            <div class="space-y-1">
-                                <label class="text-xs font-semibold"
-                                    >Nama Paket Pekerjaan</label
-                                >
-                                <input
-                                    type="text"
-                                    bind:value={form.procurement_title}
-                                    placeholder="Nama paket pengadaan..."
-                                    class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary"
-                                    required
-                                />
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-3">
-                            <div class="space-y-1">
-                                <label class="text-xs font-semibold"
-                                    >Nomor SP / SPK</label
-                                >
-                                <input
-                                    type="text"
-                                    bind:value={form.procurement_number}
-                                    placeholder="PL.107/67/7/POLTEKPEL..."
-                                    class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary"
-                                    required
-                                />
-                            </div>
-                            <div class="space-y-1">
-                                <label class="text-xs font-semibold"
-                                    >Tanggal SP / SPK</label
-                                >
-                                <input
-                                    type="date"
-                                    bind:value={form.procurement_date}
-                                    class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary"
-                                    required
-                                />
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-3">
-                            <div class="space-y-1">
-                                <label class="text-xs font-semibold"
-                                    >Waktu Pelaksanaan Pekerjaan</label
-                                >
-                                <input
-                                    type="text"
-                                    bind:value={form.work_duration}
-                                    placeholder="E.g., 5 (lima) Hari Kalender"
-                                    class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary"
-                                />
-                            </div>
-                            <div class="space-y-1">
-                                <label class="text-xs font-semibold"
-                                    >Nomor Nota Dinas PPK</label
-                                >
-                                <input
-                                    type="text"
-                                    bind:value={form.nota_dinas_number}
-                                    placeholder="ND/PPK/..."
-                                    class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary"
-                                />
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-3">
-                            <div class="space-y-1">
-                                <label class="text-xs font-semibold"
-                                    >Tanggal Nota Dinas</label
-                                >
-                                <input
-                                    type="date"
-                                    bind:value={form.nota_dinas_date}
-                                    class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary"
-                                />
-                            </div>
-                            <div class="space-y-1">
-                                <label class="text-xs font-semibold"
-                                    >Nomor BA Pengadaan Langsung (PL)</label
-                                >
-                                <input
-                                    type="text"
-                                    bind:value={form.ba_pl_number}
-                                    placeholder="BA-PL/..."
-                                    class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary"
-                                />
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-3">
-                            <div class="space-y-1">
-                                <label class="text-xs font-semibold"
-                                    >Tanggal BA Pengadaan Langsung</label
-                                >
-                                <input
-                                    type="date"
-                                    bind:value={form.ba_pl_date}
-                                    class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary"
-                                />
-                            </div>
-                        </div>
-                    </div>
-                {/if}
-
-                <!-- TAB 3: SERAH TERIMA -->
-                {#if activeModalTab === 'serah_terima'}
-                    <div class="space-y-3">
-                        <div class="grid grid-cols-2 gap-3">
-                            <div class="space-y-1">
-                                <label class="text-xs font-semibold"
-                                    >Nomor BAST Barang</label
-                                >
-                                <input
-                                    type="text"
-                                    bind:value={form.bast_number}
-                                    placeholder="PL.109/57/22/POLTEKPEL..."
-                                    class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary"
-                                />
-                            </div>
-                            <div class="space-y-1">
-                                <label class="text-xs font-semibold"
-                                    >Tanggal BAST Barang</label
-                                >
-                                <input
-                                    type="date"
-                                    bind:value={form.bast_date}
-                                    class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary"
-                                />
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-3">
-                            <div class="space-y-1">
-                                <label class="text-xs font-semibold"
-                                    >Nomor Berita Acara Pembayaran (BAP)</label
-                                >
-                                <input
-                                    type="text"
-                                    bind:value={form.bap_number}
-                                    placeholder="BAP/XXX/..."
-                                    class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary"
-                                />
-                            </div>
-                            <div class="space-y-1">
-                                <label class="text-xs font-semibold"
-                                    >Tanggal BAP</label
-                                >
-                                <input
-                                    type="date"
-                                    bind:value={form.bap_date}
-                                    class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary"
-                                />
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-3">
-                            <div class="space-y-1">
-                                <label class="text-xs font-semibold"
-                                    >Nomor BA Penyerahan</label
-                                >
-                                <input
-                                    type="text"
-                                    bind:value={form.ba_penyerahan_number}
-                                    placeholder="BA-PENYERAHAN/..."
-                                    class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary"
-                                />
-                            </div>
-                            <div class="space-y-1">
-                                <label class="text-xs font-semibold"
-                                    >Tanggal BA Penyerahan</label
-                                >
-                                <input
-                                    type="date"
-                                    bind:value={form.ba_penyerahan_date}
-                                    class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary"
-                                />
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-3">
-                            <div class="space-y-1">
-                                <label class="text-xs font-semibold"
-                                    >Nomor SP2D</label
-                                >
-                                <input
-                                    type="text"
-                                    bind:value={form.sp2d_number}
-                                    placeholder="SP2D/XXX/..."
-                                    class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary"
-                                />
-                            </div>
-                            <div class="space-y-1">
-                                <label class="text-xs font-semibold"
-                                    >Tanggal SP2D</label
-                                >
-                                <input
-                                    type="date"
-                                    bind:value={form.sp2d_date}
-                                    class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary"
-                                />
-                            </div>
-                        </div>
-                    </div>
-                {/if}
-
-                <!-- TAB 4: PEJABAT & VENDOR -->
-                {#if activeModalTab === 'pejabat'}
-                    <div class="space-y-3">
-                        <div class="grid grid-cols-2 gap-3">
-                            <div class="space-y-1">
-                                <label class="text-xs font-semibold"
-                                    >Kuasa Pengguna Anggaran (KPA)</label
-                                >
-                                <select
-                                    bind:value={form.kpa_id}
-                                    class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary cursor-pointer"
-                                >
-                                    <option value="">-- Pilih KPA --</option>
-                                    {#each officers as off}
-                                        <option value={off.id.toString()}
-                                            >{off.name} (NIP: {off.employee_id})</option
-                                        >
-                                    {/each}
-                                </select>
-                            </div>
-                            <div class="space-y-1">
-                                <label class="text-xs font-semibold"
-                                    >Pejabat Pembuat Komitmen (PPK)</label
-                                >
-                                <select
-                                    bind:value={form.ppk_id}
-                                    class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary cursor-pointer"
-                                >
-                                    <option value="">-- Pilih PPK --</option>
-                                    {#each officers as off}
-                                        <option value={off.id.toString()}
-                                            >{off.name} (NIP: {off.employee_id})</option
-                                        >
-                                    {/each}
-                                </select>
-                            </div>
-                        </div>
-
-                        <div
-                            class="p-3 bg-zinc-50 dark:bg-zinc-900/50 rounded-lg border border-zinc-150 dark:border-zinc-800/80 space-y-3"
-                        >
-                            <p class="text-xs font-bold text-primary">
-                                Informasi Penyedia (Vendor) & Perbankan
-                            </p>
-
-                            <div class="space-y-1">
-                                <label class="text-xs font-semibold"
-                                    >Pilih Vendor Terdaftar (Auto-fill)</label
-                                >
-                                <select
-                                    onchange={handleVendorSelect}
-                                    class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary cursor-pointer"
-                                >
-                                    <option value=""
-                                        >-- Tulis Baru / Edit Manual --</option
-                                    >
-                                    {#each vendors as v}
-                                        <option value={v.id}>{v.name}</option>
-                                    {/each}
-                                </select>
-                            </div>
-
-                            <div class="grid grid-cols-2 gap-2">
-                                <div class="space-y-1">
-                                    <label class="text-xs font-semibold"
-                                        >Nama Resmi Vendor</label
-                                    >
-                                    <input
-                                        type="text"
-                                        bind:value={form.vendor_name}
-                                        placeholder="E.g., CV. Media Utama"
-                                        class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary"
-                                        required
-                                    />
-                                </div>
-                                <div class="space-y-1">
-                                    <label class="text-xs font-semibold"
-                                        >NPWP Vendor</label
-                                    >
-                                    <input
-                                        type="text"
-                                        bind:value={form.vendor_npwp}
-                                        placeholder="00.000.000.0-000.000"
-                                        class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary"
-                                    />
-                                </div>
-                            </div>
-
-                            <div class="grid grid-cols-3 gap-2">
-                                <div class="space-y-1">
-                                    <label class="text-xs font-semibold"
-                                        >Nama Bank</label
-                                    >
-                                    <input
-                                        type="text"
-                                        bind:value={form.bank_name}
-                                        placeholder="BTN / Mandiri / BRI"
-                                        class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary"
-                                    />
-                                </div>
-                                <div class="space-y-1">
-                                    <label class="text-xs font-semibold"
-                                        >Nomor Rekening</label
-                                    >
-                                    <input
-                                        type="text"
-                                        bind:value={form.bank_account_number}
-                                        placeholder="0021-01-..."
-                                        class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary"
-                                    />
-                                </div>
-                                <div class="space-y-1">
-                                    <label class="text-xs font-semibold"
-                                        >Pemilik Rekening (Direktur)</label
-                                    >
-                                    <input
-                                        type="text"
-                                        bind:value={form.bank_account_name}
-                                        placeholder="Nama direktur..."
-                                        class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary"
-                                    />
-                                </div>
-                            </div>
-
-                            <div class="space-y-1">
-                                <label class="text-xs font-semibold"
-                                    >Alamat Resmi Vendor</label
-                                >
-                                <textarea
-                                    bind:value={form.vendor_address}
-                                    placeholder="Jalan, RT/RW, Kota..."
-                                    rows="2"
-                                    class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary resize-none"
-                                ></textarea>
-                            </div>
-                        </div>
-                    </div>
-                {/if}
-
-                <!-- TAB 5: PENCAIRAN (SPP/SPM/SPTJB) -->
-                {#if activeModalTab === 'pencairan'}
-                    <div class="space-y-3">
-                        <div class="grid grid-cols-2 gap-3">
-                            <div class="space-y-1">
-                                <label class="text-xs font-semibold"
-                                    >Nomor SPP (Permintaan Pembayaran)</label
-                                >
-                                <input
-                                    type="text"
-                                    bind:value={form.spp_number}
-                                    placeholder="001/SPP-LS/..."
-                                    class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary"
-                                />
-                            </div>
-                            <div class="space-y-1">
-                                <label class="text-xs font-semibold"
-                                    >Tanggal SPP</label
-                                >
-                                <input
-                                    type="date"
-                                    bind:value={form.spp_date}
-                                    class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary"
-                                />
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-3">
-                            <div class="space-y-1">
-                                <label class="text-xs font-semibold"
-                                    >Nomor SPM (Perintah Membayar)</label
-                                >
-                                <input
-                                    type="text"
-                                    bind:value={form.spm_number}
-                                    placeholder="001/SPM-LS/..."
-                                    class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary"
-                                />
-                            </div>
-                            <div class="space-y-1">
-                                <label class="text-xs font-semibold"
-                                    >Tanggal SPM</label
-                                >
-                                <input
-                                    type="date"
-                                    bind:value={form.spm_date}
-                                    class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary"
-                                />
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-3">
-                            <div class="space-y-1">
-                                <label class="text-xs font-semibold"
-                                    >Nomor SPTJB</label
-                                >
-                                <input
-                                    type="text"
-                                    bind:value={form.sptjb_number}
-                                    placeholder="001/SPTJB/..."
-                                    class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary"
-                                />
-                            </div>
-                            <div class="space-y-1">
-                                <label class="text-xs font-semibold"
-                                    >Tanggal SPTJB</label
-                                >
-                                <input
-                                    type="date"
-                                    bind:value={form.sptjb_date}
-                                    class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary"
-                                />
-                            </div>
-                        </div>
-                    </div>
-                {/if}
-
-                <!-- CEILING BUDGET WARNING ALERT -->
-                {#if form.amount > remainingBudget}
-                    <div
-                        class="p-3 bg-rose-50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-900/50 rounded-lg text-rose-700 dark:text-rose-350 text-xs flex items-start gap-2"
-                    >
-                        <span>⚠️</span>
-                        <div>
-                            <strong class="font-bold"
-                                >Over-Budget Warning:</strong
-                            >
-                            Total realisasi belanja (<strong
-                                >{formatRupiah(form.amount)}</strong
-                            >) melampaui sisa pagu anggaran (<strong
-                                >{formatRupiah(remainingBudget)}</strong
-                            >). Silakan kurangi volume atau harga item sebelum
-                            menyimpan.
-                        </div>
-                    </div>
-                {/if}
-
-                <!-- FOOTER BUTTONS -->
-                <div
-                    class="flex justify-end gap-2 pt-3 border-t border-sidebar-border/20 mt-4"
-                >
-                    <button
-                        type="button"
-                        onclick={() => {
-                            realizationModalOpen = false;
-                            form.reset();
-                        }}
-                        class="inline-flex h-8 items-center justify-center rounded-md border border-zinc-200 dark:border-zinc-800 bg-background px-3 text-xs font-medium hover:bg-accent cursor-pointer transition-colors"
-                    >
-                        Batal
-                    </button>
-                    <button
-                        type="submit"
-                        disabled={form.processing || form.amount <= 0}
-                        class="inline-flex h-8 items-center justify-center rounded-md bg-emerald-600 hover:bg-emerald-500 text-white px-3 text-xs font-semibold cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-                    >
-                        {form.processing
-                            ? 'Menyimpan...'
-                            : 'Simpan Realisasi Belanja'}
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-{/if}
 
 {#if editBudgetModalOpen}
     <div

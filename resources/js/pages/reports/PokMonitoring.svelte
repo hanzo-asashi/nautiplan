@@ -202,8 +202,12 @@
                         class={`border-l-4 border-l-primary flex flex-col transition-all ${getBgColor('program')}`}
                     >
                         <div
-                            class="flex items-center justify-between p-3.5 hover:bg-zinc-200/40 dark:hover:bg-zinc-800/40 cursor-pointer"
+                            role="button"
+                            tabindex="0"
+                            class="flex items-center justify-between p-3.5 hover:bg-zinc-200/40 dark:hover:bg-zinc-800/40 cursor-pointer outline-none"
                             onclick={() => toggle(progKey)}
+                            onkeydown={(e) =>
+                                e.key === 'Enter' && toggle(progKey)}
                         >
                             <div class="flex items-center gap-2 min-w-0 flex-1">
                                 {#if progOpen}
@@ -279,8 +283,13 @@
                                         class={`flex flex-col ${getBgColor('activity')}`}
                                     >
                                         <div
-                                            class="flex items-center justify-between p-3 hover:bg-zinc-100 dark:hover:bg-zinc-900/50 cursor-pointer"
+                                            role="button"
+                                            tabindex="0"
+                                            class="flex items-center justify-between p-3 hover:bg-zinc-100 dark:hover:bg-zinc-900/50 cursor-pointer outline-none"
                                             onclick={() => toggle(actKey)}
+                                            onkeydown={(e) =>
+                                                e.key === 'Enter' &&
+                                                toggle(actKey)}
                                         >
                                             <div
                                                 class="flex items-center gap-2 min-w-0 flex-1 pl-2"
@@ -370,8 +379,14 @@
                                                         class={`flex flex-col ${getBgColor('output')}`}
                                                     >
                                                         <div
-                                                            class="flex items-center justify-between p-2.5 hover:bg-zinc-100/60 dark:hover:bg-zinc-800/40 cursor-pointer"
+                                                            role="button"
+                                                            tabindex="0"
+                                                            class="flex items-center justify-between p-2.5 hover:bg-zinc-100/60 dark:hover:bg-zinc-800/40 cursor-pointer outline-none"
                                                             onclick={() =>
+                                                                toggle(outKey)}
+                                                            onkeydown={(e) =>
+                                                                e.key ===
+                                                                    'Enter' &&
                                                                 toggle(outKey)}
                                                         >
                                                             <div
@@ -464,8 +479,18 @@
                                                                         class={`flex flex-col ${getBgColor('sub_output')}`}
                                                                     >
                                                                         <div
-                                                                            class="flex items-center justify-between p-2.5 hover:bg-zinc-100/50 dark:hover:bg-zinc-800/30 cursor-pointer"
+                                                                            role="button"
+                                                                            tabindex="0"
+                                                                            class="flex items-center justify-between p-2.5 hover:bg-zinc-100/50 dark:hover:bg-zinc-800/30 cursor-pointer outline-none"
                                                                             onclick={() =>
+                                                                                toggle(
+                                                                                    subOutKey,
+                                                                                )}
+                                                                            onkeydown={(
+                                                                                e,
+                                                                            ) =>
+                                                                                e.key ===
+                                                                                    'Enter' &&
                                                                                 toggle(
                                                                                     subOutKey,
                                                                                 )}
@@ -561,8 +586,18 @@
                                                                                         class={`flex flex-col ${getBgColor('component')}`}
                                                                                     >
                                                                                         <div
-                                                                                            class="flex items-center justify-between p-2 hover:bg-zinc-100/40 dark:hover:bg-zinc-800/20 cursor-pointer"
+                                                                                            role="button"
+                                                                                            tabindex="0"
+                                                                                            class="flex items-center justify-between p-2 hover:bg-zinc-100/40 dark:hover:bg-zinc-800/20 cursor-pointer outline-none"
                                                                                             onclick={() =>
+                                                                                                toggle(
+                                                                                                    compKey,
+                                                                                                )}
+                                                                                            onkeydown={(
+                                                                                                e,
+                                                                                            ) =>
+                                                                                                e.key ===
+                                                                                                    'Enter' &&
                                                                                                 toggle(
                                                                                                     compKey,
                                                                                                 )}
@@ -657,8 +692,18 @@
                                                                                                         class={`flex flex-col ${getBgColor('sub_component')}`}
                                                                                                     >
                                                                                                         <div
-                                                                                                            class="flex items-center justify-between p-2 hover:bg-zinc-100/30 dark:hover:bg-zinc-800/10 cursor-pointer"
+                                                                                                            role="button"
+                                                                                                            tabindex="0"
+                                                                                                            class="flex items-center justify-between p-2 hover:bg-zinc-100/30 dark:hover:bg-zinc-800/10 cursor-pointer outline-none"
                                                                                                             onclick={() =>
+                                                                                                                toggle(
+                                                                                                                    subCompKey,
+                                                                                                                )}
+                                                                                                            onkeydown={(
+                                                                                                                e,
+                                                                                                            ) =>
+                                                                                                                e.key ===
+                                                                                                                    'Enter' &&
                                                                                                                 toggle(
                                                                                                                     subCompKey,
                                                                                                                 )}

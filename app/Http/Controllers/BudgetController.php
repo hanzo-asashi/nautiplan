@@ -120,6 +120,24 @@ class BudgetController extends Controller
         return back()->with('success', 'Pagu anggaran berhasil dihapus.');
     }
 
+    public function createRealization(ActivityBudget $budget): Response
+    {
+        $budget->load([
+            'activity.unit',
+            'fiscalYear',
+            'realizations.items',
+        ]);
+
+        $vendors = Vendor::orderBy('name')->get();
+        $officers = User::orderBy('name')->get(['id', 'name', 'employee_id', 'rank']);
+
+        return Inertia::render('budgets/RealizationForm', [
+            'budget' => $budget,
+            'vendors' => $vendors,
+            'officers' => $officers,
+        ]);
+    }
+
     public function storeRealization(Request $request): RedirectResponse
     {
         $validated = $request->validate([
