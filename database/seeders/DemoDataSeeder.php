@@ -7,8 +7,10 @@ use App\Models\ActivityBudget;
 use App\Models\ActivityIndicator;
 use App\Models\BudgetRealization;
 use App\Models\FiscalYear;
+use App\Models\Procurement;
 use App\Models\Program;
 use App\Models\ProgramIndicator;
+use App\Models\RealizationItem;
 use App\Models\Renja;
 use App\Models\Renstra;
 use App\Models\RenstraIndicator;
@@ -16,6 +18,7 @@ use App\Models\Role;
 use App\Models\SubActivity;
 use App\Models\Unit;
 use App\Models\User;
+use App\Models\Vendor;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -44,6 +47,7 @@ class DemoDataSeeder extends Seeder
             'name' => 'Super Admin',
             'email' => 'admin@nautiplan.test',
             'employee_id' => '198805122010121001',
+            'rank' => 'Pembina (IV/a)',
             'phone' => '081234567890',
             'password' => Hash::make('password'),
             'unit_id' => $directorate->id,
@@ -51,11 +55,12 @@ class DemoDataSeeder extends Seeder
         ]);
         $admin->roles()->attach($superAdminRole->id);
 
-        // Create Direktur
+        // Create Direktur (KPA Ke-2)
         $direkturUser = User::create([
             'name' => 'Capt. Stefani, M.Mar.',
             'email' => 'direktur@nautiplan.test',
             'employee_id' => '197508242001121002',
+            'rank' => 'Pembina Utama Muda (IV/c)',
             'phone' => '081122334455',
             'password' => Hash::make('password'),
             'unit_id' => $directorate->id,
@@ -64,11 +69,38 @@ class DemoDataSeeder extends Seeder
         $direkturUser->roles()->attach($direkturRole->id);
         $directorate->update(['head_user_id' => $direkturUser->id]);
 
+        // Create KPA (Capt. SIDROTUL MUNTAHA, M.Si., M.Mar)
+        $kpaUser = User::create([
+            'name' => 'Capt. SIDROTUL MUNTAHA, M.Si., M.Mar',
+            'email' => 'kpa@nautiplan.test',
+            'employee_id' => '196707121998081001',
+            'rank' => 'Pembina Tk.I (IV/b)',
+            'phone' => '081223344550',
+            'password' => Hash::make('password'),
+            'unit_id' => $directorate->id,
+            'is_active' => true,
+        ]);
+        $kpaUser->roles()->attach($direkturRole->id);
+
+        // Create PPK (ARNALDY ACHMADITA A., S.T., M.T)
+        $ppkUser = User::create([
+            'name' => 'ARNALDY ACHMADITA A., S.T., M.T',
+            'email' => 'ppk@nautiplan.test',
+            'employee_id' => '198001232009121002',
+            'rank' => 'Penata (III/c)',
+            'phone' => '081223344551',
+            'password' => Hash::make('password'),
+            'unit_id' => $wadir1->id,
+            'is_active' => true,
+        ]);
+        $ppkUser->roles()->attach($kabagRole->id);
+
         // Create Wadir I
         $wadirUser = User::create([
             'name' => 'Dr. Ir. Herry, M.T.',
             'email' => 'wadir1@nautiplan.test',
             'employee_id' => '197803152003121003',
+            'rank' => 'Pembina (IV/a)',
             'phone' => '081223344556',
             'password' => Hash::make('password'),
             'unit_id' => $wadir1->id,
@@ -82,6 +114,7 @@ class DemoDataSeeder extends Seeder
             'name' => 'Andi Perencana, S.E.',
             'email' => 'planner@nautiplan.test',
             'employee_id' => '198504102008121004',
+            'rank' => 'Penata Tk.I (III/d)',
             'phone' => '081334455667',
             'password' => Hash::make('password'),
             'unit_id' => $bagKeuangan->id,
@@ -94,6 +127,7 @@ class DemoDataSeeder extends Seeder
             'name' => 'Budi Operator Diklat',
             'email' => 'operator@nautiplan.test',
             'employee_id' => '199011302015031005',
+            'rank' => 'Penata Muda (III/a)',
             'phone' => '081445566778',
             'password' => Hash::make('password'),
             'unit_id' => $diklatUnit->id,
@@ -325,55 +359,136 @@ class DemoDataSeeder extends Seeder
             'version' => 1,
         ]);
 
-        // 8. Seed Budget Realizations
-        // Realization 1: Pembayaran Vendor Cetak Modul
-        BudgetRealization::create([
-            'activity_budget_id' => $bud1->id,
-            'realization_type' => 'surat_pesanan',
-            'amount' => 850000000.0,
-            'realization_date' => '2026-03-15',
-            'description' => 'Pembayaran termin 1 pengadaan modul pembelajaran taruna angkatan 70',
-            'receipt_number' => 'REC-20260315-01',
-            'vendor_name' => 'CV. Barombong Bahari Jaya',
-            'vendor_address' => 'Jl. Pelayaran No. 12, Barombong, Makassar',
-            'vendor_npwp' => '01.234.567.8-901.000',
-            'procurement_number' => 'SP/DIKLAT/2026/001',
-            'procurement_date' => '2026-03-01',
-            'sp2d_number' => 'SP2D/394161/2026/099',
-            'sp2d_date' => '2026-03-12',
-            'verified_by' => $plannerUser->id,
-            'verified_at' => '2026-03-16 10:00:00',
+        // 8. Seed Vendors, Procurements, and Realizations
+        // Vendor 1: CV. TEKSAS JAYA PERKASA (dari Cetak Kwitansi & BAP)
+        $vendorTeksas = Vendor::create([
+            'name' => 'CV. TEKSAS JAYA PERKASA',
+            'npwp' => '41.244.347.5-805.000',
+            'address' => 'JL. TIDUNG IV SETAPAK 2 NO. 96 MAKASSAR',
+            'bank_name' => 'BTN',
+            'bank_account_number' => '00000192-01-30-0002078',
+            'bank_account_name' => 'CV. TEKSAS JAYA PERKASA',
         ]);
 
-        // Realization 2: Honor Instruktur Bulan Maret-April
-        BudgetRealization::create([
+        // Vendor 2: CV. YUSHAR (dari BAST & SPK Pengadaan Wearpack)
+        $vendorYushar = Vendor::create([
+            'name' => 'CV. YUSHAR',
+            'npwp' => '42.555.666.7-805.000',
+            'address' => 'JL. MANNURUKI II NO. 35-C MAKASSAR',
+            'bank_name' => 'Mandiri',
+            'bank_account_number' => '1520099887766',
+            'bank_account_name' => 'CV. YUSHAR',
+        ]);
+
+        // Procurement 1: Pengadaan Teksas (Surat Pesanan)
+        $procTeksas = Procurement::create([
+            'activity_budget_id' => $bud1->id,
+            'vendor_id' => $vendorTeksas->id,
+            'title' => 'Pengadaan Pembuatan dan Pemasangan Shipping Company BLU Poltekpel Barombong',
+            'procurement_type' => 'surat_pesanan',
+            'document_number' => 'PL.107/67/7/POLTEKPEL.B/2024',
+            'document_date' => '2024-12-12',
+            'work_duration' => '5 (lima) Hari Kalender',
+            'ppk_id' => $ppkUser->id,
+            'kpa_id' => $kpaUser->id,
+        ]);
+
+        // Realization 1: Teksas
+        $realTeksas = BudgetRealization::create([
+            'activity_budget_id' => $bud1->id,
+            'procurement_id' => $procTeksas->id,
+            'realization_type' => 'surat_pesanan',
+            'amount' => 9518250.0,
+            'realization_date' => '2024-12-17',
+            'description' => 'Pengadaan Pembuatan dan Pemasangan Shipping Company BLU Poltekpel Barombong (Belanja barang)',
+            'receipt_number' => '3941610-414361-2024',
+            'bast_number' => 'PL.109/57/22/POLTEKPEL.B-2024',
+            'bast_date' => '2024-12-16',
+            'bap_number' => 'PL.109/57/22/POLTEKPEL.B-2024',
+            'bap_date' => '2024-12-17',
+            'ba_penyerahan_number' => 'PL.109/57/22/POLTEKPEL.B-2024',
+            'ba_penyerahan_date' => '2024-12-16',
+            'sp2d_number' => 'SP2D/3941610-414361-2024',
+            'sp2d_date' => '2024-12-17',
+            'verified_by' => $plannerUser->id,
+            'verified_at' => '2024-12-18 10:00:00',
+        ]);
+
+        RealizationItem::create([
+            'budget_realization_id' => $realTeksas->id,
+            'name' => 'Pembuatan dan Pemasangan Shipping Company BLU',
+            'volume' => 1,
+            'unit' => 'Paket',
+            'unit_price' => 9518250.0,
+            'remarks' => 'Sesuai Kontrak SP',
+        ]);
+
+        // Procurement 2: Pengadaan Wearpack CV. YUSHAR (SPK)
+        $procYushar = Procurement::create([
+            'activity_budget_id' => $bud1->id,
+            'vendor_id' => $vendorYushar->id,
+            'title' => 'Pengadaan Wearpack DKP Desember 1',
+            'procurement_type' => 'spk',
+            'document_number' => 'PL.107/67/18/POLTEKPEL.B/2024',
+            'document_date' => '2024-12-19',
+            'work_duration' => '6 (enam) Hari Kalender',
+            'nota_dinas_number' => '387/PPK-BLU/POLTEKPEL.B/XII/2024',
+            'nota_dinas_date' => '2024-12-16',
+            'ba_pl_number' => 'PL.107/67/17/POLTEKPEL.B/2024',
+            'ba_pl_date' => '2024-12-19',
+            'ppk_id' => $ppkUser->id,
+            'kpa_id' => $kpaUser->id,
+        ]);
+
+        // Realization 2: Yushar
+        $realYushar = BudgetRealization::create([
+            'activity_budget_id' => $bud1->id,
+            'procurement_id' => $procYushar->id,
+            'realization_type' => 'surat_pesanan',
+            'amount' => 104335560.0,
+            'realization_date' => '2024-12-24',
+            'description' => 'Belanja barang Pengadaan Wearpack DKP Desember 1',
+            'receipt_number' => '3941610-414362-2024',
+            'bast_number' => 'PL.108/54/8/POLTEKPEL.B/2024',
+            'bast_date' => '2024-12-24',
+            'bap_number' => 'PL.108/54/8/POLTEKPEL.B/2024',
+            'bap_date' => '2024-12-24',
+            'ba_penyerahan_number' => 'PL.108/54/8/POLTEKPEL.B/2024',
+            'ba_penyerahan_date' => '2024-12-24',
+            'sp2d_number' => 'SP2D/3941610-414362-2024',
+            'sp2d_date' => '2024-12-24',
+            'verified_by' => $plannerUser->id,
+            'verified_at' => '2024-12-24 15:00:00',
+        ]);
+
+        RealizationItem::create([
+            'budget_realization_id' => $realYushar->id,
+            'name' => 'Pengadaan Wearpack DKP Desember 1',
+            'volume' => 50,
+            'unit' => 'Pcs',
+            'unit_price' => 2086711.2,
+            'remarks' => 'Bahan Wearpack Standar DKP',
+        ]);
+
+        // Realization 3: Honor Instruktur (Non-Pengadaan)
+        $realHonor = BudgetRealization::create([
             'activity_budget_id' => $bud2->id,
             'realization_type' => 'non_pengadaan',
-            'amount' => 242407064.0,
-            'realization_date' => '2026-04-30',
-            'description' => 'Pembayaran honor instruktur diklat peningkatan kompetensi laut gelombang 1',
-            'receipt_number' => 'REC-20260430-14',
+            'amount' => 17480000.0,
+            'realization_date' => '2025-01-20',
+            'description' => 'Pembayaran Honorarium Awak Rescue Boat dan Uang Makan bulan Januari 2025 (Belanja Honor)',
+            'receipt_number' => '3941610-414363-2025',
             'verified_by' => $plannerUser->id,
-            'verified_at' => '2026-05-02 09:15:00',
+            'verified_at' => '2025-01-21 09:15:00',
         ]);
 
-        // Realization 3: Pembayaran Kalibrasi Bridge Simulator
-        BudgetRealization::create([
-            'activity_budget_id' => $bud3->id,
-            'realization_type' => 'surat_pesanan',
-            'amount' => 83694000.0,
-            'realization_date' => '2026-05-18',
-            'description' => 'Biaya termin 1 kalibrasi radar & simulator kemudi kapal',
-            'receipt_number' => 'REC-20260518-05',
-            'vendor_name' => 'PT. Simulator Global Indonesia',
-            'vendor_address' => 'Ruko Techno Block A No. 5, Sudirman, Jakarta',
-            'vendor_npwp' => '02.555.666.7-999.000',
-            'procurement_number' => 'SP/SIMULATOR/2026/045',
-            'procurement_date' => '2026-05-05',
-            'sp2d_number' => 'SP2D/394161/2026/184',
-            'sp2d_date' => '2026-05-15',
-            'verified_by' => $plannerUser->id,
-            'verified_at' => '2026-05-20 14:00:00',
+        RealizationItem::create([
+            'budget_realization_id' => $realHonor->id,
+            'name' => 'Honor Awak Rescue Boat',
+            'volume' => 1,
+            'unit' => 'Bulan',
+            'unit_price' => 17480000.0,
+            'remarks' => 'Januari 2025',
         ]);
 
         // 9. Seed Activity Indicators (IKU/IKK)

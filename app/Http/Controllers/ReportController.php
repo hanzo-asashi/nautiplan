@@ -520,9 +520,14 @@ class ReportController extends Controller
             'activityBudget.activity.program',
             'activityBudget.activity.unit',
             'activityBudget.activity.fiscalYear',
+            'procurement.vendor',
+            'procurement.ppk',
+            'procurement.kpa',
+            'items',
         ]);
 
-        $pdf = Pdf::loadView('pdf.surat-pesanan', compact('realization'));
+        $terbilang = self::terbilang($realization->amount).' rupiah';
+        $pdf = Pdf::loadView('pdf.surat-pesanan', compact('realization', 'terbilang'));
 
         return $pdf->download("surat-pesanan-{$realization->receipt_number}.pdf");
     }
@@ -530,7 +535,7 @@ class ReportController extends Controller
     public function downloadPdfNonProcurement(Request $request): \Illuminate\Http\Response
     {
         $realizations = BudgetRealization::where('realization_type', 'non_pengadaan')
-            ->with(['activityBudget.activity.program', 'activityBudget.activity.unit'])
+            ->with(['activityBudget.activity.program', 'activityBudget.activity.unit', 'items'])
             ->get();
 
         $pdf = Pdf::loadView('pdf.laporan-non-pengadaan', compact('realizations'));
@@ -541,14 +546,122 @@ class ReportController extends Controller
     public function downloadPdfVendor(Request $request): \Illuminate\Http\Response
     {
         $realizations = BudgetRealization::where('realization_type', 'surat_pesanan')
-            ->whereNotNull('vendor_name')
-            ->with(['activityBudget.activity.program', 'activityBudget.activity.unit'])
+            ->whereHas('procurement.vendor')
+            ->with(['activityBudget.activity.program', 'activityBudget.activity.unit', 'procurement.vendor'])
             ->get()
-            ->groupBy('vendor_name');
+            ->groupBy(function ($item) {
+                return $item->procurement->vendor->name;
+            });
 
         $pdf = Pdf::loadView('pdf.laporan-vendor', compact('realizations'));
 
         return $pdf->download('laporan-realisasi-per-vendor.pdf');
+    }
+
+    public function downloadPdfSpk(BudgetRealization $realization): \Illuminate\Http\Response
+    {
+        $realization->load([
+            'activityBudget.activity.program',
+            'activityBudget.activity.unit',
+            'activityBudget.activity.fiscalYear',
+            'procurement.vendor',
+            'procurement.ppk',
+            'procurement.kpa',
+            'items',
+        ]);
+
+        $terbilang = self::terbilang($realization->amount).' rupiah';
+        $pdf = Pdf::loadView('pdf.spk', compact('realization', 'terbilang'));
+
+        return $pdf->download("spk-{$realization->receipt_number}.pdf");
+    }
+
+    public function downloadPdfBast(BudgetRealization $realization): \Illuminate\Http\Response
+    {
+        $realization->load([
+            'activityBudget.activity.program',
+            'activityBudget.activity.unit',
+            'activityBudget.activity.fiscalYear',
+            'procurement.vendor',
+            'procurement.ppk',
+            'procurement.kpa',
+            'items',
+        ]);
+
+        $terbilang = self::terbilang($realization->amount).' rupiah';
+        $pdf = Pdf::loadView('pdf.bast', compact('realization', 'terbilang'));
+
+        return $pdf->download("bast-{$realization->receipt_number}.pdf");
+    }
+
+    public function downloadPdfBap(BudgetRealization $realization): \Illuminate\Http\Response
+    {
+        $realization->load([
+            'activityBudget.activity.program',
+            'activityBudget.activity.unit',
+            'activityBudget.activity.fiscalYear',
+            'procurement.vendor',
+            'procurement.ppk',
+            'procurement.kpa',
+            'items',
+        ]);
+
+        $terbilang = self::terbilang($realization->amount).' rupiah';
+        $pdf = Pdf::loadView('pdf.bap', compact('realization', 'terbilang'));
+
+        return $pdf->download("bap-{$realization->receipt_number}.pdf");
+    }
+
+    public function downloadPdfKwitansi(BudgetRealization $realization): \Illuminate\Http\Response
+    {
+        $realization->load([
+            'activityBudget.activity.program',
+            'activityBudget.activity.unit',
+            'activityBudget.activity.fiscalYear',
+            'procurement.vendor',
+            'procurement.ppk',
+            'procurement.kpa',
+            'items',
+        ]);
+
+        $terbilang = self::terbilang($realization->amount).' rupiah';
+        $pdf = Pdf::loadView('pdf.kwitansi', compact('realization', 'terbilang'));
+
+        return $pdf->download("kwitansi-{$realization->receipt_number}.pdf");
+    }
+
+    /**
+     * Konversi angka nominal menjadi ejaan kalimat Terbilang Bahasa Indonesia
+     */
+    public static function terbilang(float $nilai): string
+    {
+        $nilai = abs($nilai);
+        $huruf = ['', 'satu', 'dua', 'tiga', 'empat', 'lima', 'enam', 'tujuh', 'delapan', 'sembilan', 'sepuluh', 'sebelas'];
+        $temp = '';
+
+        if ($nilai < 12) {
+            $temp = ' '.$huruf[(int) $nilai];
+        } elseif ($nilai < 20) {
+            $temp = self::terbilang($nilai - 10).' belas';
+        } elseif ($nilai < 100) {
+            $temp = self::terbilang(floor($nilai / 10)).' puluh '.self::terbilang($nilai % 10);
+        } elseif ($nilai < 200) {
+            $temp = ' seratus '.self::terbilang($nilai - 100);
+        } elseif ($nilai < 1000) {
+            $temp = self::terbilang(floor($nilai / 100)).' ratus '.self::terbilang($nilai % 100);
+        } elseif ($nilai < 2000) {
+            $temp = ' seribu '.self::terbilang($nilai - 1000);
+        } elseif ($nilai < 1000000) {
+            $temp = self::terbilang(floor($nilai / 1000)).' ribu '.self::terbilang($nilai % 1000);
+        } elseif ($nilai < 1000000000) {
+            $temp = self::terbilang(floor($nilai / 1000000)).' juta '.self::terbilang($nilai % 1000000);
+        } elseif ($nilai < 1000000000000) {
+            $temp = self::terbilang(floor($nilai / 1000000000)).' miliar '.self::terbilang(fmod($nilai, 1000000000));
+        } elseif ($nilai < 1000000000000000) {
+            $temp = self::terbilang(floor($nilai / 1000000000000)).' triliun '.self::terbilang(fmod($nilai, 1000000000000));
+        }
+
+        return trim($temp);
     }
 
     public function calendar(Request $request): Response
