@@ -233,15 +233,15 @@
                             >
                                 <span
                                     class="w-28 text-right text-foreground font-semibold"
-                                    >{formatRupiah(prog.pagu, false)}</span
+                                    >{formatRupiah(prog.pagu, true)}</span
                                 >
                                 <span
                                     class="w-28 text-right text-emerald-600 dark:text-emerald-400 font-semibold"
-                                    >{formatRupiah(prog.realisasi, false)}</span
+                                    >{formatRupiah(prog.realisasi, true)}</span
                                 >
                                 <span
                                     class="w-28 text-right text-rose-600 dark:text-rose-450 font-bold"
-                                    >{formatRupiah(prog.sisa, false)}</span
+                                    >{formatRupiah(prog.sisa, true)}</span
                                 >
                                 <div
                                     class="w-16 flex items-center justify-center gap-1.5"
@@ -314,21 +314,21 @@
                                                     class="w-28 text-right text-foreground"
                                                     >{formatRupiah(
                                                         act.pagu,
-                                                        false,
+                                                        true,
                                                     )}</span
                                                 >
                                                 <span
                                                     class="w-28 text-right text-emerald-600 dark:text-emerald-400"
                                                     >{formatRupiah(
                                                         act.realisasi,
-                                                        false,
+                                                        true,
                                                     )}</span
                                                 >
                                                 <span
                                                     class="w-28 text-right text-rose-600 dark:text-rose-450 font-bold"
                                                     >{formatRupiah(
                                                         act.sisa,
-                                                        false,
+                                                        true,
                                                     )}</span
                                                 >
                                                 <div
@@ -406,21 +406,21 @@
                                                                     class="w-28 text-right text-muted-foreground"
                                                                     >{formatRupiah(
                                                                         out.pagu,
-                                                                        false,
+                                                                        true,
                                                                     )}</span
                                                                 >
                                                                 <span
                                                                     class="w-28 text-right text-emerald-600 dark:text-emerald-500"
                                                                     >{formatRupiah(
                                                                         out.realisasi,
-                                                                        false,
+                                                                        true,
                                                                     )}</span
                                                                 >
                                                                 <span
                                                                     class="w-28 text-right text-rose-500 font-semibold"
                                                                     >{formatRupiah(
                                                                         out.sisa,
-                                                                        false,
+                                                                        true,
                                                                     )}</span
                                                                 >
                                                                 <div
@@ -503,21 +503,21 @@
                                                                                     class="w-28 text-right text-muted-foreground"
                                                                                     >{formatRupiah(
                                                                                         subOut.pagu,
-                                                                                        false,
+                                                                                        true,
                                                                                     )}</span
                                                                                 >
                                                                                 <span
                                                                                     class="w-28 text-right text-emerald-600 dark:text-emerald-500"
                                                                                     >{formatRupiah(
                                                                                         subOut.realisasi,
-                                                                                        false,
+                                                                                        true,
                                                                                     )}</span
                                                                                 >
                                                                                 <span
                                                                                     class="w-28 text-right text-rose-500 font-semibold"
                                                                                     >{formatRupiah(
                                                                                         subOut.sisa,
-                                                                                        false,
+                                                                                        true,
                                                                                     )}</span
                                                                                 >
                                                                                 <div
@@ -599,21 +599,21 @@
                                                                                                     class="w-28 text-right text-muted-foreground"
                                                                                                     >{formatRupiah(
                                                                                                         comp.pagu,
-                                                                                                        false,
+                                                                                                        true,
                                                                                                     )}</span
                                                                                                 >
                                                                                                 <span
                                                                                                     class="w-28 text-right text-emerald-600 dark:text-emerald-500"
                                                                                                     >{formatRupiah(
                                                                                                         comp.realisasi,
-                                                                                                        false,
+                                                                                                        true,
                                                                                                     )}</span
                                                                                                 >
                                                                                                 <span
                                                                                                     class="w-28 text-right text-rose-500 font-semibold"
                                                                                                     >{formatRupiah(
                                                                                                         comp.sisa,
-                                                                                                        false,
+                                                                                                        true,
                                                                                                     )}</span
                                                                                                 >
                                                                                                 <div
@@ -696,21 +696,21 @@
                                                                                                                     class="w-28 text-right text-muted-foreground"
                                                                                                                     >{formatRupiah(
                                                                                                                         subComp.pagu,
-                                                                                                                        false,
+                                                                                                                        true,
                                                                                                                     )}</span
                                                                                                                 >
                                                                                                                 <span
                                                                                                                     class="w-28 text-right text-emerald-600 dark:text-emerald-500"
                                                                                                                     >{formatRupiah(
                                                                                                                         subComp.realisasi,
-                                                                                                                        false,
+                                                                                                                        true,
                                                                                                                     )}</span
                                                                                                                 >
                                                                                                                 <span
                                                                                                                     class="w-28 text-right text-rose-500 font-semibold"
                                                                                                                     >{formatRupiah(
                                                                                                                         subComp.sisa,
-                                                                                                                        false,
+                                                                                                                        true,
                                                                                                                     )}</span
                                                                                                                 >
                                                                                                                 <div
@@ -774,21 +774,21 @@
                                                                                                                                 class="w-28 text-right text-muted-foreground/80"
                                                                                                                                 >{formatRupiah(
                                                                                                                                     budget.pagu,
-                                                                                                                                    false,
+                                                                                                                                    true,
                                                                                                                                 )}</span
                                                                                                                             >
                                                                                                                             <span
                                                                                                                                 class="w-28 text-right text-emerald-600/80 dark:text-emerald-500/80"
                                                                                                                                 >{formatRupiah(
                                                                                                                                     budget.realisasi,
-                                                                                                                                    false,
+                                                                                                                                    true,
                                                                                                                                 )}</span
                                                                                                                             >
                                                                                                                             <span
                                                                                                                                 class="w-28 text-right text-rose-500/80"
                                                                                                                                 >{formatRupiah(
                                                                                                                                     budget.sisa,
-                                                                                                                                    false,
+                                                                                                                                    true,
                                                                                                                                 )}</span
                                                                                                                             >
                                                                                                                             <div
