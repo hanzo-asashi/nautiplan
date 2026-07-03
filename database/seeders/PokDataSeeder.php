@@ -72,10 +72,10 @@ class PokDataSeeder extends Seeder
                 }
 
                 $values = $row->toArray();
-                $code = isset($values[1]) ? trim((string) $values[1]) : '';
-                $uraian = isset($values[2]) ? trim((string) $values[2]) : '';
+                $code = isset($values[1]) ? $this->getStringValue($values[1]) : '';
+                $uraian = isset($values[2]) ? $this->getStringValue($values[2]) : '';
                 $volume = isset($values[3]) ? $values[3] : null;
-                $unit = isset($values[4]) ? trim((string) $values[4]) : '';
+                $unit = isset($values[4]) ? $this->getStringValue($values[4]) : '';
                 $unitPrice = isset($values[5]) ? $values[5] : null;
                 $total = isset($values[6]) ? $values[6] : null;
 
@@ -359,5 +359,17 @@ class PokDataSeeder extends Seeder
 
         $reader->close();
         $this->command->info('POK seeding successfully completed!');
+    }
+
+    /**
+     * Get string value from a mixed cell.
+     */
+    private function getStringValue(mixed $value): string
+    {
+        if (is_string($value) || is_numeric($value)) {
+            return trim((string) $value);
+        }
+
+        return '';
     }
 }
