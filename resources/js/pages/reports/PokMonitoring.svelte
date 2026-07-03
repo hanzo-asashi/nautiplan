@@ -135,7 +135,7 @@
                 class="px-3 py-2 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary cursor-pointer font-medium"
             >
                 {#each fiscalYears as fy}
-                    <option value={fy.id.toString()}
+                    <option value={fy.id}
                         >Tahun {fy.year} {fy.is_active ? '(Aktif)' : ''}</option
                     >
                 {/each}
