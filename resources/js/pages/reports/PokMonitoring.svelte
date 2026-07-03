@@ -119,7 +119,7 @@
 
 <AppHead title="Evaluasi POK" />
 
-<div class="space-y-6 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+<div class="p-6 space-y-6 w-full">
     <div
         class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
     >
