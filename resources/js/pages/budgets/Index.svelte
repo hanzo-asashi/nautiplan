@@ -762,7 +762,7 @@
                                                             >
                                                                 🤝 Cetak SPTJB
                                                             </a>
-                                                            {#if real.items && real.items.some(i => Number(i.tax_ppn) > 0)}
+                                                            {#if real.items && real.items.some((i) => Number(i.tax_ppn) > 0)}
                                                                 <a
                                                                     href={`/reports/realization/${real.id}/ssp?type=ppn`}
                                                                     target="_blank"
@@ -771,10 +771,11 @@
                                                                             null)}
                                                                     class="block px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-foreground transition-colors"
                                                                 >
-                                                                    🧾 Cetak SSP (PPN)
+                                                                    🧾 Cetak SSP
+                                                                    (PPN)
                                                                 </a>
                                                             {/if}
-                                                            {#if real.items && real.items.some(i => Number(i.tax_pph22) > 0)}
+                                                            {#if real.items && real.items.some((i) => Number(i.tax_pph22) > 0)}
                                                                 <a
                                                                     href={`/reports/realization/${real.id}/ssp?type=pph22`}
                                                                     target="_blank"
@@ -783,10 +784,11 @@
                                                                             null)}
                                                                     class="block px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-foreground transition-colors"
                                                                 >
-                                                                    🧾 Cetak SSP (PPh 22)
+                                                                    🧾 Cetak SSP
+                                                                    (PPh 22)
                                                                 </a>
                                                             {/if}
-                                                            {#if real.items && real.items.some(i => Number(i.tax_pph23) > 0)}
+                                                            {#if real.items && real.items.some((i) => Number(i.tax_pph23) > 0)}
                                                                 <a
                                                                     href={`/reports/realization/${real.id}/ssp?type=pph23`}
                                                                     target="_blank"
@@ -795,7 +797,8 @@
                                                                             null)}
                                                                     class="block px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-foreground transition-colors"
                                                                 >
-                                                                    🧾 Cetak SSP (PPh 23)
+                                                                    🧾 Cetak SSP
+                                                                    (PPh 23)
                                                                 </a>
                                                             {/if}
                                                         </div>
@@ -1098,22 +1101,72 @@
                                                         placeholder="Keterangan / spesifikasi (opsional)..."
                                                         class="w-full px-2 py-0.5 mt-1 bg-background border border-transparent rounded text-[10px] text-muted-foreground outline-none focus:border-zinc-200 dark:focus:border-zinc-700"
                                                     />
-                                                    <div class="flex items-center gap-1.5 mt-1 text-[9px] bg-zinc-50 dark:bg-zinc-900/60 p-1 rounded border border-zinc-150 dark:border-zinc-800 w-full overflow-x-auto">
-                                                        <div class="flex items-center gap-0.5">
-                                                            <span class="font-semibold text-muted-foreground">PPN:</span>
-                                                            <input type="number" bind:value={item.tax_ppn} class="w-12 px-1 py-0.5 bg-background border border-zinc-200 dark:border-zinc-800 rounded text-[9px] text-right" placeholder="0" />
+                                                    <div
+                                                        class="flex items-center gap-1.5 mt-1 text-[9px] bg-zinc-50 dark:bg-zinc-900/60 p-1 rounded border border-zinc-150 dark:border-zinc-800 w-full overflow-x-auto"
+                                                    >
+                                                        <div
+                                                            class="flex items-center gap-0.5"
+                                                        >
+                                                            <span
+                                                                class="font-semibold text-muted-foreground"
+                                                                >PPN:</span
+                                                            >
+                                                            <input
+                                                                type="number"
+                                                                bind:value={
+                                                                    item.tax_ppn
+                                                                }
+                                                                class="w-12 px-1 py-0.5 bg-background border border-zinc-200 dark:border-zinc-800 rounded text-[9px] text-right"
+                                                                placeholder="0"
+                                                            />
                                                         </div>
-                                                        <div class="flex items-center gap-0.5">
-                                                            <span class="font-semibold text-muted-foreground">PPh21:</span>
-                                                            <input type="number" bind:value={item.tax_pph21} class="w-12 px-1 py-0.5 bg-background border border-zinc-200 dark:border-zinc-800 rounded text-[9px] text-right" placeholder="0" />
+                                                        <div
+                                                            class="flex items-center gap-0.5"
+                                                        >
+                                                            <span
+                                                                class="font-semibold text-muted-foreground"
+                                                                >PPh21:</span
+                                                            >
+                                                            <input
+                                                                type="number"
+                                                                bind:value={
+                                                                    item.tax_pph21
+                                                                }
+                                                                class="w-12 px-1 py-0.5 bg-background border border-zinc-200 dark:border-zinc-800 rounded text-[9px] text-right"
+                                                                placeholder="0"
+                                                            />
                                                         </div>
-                                                        <div class="flex items-center gap-0.5">
-                                                            <span class="font-semibold text-muted-foreground">PPh22:</span>
-                                                            <input type="number" bind:value={item.tax_pph22} class="w-12 px-1 py-0.5 bg-background border border-zinc-200 dark:border-zinc-800 rounded text-[9px] text-right" placeholder="0" />
+                                                        <div
+                                                            class="flex items-center gap-0.5"
+                                                        >
+                                                            <span
+                                                                class="font-semibold text-muted-foreground"
+                                                                >PPh22:</span
+                                                            >
+                                                            <input
+                                                                type="number"
+                                                                bind:value={
+                                                                    item.tax_pph22
+                                                                }
+                                                                class="w-12 px-1 py-0.5 bg-background border border-zinc-200 dark:border-zinc-800 rounded text-[9px] text-right"
+                                                                placeholder="0"
+                                                            />
                                                         </div>
-                                                        <div class="flex items-center gap-0.5">
-                                                            <span class="font-semibold text-muted-foreground">PPh23:</span>
-                                                            <input type="number" bind:value={item.tax_pph23} class="w-12 px-1 py-0.5 bg-background border border-zinc-200 dark:border-zinc-800 rounded text-[9px] text-right" placeholder="0" />
+                                                        <div
+                                                            class="flex items-center gap-0.5"
+                                                        >
+                                                            <span
+                                                                class="font-semibold text-muted-foreground"
+                                                                >PPh23:</span
+                                                            >
+                                                            <input
+                                                                type="number"
+                                                                bind:value={
+                                                                    item.tax_pph23
+                                                                }
+                                                                class="w-12 px-1 py-0.5 bg-background border border-zinc-200 dark:border-zinc-800 rounded text-[9px] text-right"
+                                                                placeholder="0"
+                                                            />
                                                         </div>
                                                     </div>
                                                 </td>
