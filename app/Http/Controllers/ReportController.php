@@ -492,7 +492,7 @@ class ReportController extends Controller
 
         $pdf = Pdf::loadView('pdf.activity-detail', compact('activity'));
 
-        return $pdf->download("detail-kegiatan-{$activity->code}.pdf");
+        return $pdf->stream("detail-kegiatan-{$activity->code}.pdf");
     }
 
     public function downloadPdfQuarterly(Activity $activity, string $quarter): \Illuminate\Http\Response
@@ -511,7 +511,7 @@ class ReportController extends Controller
 
         $pdf = Pdf::loadView('pdf.quarterly-report', compact('activity', 'report', 'quarter'));
 
-        return $pdf->download("laporan-monev-{$activity->code}-{$quarter}.pdf");
+        return $pdf->stream("laporan-monev-{$activity->code}-{$quarter}.pdf");
     }
 
     public function downloadPdfRealization(BudgetRealization $realization): \Illuminate\Http\Response
@@ -529,7 +529,7 @@ class ReportController extends Controller
         $terbilang = self::terbilang($realization->amount).' rupiah';
         $pdf = Pdf::loadView('pdf.surat-pesanan', compact('realization', 'terbilang'));
 
-        return $pdf->download("surat-pesanan-{$realization->receipt_number}.pdf");
+        return $pdf->stream("surat-pesanan-{$realization->receipt_number}.pdf");
     }
 
     public function downloadPdfNonProcurement(Request $request): \Illuminate\Http\Response
@@ -540,7 +540,7 @@ class ReportController extends Controller
 
         $pdf = Pdf::loadView('pdf.laporan-non-pengadaan', compact('realizations'));
 
-        return $pdf->download('laporan-realisasi-non-pengadaan.pdf');
+        return $pdf->stream('laporan-realisasi-non-pengadaan.pdf');
     }
 
     public function downloadPdfVendor(Request $request): \Illuminate\Http\Response
@@ -555,7 +555,7 @@ class ReportController extends Controller
 
         $pdf = Pdf::loadView('pdf.laporan-vendor', compact('realizations'));
 
-        return $pdf->download('laporan-realisasi-per-vendor.pdf');
+        return $pdf->stream('laporan-realisasi-per-vendor.pdf');
     }
 
     public function downloadPdfSpk(BudgetRealization $realization): \Illuminate\Http\Response
@@ -573,7 +573,7 @@ class ReportController extends Controller
         $terbilang = self::terbilang($realization->amount).' rupiah';
         $pdf = Pdf::loadView('pdf.spk', compact('realization', 'terbilang'));
 
-        return $pdf->download("spk-{$realization->receipt_number}.pdf");
+        return $pdf->stream("spk-{$realization->receipt_number}.pdf");
     }
 
     public function downloadPdfBast(BudgetRealization $realization): \Illuminate\Http\Response
@@ -591,7 +591,7 @@ class ReportController extends Controller
         $terbilang = self::terbilang($realization->amount).' rupiah';
         $pdf = Pdf::loadView('pdf.bast', compact('realization', 'terbilang'));
 
-        return $pdf->download("bast-{$realization->receipt_number}.pdf");
+        return $pdf->stream("bast-{$realization->receipt_number}.pdf");
     }
 
     public function downloadPdfBap(BudgetRealization $realization): \Illuminate\Http\Response
@@ -609,7 +609,7 @@ class ReportController extends Controller
         $terbilang = self::terbilang($realization->amount).' rupiah';
         $pdf = Pdf::loadView('pdf.bap', compact('realization', 'terbilang'));
 
-        return $pdf->download("bap-{$realization->receipt_number}.pdf");
+        return $pdf->stream("bap-{$realization->receipt_number}.pdf");
     }
 
     public function downloadPdfKwitansi(BudgetRealization $realization): \Illuminate\Http\Response
@@ -627,7 +627,7 @@ class ReportController extends Controller
         $terbilang = self::terbilang($realization->amount).' rupiah';
         $pdf = Pdf::loadView('pdf.kwitansi', compact('realization', 'terbilang'));
 
-        return $pdf->download("kwitansi-{$realization->receipt_number}.pdf");
+        return $pdf->stream("kwitansi-{$realization->receipt_number}.pdf");
     }
 
     /**

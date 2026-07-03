@@ -91,7 +91,7 @@ test('user can download activity detail pdf', function () {
     $response = $this->actingAs($this->user)->get(route('reports.activity.pdf', $this->activity));
     $response->assertSuccessful();
     $response->assertHeader('content-type', 'application/pdf');
-    $response->assertHeader('content-disposition', 'attachment; filename=detail-kegiatan-ACT-TEST.pdf');
+    $response->assertHeader('content-disposition', 'inline; filename=detail-kegiatan-ACT-TEST.pdf');
 });
 
 test('user can download quarterly report pdf', function () {
@@ -109,7 +109,7 @@ test('user can download quarterly report pdf', function () {
     $response = $this->actingAs($this->user)->get(route('reports.quarterly.pdf', [$this->activity, 'Q1']));
     $response->assertSuccessful();
     $response->assertHeader('content-type', 'application/pdf');
-    $response->assertHeader('content-disposition', 'attachment; filename=laporan-monev-ACT-TEST-Q1.pdf');
+    $response->assertHeader('content-disposition', 'inline; filename=laporan-monev-ACT-TEST-Q1.pdf');
 });
 
 test('user can import activities from excel', function () {
