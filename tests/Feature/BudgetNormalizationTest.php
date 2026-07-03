@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ReportController;
 use App\Models\Activity;
 use App\Models\ActivityBudget;
 use App\Models\BudgetRealization;
@@ -263,4 +264,11 @@ test('user can download PDFs even if the realization has no procurement', functi
     $response = $this->actingAs($this->user)->get(route('reports.realization.kwitansi', $realization));
     $response->assertSuccessful();
     $response->assertHeader('content-type', 'application/pdf');
+});
+
+test('terbilang helper returns correct Indonesian spelling', function () {
+    expect(ReportController::terbilang(17480000))->toBe('tujuh belas juta empat ratus delapan puluh ribu');
+    expect(ReportController::terbilang(1500000))->toBe('satu juta lima ratus ribu');
+    expect(ReportController::terbilang(120))->toBe('seratus dua puluh');
+    expect(ReportController::terbilang(1005000))->toBe('satu juta lima ribu');
 });
