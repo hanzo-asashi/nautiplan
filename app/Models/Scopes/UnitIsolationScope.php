@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Scope;
 use Illuminate\Support\Facades\Auth;
 
+/**
+ * @implements Scope<Model>
+ */
 class UnitIsolationScope implements Scope
 {
     /**
