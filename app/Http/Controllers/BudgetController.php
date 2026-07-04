@@ -101,6 +101,26 @@ class BudgetController extends Controller
         return back()->with('success', 'Pagu anggaran berhasil ditambahkan.');
     }
 
+    public function editBudget(ActivityBudget $budget): Response|RedirectResponse
+    {
+        if ($budget->fiscalYear->is_locked) {
+            return back()->with('error', 'Tahun anggaran sudah dikunci.');
+        }
+
+        $budget->load([
+            'activity.unit',
+            'activity.program',
+            'budgetItems',
+            'revisions.revisedBy',
+            'revisions.details',
+            'fiscalYear',
+        ]);
+
+        return Inertia::render('budgets/Edit', [
+            'budget' => $budget,
+        ]);
+    }
+
     public function updateBudget(Request $request, ActivityBudget $budget): RedirectResponse
     {
         if ($budget->fiscalYear->is_locked) {
