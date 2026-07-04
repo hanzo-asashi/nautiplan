@@ -1,6 +1,6 @@
 # 📖 Panduan Pengguna — Fitur Lanjutan NautiPlan
 
-Dokumen ini berisi panduan penggunaan fitur-fitur operasional tingkat lanjut yang dirancang untuk membantu pengelolaan kegiatan dan sub-kegiatan sehari-hari secara digital dan real-time di Politeknik Pelayaran Barombong.
+Dokumen ini berisi panduan penggunaan fitur-fitur operasional tingkat lanjut yang dirancang untuk membantu pengelolaan kegiatan, sub-kegiatan, hirarki DIPA, pencairan anggaran (SPP, SPM, SPTJB, SSP Pajak), pelacakan revisi POK, serta monitoring evaluasi di Politeknik Pelayaran Barombong.
 
 ---
 
@@ -10,6 +10,11 @@ Dokumen ini berisi panduan penggunaan fitur-fitur operasional tingkat lanjut yan
 3. [Notifikasi Real-time (SSE)](#-notifikasi-real-time-sse)
 4. [Manajemen Versi Dokumen (Drag-and-Drop)](#-manajemen-versi-dokumen-drag-and-drop)
 5. [Riwayat Perubahan & Audit Trail](#-riwayat-perubahan--audit-trail)
+6. [Struktur Hirarki DIPA & Item Budgeting (POK)](#-struktur-hirarki-dipa--item-budgeting-pok)
+7. [Administrasi Pencairan (SPP, SPM, SPTJB, & SSP Pajak)](#-administrasi-pencairan-spp-spm-sptjb--ssp-pajak)
+8. [Pelacakan Revisi POK (Semula vs Menjadi)](#-pelacakan-revisi-pok-semula-vs-menjadi)
+9. [Tren Penyerapan & Early Warning System (EWS)](#-tren-penyerapan--early-warning-system-ews)
+10. [Laporan Monev Struktur DIPA APBN](#-laporan-monev-struktur-dipa-apbn)
 
 ---
 
@@ -51,7 +56,7 @@ NautiPlan menggunakan protokol Server-Sent Events (SSE) untuk mengirimkan pember
 * **Lonceng Notifikasi**: Lonceng di pojok kanan atas layar akan menyala dan menampilkan badge merah ketika ada notifikasi baru (misal: pengajuan persetujuan baru, tugas diperbarui, atau revisi diminta).
 * **Tindakan Cepat**: Buka lonceng notifikasi lalu klik salah satu notifikasi untuk langsung pergi ke halaman terkait.
 * **Tandai Dibaca**: Klik tombol **Tandai Semua Dibaca** atau klik ikon centang pada tiap notifikasi untuk merapikan kotak masuk.
-* **Notifikasi Desktop**: Jika Anda mengizinkan notifikasi browser, pemberitahuan akan muncul sebagai notifikasi desktop windows secara instan.
+* **Notifikasi Desktop**: Jika Anda mengizinkan notifikasi browser, pemberitahuan akan muncul sebagai notifikasi desktop secara instan.
 
 ---
 
@@ -77,3 +82,80 @@ Modul Audit Trail mendokumentasikan setiap perubahan parameter kritis dalam kegi
 ### Cara Penggunaan:
 * **Garis Waktu Perubahan**: Riwayat diurutkan berdasarkan waktu terbaru (kronologis) lengkap dengan informasi pengguna yang melakukan perubahan.
 * **Perbandingan Parameter (Diff)**: Setiap entri menampilkan perubahan detail berupa tabel pembanding parameter sebelum (Nilai Lama) dan sesudah (Nilai Baru) perubahan tersebut disimpan.
+
+---
+
+## 🏛️ Struktur Hirarki DIPA & Item Budgeting (POK)
+
+NautiPlan mengadopsi struktur penganggaran terstandarisasi DIPA APBN untuk pelaporan belanja yang terperinci dan terstruktur.
+
+### Alur Hirarki:
+`Program` ➔ `Kegiatan` ➔ `Output` ➔ `Sub Output` ➔ `Komponen` ➔ `Sub Komponen` ➔ `Pagu Belanja (Akun)` ➔ `Rincian POK (BudgetItem)`
+
+### Penggunaan Item Budgeting:
+* **Rincian POK**: Setiap Akun belanja memiliki rincian item (nama item, volume kuantitas, satuan, harga satuan, dan total pagu).
+* **Manajemen Rincian**: KPA atau Operator Keuangan dapat menambahkan rincian baru pada POK melalui menu kelola anggaran kegiatan.
+* **Audit Preventif Otomatis**: Item rencana POK inilah yang menjadi acuan ketat seluruh belanja realisasi berikutnya.
+
+---
+
+## 📄 Administrasi Pencairan (SPP, SPM, SPTJB, & SSP Pajak)
+
+Modul realisasi kini terintegrasi penuh dengan dokumen pertanggungjawaban keuangan Pejabat Pembuat Komitmen (PPK).
+
+### Validasi Transaksi (Audit Preventif):
+* **Markup Prevention**: Sistem akan secara otomatis menolak realisasi jika harga satuan yang dimasukkan melebihi harga satuan yang direncanakan pada POK.
+* **Volume Control**: Sistem menolak transaksi secara preventif jika jumlah volume item yang dibelanjakan melebihi sisa volume rencana POK (`remaining_volume`).
+
+### Perhitungan Pajak Presisi:
+* Pengguna dapat memilih komponen pajak pada tiap item realisasi belanja:
+  * **PPN**: Dihitung otomatis sebesar 11% dari nilai kena pajak.
+  * **PPh 21**: Pajak penghasilan perorangan (mendukung opsi PPh 21 campur/mixed).
+  * **PPh 22 & PPh 23**: Pemotongan pajak pembelian barang atau jasa.
+
+### Cetak Dokumen PDF Siap Pakai:
+Setelah realisasi dicatat, Anda dapat mengunduh dokumen administrasi formal berstandar negara berikut:
+1. **Surat Permintaan Pembayaran (SPP)**: Berisi rincian tagihan penyerapan belanja.
+2. **Surat Perintah Membayar (SPM)**: Surat perintah pencairan dana ke kas negara.
+3. **Surat Pernyataan Tanggung Jawab Belanja (SPTJB)**: Surat pernyataan keabsahan belanja PPK.
+4. **Surat Setoran Pajak (SSP)**: Lembar penyetoran potongan PPN/PPh ke kantor pajak (dicetak otomatis per jenis pajak yang dipungut).
+
+---
+
+## 🔄 Pelacakan Revisi POK (Semula vs Menjadi)
+
+Setiap pergeseran atau perubahan volume/harga rincian POK akan didokumentasikan untuk keperluan audit keuangan internal.
+
+### Alur Kerja Revisi:
+1. Masuk ke halaman **Daftar Pagu Anggaran** lalu pilih Akun Belanja yang ingin disesuaikan.
+2. Ubah rincian item belanja (misal: memindahkan volume kertas, mengubah harga satuan standard, atau menambah rincian baru).
+3. Masukkan **Alasan Revisi** secara singkat dan jelas sebelum menekan tombol simpan.
+4. Sistem akan menaikkan **Nomor Versi POK** dan merekam data snapshot lama sebagai "Semula" dan data perubahan baru sebagai "Menjadi".
+
+### Visualisasi & Cetak Laporan Revisi:
+* **Histori Revisi (Modal)**: Klik tombol **Histori Revisi** pada baris anggaran untuk membandingkan secara visual rincian sebelum vs sesudah perubahan (lengkap dengan penanda item baru/dihapus dan nilai selisih delta).
+* **Cetak PDF Laporan Komparatif**: Anda dapat mengekspor laporan komparatif revisi POK ini dalam bentuk berkas PDF resmi untuk arsip pemeriksaan.
+
+---
+
+## ⚠️ Tren Penyerapan & Early Warning System (EWS)
+
+Modul Analisis menyajikan pemantauan penyerapan anggaran berjalan secara visual dan memberikan peringatan proaktif jika terjadi kondisi kritis.
+
+### Indikator Pemantauan:
+1. **Tren Penyerapan Bulanan (Kumulatif)**: Menyajikan progres realisasi kumulatif dari bulan Januari hingga Desember untuk memantau kecepatan belanja sepanjang tahun anggaran berjalan.
+2. **Pagu Kritis / Early Warning System (EWS)**:
+   * Menampilkan daftar pagu belanja dengan persentase penyerapan di atas **85%** (dana hampir habis) atau memiliki sisa saldo di bawah **Rp 2.000.000**.
+   * Kartu peringatan berkode warna: **Kuning (Warning)** untuk sisa dana terbatas dan **Merah (Sangat Kritis/Depleted)** jika pagu sudah hampir habis agar PPK/KPA segera menjadwalkan revisi POK.
+
+---
+
+## 📊 Laporan Monev Struktur DIPA APBN
+
+Sistem menyediakan ekspor data yang komprehensif bagi pimpinan untuk melakukan pemantauan anggaran.
+
+### Cara Akses & Ekspor:
+* Masuk ke menu **Analisis & Realisasi**.
+* Klik tab **Hub Impor & Ekspor** untuk mengunduh template rencana POK atau mengunggah data anggaran masal.
+* Klik tombol **Cetak Laporan** untuk mengunduh komparasi realisasi anggaran per Unit Kerja, per Program, maupun perbandingan realisasi multi-tahun.
+* Laporan realisasi per-hirarki (Output/Sub-Output/Komponen) dapat dicetak secara terstruktur guna melihat efisiensi penyerapan masing-masing pos anggaran.
