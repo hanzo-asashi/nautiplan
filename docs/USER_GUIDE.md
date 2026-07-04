@@ -16,7 +16,6 @@ Dokumen ini berisi panduan penggunaan fitur-fitur operasional tingkat lanjut yan
 9. [Tren Penyerapan & Early Warning System (EWS)](#-tren-penyerapan--early-warning-system-ews)
 10. [Laporan Monev Struktur DIPA APBN](#-laporan-monev-struktur-dipa-apbn)
 11. [Keamanan & Validasi Transaksi Lanjutan](#-keamanan--validasi-transaksi-lanjutan)
-12. [Tampilan Penuh Formulir (Full-Page Form)](#-tampilan-penuh-formulir-full-page-form)
 
 ---
 
@@ -178,12 +177,3 @@ Sistem dilengkapi dengan proteksi integritas data dan validasi otomatis untuk me
 
 ### 3. Rekaman Jejak Audit (Audit Trail) Lanjutan:
 * Setiap perubahan data anggaran krusial (termasuk kegiatan, rincian POK, catatan realisasi, dan revisi) kini terekam secara komprehensif dalam log audit sistem untuk menjamin akuntabilitas 100%.
-
----
-
-## 🖥️ Tampilan Penuh Formulir (Full-Page Form)
-
-Untuk memfasilitasi formulir yang sangat padat dan memiliki teks yang panjang (seperti Revisi POK dan Pencatatan Realisasi), NautiPlan memigrasi tampilan formulir yang dulunya berbasis *Pop-up/Modal* menjadi Halaman Penuh (*Dedicated Page*).
-
-* **Visibilitas Maksimal**: Area pandang (viewport) lebih luas tanpa batasan modal, sehingga rincian item, angka, dan deskripsi revisi dapat terlihat secara utuh.
-* **Fokus Penuh**: Tidak terganggu oleh elemen latar belakang, memudahkan pengisian rincian belanja, perpajakan, dan harga satuan secara presisi.
