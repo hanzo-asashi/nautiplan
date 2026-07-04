@@ -4,15 +4,16 @@ namespace App\Actions\Activity;
 
 use App\Models\Activity;
 use App\Models\AuditLog;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class GetActivityRevisionsAction
 {
     /**
      * Get revisions/audit logs for an activity, its budgets, and sub-activities.
      *
-     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator<int, AuditLog>
+     * @return LengthAwarePaginator<int, AuditLog>
      */
-    public function execute(Activity $activity): \Illuminate\Contracts\Pagination\LengthAwarePaginator
+    public function execute(Activity $activity): LengthAwarePaginator
     {
         $budgetIds = $activity->budgets()->pluck('id')->toArray();
         $subActivityIds = $activity->subActivities()->pluck('id')->toArray();
