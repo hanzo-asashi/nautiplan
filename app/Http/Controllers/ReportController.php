@@ -1065,9 +1065,6 @@ class ReportController extends Controller
 
             $no = 1;
             foreach ($realizations as $real) {
-                if (! $real instanceof BudgetRealization) {
-                    continue;
-                }
                 $makCode = '';
                 $act = $real->activityBudget->activity;
                 if ($act) {
@@ -1091,7 +1088,7 @@ class ReportController extends Controller
 
                     $writer->addRow(Row::fromValues([
                         $no++,
-                        $real->realization_date->format('Y-m-d'),
+                        \Illuminate\Support\Carbon::parse($real->realization_date)->format('Y-m-d'),
                         $real->receipt_number ?? '',
                         $real->description ?? '',
                         $makCode,
