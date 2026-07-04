@@ -3,6 +3,7 @@
 use App\Models\Activity;
 use App\Models\ActivityBudget;
 use App\Models\ActivityDocument;
+use App\Models\BudgetItem;
 use App\Models\FiscalYear;
 use App\Models\Notification;
 use App\Models\Program;
@@ -199,6 +200,15 @@ it('can log realization with type and vendor details', function () {
         'version' => 1,
     ]);
 
+    $budgetItem = BudgetItem::create([
+        'activity_budget_id' => $budget->id,
+        'name' => 'Modul Diklat',
+        'volume' => 2,
+        'unit' => 'Paket',
+        'unit_price' => 25000000.0,
+        'total' => 50000000.0,
+    ]);
+
     $realizationData = [
         'activity_budget_id' => $budget->id,
         'realization_type' => 'surat_pesanan',
@@ -217,6 +227,7 @@ it('can log realization with type and vendor details', function () {
         'sp2d_date' => '2026-03-10',
         'items' => [
             [
+                'budget_item_id' => $budgetItem->id,
                 'name' => 'Modul Diklat',
                 'volume' => 1,
                 'unit' => 'Paket',

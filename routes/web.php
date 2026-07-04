@@ -100,6 +100,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('reports/export/rekap-komponen', [ReportController::class, 'downloadPdfRekapKomponen'])->name('reports.export.rekap-komponen');
     Route::get('reports/non-procurement/pdf', [ReportController::class, 'downloadPdfNonProcurement'])->name('reports.non-procurement.pdf');
     Route::get('reports/vendor/pdf', [ReportController::class, 'downloadPdfVendor'])->name('reports.vendor.pdf');
+    Route::get('reports/revision/{revision}/pdf', [ReportController::class, 'downloadPdfRevision'])->name('reports.revision.pdf');
 
     // Notifications Workflow
     Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');

@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Activity;
 use App\Models\ActivityBudget;
 use App\Models\ActivityIndicator;
+use App\Models\BudgetItem;
 use App\Models\BudgetRealization;
 use App\Models\FiscalYear;
 use App\Models\Procurement;
@@ -380,6 +381,34 @@ class DemoDataSeeder extends Seeder
             'bank_account_name' => 'CV. YUSHAR',
         ]);
 
+        // Seed Budget Items
+        $itemTeksas = BudgetItem::create([
+            'activity_budget_id' => $bud1->id,
+            'name' => 'Pembuatan dan Pemasangan Shipping Company BLU',
+            'volume' => 5,
+            'unit' => 'Paket',
+            'unit_price' => 9518250.0,
+            'total' => 47591250.0,
+        ]);
+
+        $itemYushar = BudgetItem::create([
+            'activity_budget_id' => $bud1->id,
+            'name' => 'Pengadaan Wearpack DKP Desember 1',
+            'volume' => 100,
+            'unit' => 'Pcs',
+            'unit_price' => 2086711.2,
+            'total' => 208671120.0,
+        ]);
+
+        $itemHonor = BudgetItem::create([
+            'activity_budget_id' => $bud2->id,
+            'name' => 'Honor Awak Rescue Boat',
+            'volume' => 12,
+            'unit' => 'Bulan',
+            'unit_price' => 17480000.0,
+            'total' => 209760000.0,
+        ]);
+
         // Procurement 1: Pengadaan Teksas (Surat Pesanan)
         $procTeksas = Procurement::create([
             'activity_budget_id' => $bud1->id,
@@ -416,6 +445,7 @@ class DemoDataSeeder extends Seeder
 
         RealizationItem::create([
             'budget_realization_id' => $realTeksas->id,
+            'budget_item_id' => $itemTeksas->id,
             'name' => 'Pembuatan dan Pemasangan Shipping Company BLU',
             'volume' => 1,
             'unit' => 'Paket',
@@ -463,6 +493,7 @@ class DemoDataSeeder extends Seeder
 
         RealizationItem::create([
             'budget_realization_id' => $realYushar->id,
+            'budget_item_id' => $itemYushar->id,
             'name' => 'Pengadaan Wearpack DKP Desember 1',
             'volume' => 50,
             'unit' => 'Pcs',
@@ -484,6 +515,7 @@ class DemoDataSeeder extends Seeder
 
         RealizationItem::create([
             'budget_realization_id' => $realHonor->id,
+            'budget_item_id' => $itemHonor->id,
             'name' => 'Honor Awak Rescue Boat',
             'volume' => 1,
             'unit' => 'Bulan',

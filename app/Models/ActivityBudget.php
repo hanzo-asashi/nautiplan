@@ -97,4 +97,12 @@ class ActivityBudget extends Model
 
         return round(($this->total_realized / (float) $this->amount) * 100, 2);
     }
+
+    /**
+     * @return HasMany<BudgetRevision, $this>
+     */
+    public function revisions(): HasMany
+    {
+        return $this->hasMany(BudgetRevision::class);
+    }
 }

@@ -3,6 +3,7 @@
 use App\Http\Controllers\ReportController;
 use App\Models\Activity;
 use App\Models\ActivityBudget;
+use App\Models\BudgetItem;
 use App\Models\BudgetRealization;
 use App\Models\FiscalYear;
 use App\Models\Procurement;
@@ -62,6 +63,24 @@ beforeEach(function () {
         'fiscal_year_id' => $this->fiscalYear->id,
     ]);
 
+    $this->budgetItemLaptop = BudgetItem::create([
+        'activity_budget_id' => $this->budget->id,
+        'name' => 'Laptop Asus ROG',
+        'volume' => 5,
+        'unit' => 'Unit',
+        'unit_price' => 10000000,
+        'total' => 50000000,
+    ]);
+
+    $this->budgetItemKertas = BudgetItem::create([
+        'activity_budget_id' => $this->budget->id,
+        'name' => 'Kertas A4',
+        'volume' => 100,
+        'unit' => 'Rim',
+        'unit_price' => 500000,
+        'total' => 50000000,
+    ]);
+
     // Create another user as PPK/KPA
     $this->ppk = User::factory()->create(['name' => 'Arnaldy Achmadita', 'rank' => 'Penata (III/c)']);
     $this->kpa = User::factory()->create(['name' => 'Sidrotul Muntaha', 'rank' => 'Pembina Tk.I (IV/b)']);
@@ -114,6 +133,7 @@ test('user can store a normalized procurement realization with nested items', fu
 
         'items' => [
             [
+                'budget_item_id' => $this->budgetItemLaptop->id,
                 'name' => 'Laptop Asus ROG',
                 'volume' => 1,
                 'unit' => 'Unit',
@@ -202,6 +222,7 @@ test('user can download normalized PDFs', function () {
 
     RealizationItem::create([
         'budget_realization_id' => $realization->id,
+        'budget_item_id' => $this->budgetItemKertas->id,
         'name' => 'Kertas A4',
         'volume' => 10,
         'unit' => 'Rim',

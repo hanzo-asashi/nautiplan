@@ -150,6 +150,14 @@
         account_name: '',
         description: '',
         amount: 0,
+        revision_description: '',
+        items: [] as Array<{
+            id?: number;
+            name: string;
+            volume: number;
+            unit: string;
+            unit_price: number;
+        }>,
     });
 
     function openEditBudgetModal(budget: any) {
@@ -159,17 +167,74 @@
         editForm.account_name = budget.account_name || '';
         editForm.description = budget.description;
         editForm.amount = budget.amount;
+        editForm.revision_description = '';
+
+        editForm.items = (budget.budget_items || []).map((bi: any) => ({
+            id: bi.id,
+            name: bi.name,
+            volume: Number(bi.volume),
+            unit: bi.unit,
+            unit_price: Number(bi.unit_price),
+        }));
+
         editBudgetModalOpen = true;
+    }
+
+    function addEditItem() {
+        editForm.items = [
+            ...editForm.items,
+            {
+                name: '',
+                volume: 1,
+                unit: 'Pcs',
+                unit_price: 0,
+            },
+        ];
+        calculateEditTotal();
+    }
+
+    function removeEditItem(index: number) {
+        editForm.items = editForm.items.filter((_, i) => i !== index);
+        calculateEditTotal();
+    }
+
+    function calculateEditTotal() {
+        editForm.amount = editForm.items.reduce(
+            (sum, item) => sum + Number(item.volume) * Number(item.unit_price),
+            0,
+        );
     }
 
     function handleEditBudgetSubmit(e: Event) {
         e.preventDefault();
+
+        if (editForm.items.length === 0) {
+            alert('Harap masukkan minimal 1 item anggaran.');
+
+            return;
+        }
+
+        if (!editForm.revision_description.trim()) {
+            alert('Harap isi alasan/keterangan revisi.');
+
+            return;
+        }
+
         editForm.put(toUrl(update({ budget: selectedBudgetToEdit.id })), {
             onSuccess: () => {
                 editBudgetModalOpen = false;
                 editForm.reset();
             },
         });
+    }
+
+    // Revision history modal state
+    let revisionHistoryModalOpen = $state(false);
+    let selectedBudgetForHistory = $state<any>(null);
+
+    function openRevisionHistoryModal(budget: any) {
+        selectedBudgetForHistory = budget;
+        revisionHistoryModalOpen = true;
     }
 </script>
 
@@ -359,40 +424,52 @@
                                 >
                             </div>
 
-                            {#if isFinanceOrAdmin}
-                                <div
-                                    class="flex gap-2 pl-2 border-l border-sidebar-border/30"
+                            <div class="flex gap-2 items-center">
+                                <button
+                                    onclick={() =>
+                                        openRevisionHistoryModal(bud)}
+                                    class="inline-flex h-8 w-8 items-center justify-center rounded-md border border-zinc-200/50 dark:border-zinc-800 bg-background text-zinc-550 hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer"
+                                    title="Histori Revisi POK"
                                 >
-                                    <Link
-                                        href={toUrl(
-                                            realizationCreate({
-                                                budget: bud.id,
-                                            }),
-                                        )}
-                                        class="inline-flex h-8 items-center justify-center rounded-md bg-emerald-600 hover:bg-emerald-500 text-white px-3 text-xs font-semibold shadow-sm cursor-pointer gap-1"
+                                    <History class="size-4" />
+                                </button>
+
+                                {#if isFinanceOrAdmin}
+                                    <div
+                                        class="flex gap-2 pl-2 border-l border-sidebar-border/30"
                                     >
-                                        <Plus class="size-3.5" />
-                                        Realisasi
-                                    </Link>
-                                    <button
-                                        onclick={() => openEditBudgetModal(bud)}
-                                        class="inline-flex h-8 w-8 items-center justify-center rounded-md border border-zinc-200/50 dark:border-zinc-800 bg-background text-primary hover:bg-primary/10 cursor-pointer"
-                                        title="Edit Pagu"
-                                    >
-                                        <Pen class="size-4" />
-                                    </button>
-                                    {#if bud.realizations.length === 0}
+                                        <Link
+                                            href={toUrl(
+                                                realizationCreate({
+                                                    budget: bud.id,
+                                                }),
+                                            )}
+                                            class="inline-flex h-8 items-center justify-center rounded-md bg-emerald-600 hover:bg-emerald-500 text-white px-3 text-xs font-semibold shadow-sm cursor-pointer gap-1"
+                                        >
+                                            <Plus class="size-3.5" />
+                                            Realisasi
+                                        </Link>
                                         <button
                                             onclick={() =>
-                                                handleDeleteBudget(bud.id)}
-                                            class="inline-flex h-8 w-8 items-center justify-center rounded-md border border-zinc-200/50 dark:border-zinc-800 bg-background text-rose-500 hover:bg-rose-500/10 cursor-pointer"
-                                            title="Hapus Pagu"
+                                                openEditBudgetModal(bud)}
+                                            class="inline-flex h-8 w-8 items-center justify-center rounded-md border border-zinc-200/50 dark:border-zinc-800 bg-background text-primary hover:bg-primary/10 cursor-pointer"
+                                            title="Revisi POK"
                                         >
-                                            <Trash2 class="size-4" />
+                                            <Pen class="size-4" />
                                         </button>
-                                    {/if}
-                                </div>
-                            {/if}
+                                        {#if bud.realizations.length === 0}
+                                            <button
+                                                onclick={() =>
+                                                    handleDeleteBudget(bud.id)}
+                                                class="inline-flex h-8 w-8 items-center justify-center rounded-md border border-zinc-200/50 dark:border-zinc-800 bg-background text-rose-500 hover:bg-rose-500/10 cursor-pointer"
+                                                title="Hapus Pagu"
+                                            >
+                                                <Trash2 class="size-4" />
+                                            </button>
+                                        {/if}
+                                    </div>
+                                {/if}
+                            </div>
                         </div>
                     </div>
 
@@ -793,77 +870,224 @@
 
 {#if editBudgetModalOpen}
     <div
-        class="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/30 backdrop-blur-sm"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/30 backdrop-blur-sm p-4 overflow-y-auto"
     >
         <div
-            class="bg-card/95 border border-sidebar-border/50 p-6 rounded-xl shadow-xl w-full max-w-md space-y-4 text-foreground"
+            class="bg-card/95 border border-sidebar-border/50 p-6 rounded-xl shadow-xl w-full max-w-4xl space-y-4 text-foreground max-h-[90vh] overflow-y-auto"
         >
-            <h3 class="text-lg font-bold">Edit Pagu Anggaran</h3>
-            <p class="text-xs text-muted-foreground">
+            <h3 class="text-lg font-bold">Revisi Pagu Anggaran (POK)</h3>
+            <p class="text-xs text-muted-foreground -mt-2">
                 Kegiatan: {selectedBudgetToEdit?.activity?.name || '-'}
             </p>
 
-            <form onsubmit={handleEditBudgetSubmit} class="space-y-3">
-                <div class="space-y-1">
-                    <label class="text-xs font-semibold"
-                        >Kategori Anggaran</label
-                    >
-                    <select
-                        bind:value={editForm.budget_category}
-                        class="w-full px-3 py-1.5 text-sm bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary cursor-pointer"
-                        required
-                    >
-                        <option value="personnel">Personnel</option>
-                        <option value="goods_services">Goods & Services</option>
-                        <option value="capital">Capital</option>
-                        <option value="other">Other</option>
-                    </select>
-                </div>
-                <div class="grid grid-cols-2 gap-3">
+            <form onsubmit={handleEditBudgetSubmit} class="space-y-4">
+                <!-- Metadata Grid -->
+                <div
+                    class="grid grid-cols-1 md:grid-cols-4 gap-3 bg-zinc-50 dark:bg-zinc-900/35 p-3 rounded-lg border border-zinc-200/50 dark:border-zinc-800"
+                >
                     <div class="space-y-1">
-                        <label class="text-xs font-semibold">Kode Akun</label>
+                        <label class="text-xs font-bold"
+                            >Kategori Anggaran</label
+                        >
+                        <select
+                            bind:value={editForm.budget_category}
+                            class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary cursor-pointer font-semibold"
+                            required
+                        >
+                            <option value="personnel">Personnel</option>
+                            <option value="goods_services"
+                                >Goods & Services</option
+                            >
+                            <option value="capital">Capital</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-xs font-bold">Kode Akun</label>
                         <input
                             type="text"
                             bind:value={editForm.account_code}
-                            placeholder="Contoh: 521811"
-                            class="w-full px-3 py-1.5 text-sm bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary"
+                            placeholder="E.g., 521811"
+                            class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary font-semibold"
                         />
                     </div>
                     <div class="space-y-1">
-                        <label class="text-xs font-semibold">Nama Akun</label>
+                        <label class="text-xs font-bold">Nama Akun</label>
                         <input
                             type="text"
                             bind:value={editForm.account_name}
-                            placeholder="Contoh: Belanja Barang"
-                            class="w-full px-3 py-1.5 text-sm bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary"
+                            placeholder="E.g., Belanja Barang"
+                            class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary font-semibold"
+                        />
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-xs font-bold">Deskripsi Pagu</label>
+                        <input
+                            type="text"
+                            bind:value={editForm.description}
+                            class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary font-semibold"
+                            required
                         />
                     </div>
                 </div>
-                <div class="space-y-1">
-                    <label class="text-xs font-semibold">Deskripsi Pagu</label>
-                    <input
-                        type="text"
-                        bind:value={editForm.description}
-                        class="w-full px-3 py-1.5 text-sm bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary"
-                        required
-                    />
-                </div>
 
-                <div class="space-y-1">
-                    <label class="text-xs font-semibold"
-                        >Jumlah Pagu (IDR)</label
-                    >
-                    <input
-                        type="number"
-                        bind:value={editForm.amount}
-                        class="w-full px-3 py-1.5 text-sm bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary"
-                        min="0"
-                        required
-                    />
-                </div>
-
+                <!-- Items Section -->
                 <div
-                    class="flex justify-end gap-3 pt-3 border-t border-sidebar-border/20 mt-4"
+                    class="space-y-2 border border-zinc-200/50 dark:border-zinc-800 rounded-lg p-4"
+                >
+                    <div
+                        class="flex justify-between items-center border-b border-zinc-200/50 dark:border-zinc-800 pb-2"
+                    >
+                        <h4 class="text-sm font-bold text-primary">
+                            Rincian Rencana Belanja (POK)
+                        </h4>
+                        <button
+                            type="button"
+                            onclick={addEditItem}
+                            class="inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-semibold bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors cursor-pointer"
+                        >
+                            <Plus class="w-3 h-3" /> Tambah Item
+                        </button>
+                    </div>
+
+                    <div
+                        class="overflow-x-auto max-h-[300px] overflow-y-auto space-y-2 pt-2"
+                    >
+                        {#if editForm.items.length === 0}
+                            <div
+                                class="text-center py-6 text-xs text-muted-foreground"
+                            >
+                                Belum ada rincian item anggaran. Klik Tambah
+                                Item.
+                            </div>
+                        {:else}
+                            <table
+                                class="w-full text-xs text-left border-collapse"
+                            >
+                                <thead>
+                                    <tr
+                                        class="border-b border-zinc-200 dark:border-zinc-800 text-muted-foreground font-semibold"
+                                    >
+                                        <th class="pb-2">Nama Barang / Jasa</th>
+                                        <th class="pb-2 text-center w-20"
+                                            >Volume</th
+                                        >
+                                        <th class="pb-2 text-center w-24"
+                                            >Satuan</th
+                                        >
+                                        <th class="pb-2 text-right w-36"
+                                            >Harga Satuan</th
+                                        >
+                                        <th class="pb-2 text-right w-36"
+                                            >Total</th
+                                        >
+                                        <th class="pb-2 text-center w-12"
+                                            >Aksi</th
+                                        >
+                                    </tr>
+                                </thead>
+                                <tbody
+                                    class="divide-y divide-zinc-250/20 dark:divide-zinc-800/30"
+                                >
+                                    {#each editForm.items as item, idx}
+                                        <tr>
+                                            <td class="py-2 pr-2">
+                                                <input
+                                                    type="text"
+                                                    bind:value={item.name}
+                                                    placeholder="Nama item"
+                                                    class="w-full px-2 py-1 bg-background border border-zinc-200 dark:border-zinc-800 rounded-md outline-none focus:border-primary font-medium"
+                                                    required
+                                                />
+                                            </td>
+                                            <td class="py-2 pr-2">
+                                                <input
+                                                    type="number"
+                                                    bind:value={item.volume}
+                                                    oninput={calculateEditTotal}
+                                                    min="0.01"
+                                                    step="any"
+                                                    class="w-full px-2 py-1 bg-background border border-zinc-200 dark:border-zinc-800 rounded-md outline-none focus:border-primary text-center font-medium"
+                                                    required
+                                                />
+                                            </td>
+                                            <td class="py-2 pr-2">
+                                                <input
+                                                    type="text"
+                                                    bind:value={item.unit}
+                                                    placeholder="E.g., Rim"
+                                                    class="w-full px-2 py-1 bg-background border border-zinc-200 dark:border-zinc-800 rounded-md outline-none focus:border-primary text-center font-medium"
+                                                    required
+                                                />
+                                            </td>
+                                            <td class="py-2 pr-2">
+                                                <input
+                                                    type="number"
+                                                    bind:value={item.unit_price}
+                                                    oninput={calculateEditTotal}
+                                                    min="0"
+                                                    class="w-full px-2 py-1 bg-background border border-zinc-200 dark:border-zinc-800 rounded-md outline-none focus:border-primary text-right font-bold"
+                                                    required
+                                                />
+                                            </td>
+                                            <td
+                                                class="py-2 pr-2 text-right font-bold text-zinc-650 dark:text-zinc-350"
+                                            >
+                                                {formatRupiah(
+                                                    item.volume *
+                                                        item.unit_price,
+                                                )}
+                                            </td>
+                                            <td class="py-2 text-center">
+                                                <button
+                                                    type="button"
+                                                    onclick={() =>
+                                                        removeEditItem(idx)}
+                                                    class="text-rose-500 hover:text-rose-600 p-1 hover:bg-rose-50 dark:hover:bg-rose-950/20 rounded cursor-pointer"
+                                                    title="Hapus Item"
+                                                >
+                                                    <Trash2
+                                                        class="w-3.5 h-3.5"
+                                                    />
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    {/each}
+                                </tbody>
+                            </table>
+                        {/if}
+                    </div>
+
+                    <!-- Computed Total Pagu Display -->
+                    <div
+                        class="flex justify-between items-center p-3 bg-zinc-100 dark:bg-zinc-900 rounded-lg font-bold text-xs mt-3"
+                    >
+                        <span class="text-muted-foreground"
+                            >Total Pagu Baru (Dihitung Otomatis):</span
+                        >
+                        <span class="text-sm font-extrabold text-foreground"
+                            >{formatRupiah(editForm.amount)}</span
+                        >
+                    </div>
+                </div>
+
+                <!-- Revision Description -->
+                <div class="space-y-1">
+                    <label class="text-xs font-bold text-rose-500"
+                        >Alasan / Keterangan Revisi *</label
+                    >
+                    <textarea
+                        bind:value={editForm.revision_description}
+                        placeholder="E.g., Pergeseran anggaran belanja barang untuk mendukung diklat simulator semester I"
+                        rows="2"
+                        class="w-full px-3 py-2 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary font-medium"
+                        required
+                    ></textarea>
+                </div>
+
+                <!-- Actions -->
+                <div
+                    class="flex justify-end gap-3 pt-3 border-t border-sidebar-border/20"
                 >
                     <button
                         type="button"
@@ -871,19 +1095,268 @@
                             editBudgetModalOpen = false;
                             editForm.reset();
                         }}
-                        class="inline-flex h-9 items-center justify-center rounded-md border border-zinc-200 dark:border-zinc-800 bg-background px-4 py-2 text-sm font-medium hover:bg-accent cursor-pointer"
+                        class="inline-flex h-9 items-center justify-center rounded-lg border border-zinc-200 dark:border-zinc-800 bg-background px-4 py-2 text-xs font-semibold hover:bg-accent cursor-pointer"
                     >
                         Batal
                     </button>
                     <button
                         type="submit"
                         disabled={editForm.processing}
-                        class="inline-flex h-9 items-center justify-center rounded-md bg-primary hover:bg-primary/90 text-white px-4 py-2 text-sm font-medium cursor-pointer"
+                        class="inline-flex h-9 items-center justify-center rounded-lg bg-primary hover:bg-primary/95 text-white px-4 py-2 text-xs font-bold cursor-pointer transition-colors"
                     >
-                        Simpan Perubahan
+                        {editForm.processing
+                            ? 'Menyimpan...'
+                            : 'Simpan & Revisi POK'}
                     </button>
                 </div>
             </form>
+        </div>
+    </div>
+{/if}
+
+{#if revisionHistoryModalOpen}
+    <div
+        class="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/30 backdrop-blur-sm p-4 overflow-y-auto"
+    >
+        <div
+            class="bg-card/95 border border-sidebar-border/50 p-6 rounded-xl shadow-xl w-full max-w-4xl space-y-4 text-foreground max-h-[90vh] overflow-y-auto"
+        >
+            <div
+                class="flex justify-between items-start border-b border-sidebar-border/20 pb-3"
+            >
+                <div>
+                    <h3 class="text-lg font-bold">
+                        Histori Revisi Anggaran (POK)
+                    </h3>
+                    <p class="text-xs text-muted-foreground mt-0.5">
+                        Kegiatan: {selectedBudgetForHistory?.activity?.name ||
+                            '-'} | Deskripsi: {selectedBudgetForHistory?.description}
+                    </p>
+                </div>
+                <button
+                    type="button"
+                    onclick={() => (revisionHistoryModalOpen = false)}
+                    class="text-zinc-450 hover:text-zinc-600 dark:text-zinc-550 dark:hover:text-zinc-400 p-1 rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer"
+                >
+                    ✕
+                </button>
+            </div>
+
+            <div class="space-y-6 overflow-y-auto max-h-[65vh] pr-2 pt-2">
+                {#if !selectedBudgetForHistory?.revisions || selectedBudgetForHistory.revisions.length === 0}
+                    <div
+                        class="text-center py-12 text-sm text-muted-foreground"
+                    >
+                        Belum ada histori revisi untuk pagu anggaran ini.
+                    </div>
+                {:else}
+                    {#each selectedBudgetForHistory.revisions as revision (revision.id)}
+                        <div
+                            class="border border-zinc-200 dark:border-zinc-800 rounded-xl overflow-hidden bg-zinc-50/50 dark:bg-zinc-900/10"
+                        >
+                            <!-- Revision Header -->
+                            <div
+                                class="p-4 bg-zinc-100/50 dark:bg-zinc-900/40 border-b border-zinc-200 dark:border-zinc-800 flex flex-wrap justify-between items-center gap-3"
+                            >
+                                <div>
+                                    <div class="flex items-center gap-2">
+                                        <span
+                                            class="text-xs font-bold bg-primary/10 text-primary px-2 py-0.5 rounded"
+                                        >
+                                            Revisi #{revision.revision_number}
+                                        </span>
+                                        <span
+                                            class="text-xs text-muted-foreground font-medium"
+                                        >
+                                            Oleh: <strong
+                                                class="text-foreground"
+                                                >{revision.revised_by?.name ||
+                                                    'Sistem'}</strong
+                                            >
+                                        </span>
+                                        <span
+                                            class="text-xs text-muted-foreground font-medium"
+                                        >
+                                            | Tanggal: {new Date(
+                                                revision.created_at,
+                                            ).toLocaleDateString('id-ID', {
+                                                day: 'numeric',
+                                                month: 'short',
+                                                year: 'numeric',
+                                                hour: '2-digit',
+                                                minute: '2-digit',
+                                            })}
+                                        </span>
+                                    </div>
+                                    <p
+                                        class="text-xs font-semibold text-foreground mt-2"
+                                    >
+                                        Alasan: <span
+                                            class="italic font-medium text-muted-foreground"
+                                            >"{revision.description}"</span
+                                        >
+                                    </p>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <div class="text-right">
+                                        <span
+                                            class="text-[10px] text-muted-foreground block font-semibold"
+                                            >Total Pagu Semula &rarr; Menjadi</span
+                                        >
+                                        <span
+                                            class="text-xs font-bold text-foreground"
+                                        >
+                                            {formatRupiah(
+                                                revision.amount_semula,
+                                            )} &rarr; {formatRupiah(
+                                                revision.amount_menjadi,
+                                            )}
+                                        </span>
+                                    </div>
+                                    <a
+                                        href={`/reports/revision/${revision.id}/pdf`}
+                                        target="_blank"
+                                        class="inline-flex h-8 items-center justify-center rounded-lg bg-zinc-200 dark:bg-zinc-800 text-foreground px-3 text-xs font-bold hover:bg-zinc-300 dark:hover:bg-zinc-700 cursor-pointer gap-1 transition-colors"
+                                    >
+                                        📄 PDF
+                                    </a>
+                                </div>
+                            </div>
+
+                            <!-- Revision Details Table -->
+                            <div class="p-4 overflow-x-auto">
+                                <table
+                                    class="w-full text-xs text-left border-collapse"
+                                >
+                                    <thead>
+                                        <tr
+                                            class="border-b border-zinc-200 dark:border-zinc-800 text-muted-foreground font-semibold"
+                                        >
+                                            <th class="pb-2">Rincian Item</th>
+                                            <th class="pb-2 text-right w-48"
+                                                >Semula (Pagu Lama)</th
+                                            >
+                                            <th class="pb-2 text-right w-48"
+                                                >Menjadi (Pagu Baru)</th
+                                            >
+                                            <th class="pb-2 text-right w-36"
+                                                >Selisih (Perubahan)</th
+                                            >
+                                        </tr>
+                                    </thead>
+                                    <tbody
+                                        class="divide-y divide-zinc-200/50 dark:divide-zinc-800/30"
+                                    >
+                                        {#each revision.details || [] as detail}
+                                            {@const isNew =
+                                                !detail.total_semula ||
+                                                Number(detail.total_semula) ===
+                                                    0}
+                                            {@const isDeleted =
+                                                !detail.total_menjadi ||
+                                                Number(detail.total_menjadi) ===
+                                                    0}
+                                            {@const delta =
+                                                Number(detail.total_menjadi) -
+                                                Number(detail.total_semula)}
+
+                                            <tr>
+                                                <td class="py-2.5 font-medium">
+                                                    {detail.name_menjadi ||
+                                                        detail.name_semula}
+                                                    {#if isNew}
+                                                        <span
+                                                            class="ml-1 text-[9px] bg-emerald-500/10 text-emerald-600 px-1 py-0.5 rounded font-bold"
+                                                            >Baru</span
+                                                        >
+                                                    {:else if isDeleted}
+                                                        <span
+                                                            class="ml-1 text-[9px] bg-rose-500/10 text-rose-600 px-1 py-0.5 rounded font-bold"
+                                                            >Dihapus</span
+                                                        >
+                                                    {/if}
+                                                </td>
+                                                <td
+                                                    class="py-2.5 text-right font-medium text-muted-foreground"
+                                                >
+                                                    {#if isNew}
+                                                        -
+                                                    {:else}
+                                                        {detail.volume_semula}
+                                                        {detail.unit_semula} @ {formatRupiah(
+                                                            detail.unit_price_semula,
+                                                        )}
+                                                        <span
+                                                            class="block text-[10px] font-bold mt-0.5 text-foreground"
+                                                            >{formatRupiah(
+                                                                detail.total_semula,
+                                                            )}</span
+                                                        >
+                                                    {/if}
+                                                </td>
+                                                <td
+                                                    class="py-2.5 text-right font-medium"
+                                                >
+                                                    {#if isDeleted}
+                                                        -
+                                                    {:else}
+                                                        {detail.volume_menjadi}
+                                                        {detail.unit_menjadi} @ {formatRupiah(
+                                                            detail.unit_price_menjadi,
+                                                        )}
+                                                        <span
+                                                            class="block text-[10px] font-extrabold mt-0.5"
+                                                            >{formatRupiah(
+                                                                detail.total_menjadi,
+                                                            )}</span
+                                                        >
+                                                    {/if}
+                                                </td>
+                                                <td
+                                                    class="py-2.5 text-right font-bold"
+                                                >
+                                                    {#if delta > 0}
+                                                        <span
+                                                            class="text-emerald-600 dark:text-emerald-400"
+                                                            >+{formatRupiah(
+                                                                delta,
+                                                            )}</span
+                                                        >
+                                                    {:else if delta < 0}
+                                                        <span
+                                                            class="text-rose-500"
+                                                            >-{formatRupiah(
+                                                                Math.abs(delta),
+                                                            )}</span
+                                                        >
+                                                    {:else}
+                                                        <span
+                                                            class="text-zinc-400"
+                                                            >0</span
+                                                        >
+                                                    {/if}
+                                                </td>
+                                            </tr>
+                                        {/each}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    {/each}
+                {/if}
+            </div>
+
+            <div
+                class="flex justify-end pt-3 border-t border-sidebar-border/20"
+            >
+                <button
+                    type="button"
+                    onclick={() => (revisionHistoryModalOpen = false)}
+                    class="inline-flex h-9 items-center justify-center rounded-lg bg-primary hover:bg-primary/95 text-white px-5 py-2 text-xs font-bold cursor-pointer transition-colors"
+                >
+                    Tutup
+                </button>
+            </div>
         </div>
     </div>
 {/if}

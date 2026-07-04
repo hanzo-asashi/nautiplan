@@ -26,6 +26,7 @@ class RealizationItem extends Model
 {
     protected $fillable = [
         'budget_realization_id',
+        'budget_item_id',
         'name',
         'volume',
         'unit',
@@ -60,6 +61,14 @@ class RealizationItem extends Model
     public function realization(): BelongsTo
     {
         return $this->belongsTo(BudgetRealization::class, 'budget_realization_id');
+    }
+
+    /**
+     * @return BelongsTo<BudgetItem, $this>
+     */
+    public function budgetItem(): BelongsTo
+    {
+        return $this->belongsTo(BudgetItem::class, 'budget_item_id');
     }
 
     public function getTotalPriceAttribute(): float

@@ -3,9 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\ActivityBudget;
+use App\Models\BudgetItem;
 use App\Models\BudgetRealization;
+use App\Models\BudgetRevision;
+use App\Models\BudgetRevisionDetail;
 use App\Models\FiscalYear;
 use App\Models\Procurement;
+use App\Models\RealizationItem;
 use App\Models\Unit;
 use App\Models\User;
 use App\Models\Vendor;
@@ -13,6 +17,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -27,6 +32,9 @@ class BudgetController extends Controller
             'realizations.procurement.vendor',
             'realizations.procurement.ppk',
             'realizations.procurement.kpa',
+            'budgetItems',
+            'revisions.details',
+            'revisions.revisedBy',
         ]);
 
         if ($request->filled('unit_id')) {
@@ -98,15 +106,129 @@ class BudgetController extends Controller
             'account_code' => 'nullable|string|max:50',
             'account_name' => 'nullable|string|max:255',
             'description' => 'required|string|max:255',
-            'amount' => 'required|numeric|min:0',
+            'revision_description' => 'required|string|max:1000',
+
+            // Items
+            'items' => 'required|array|min:1',
+            'items.*.id' => 'nullable|exists:budget_items,id',
+            'items.*.name' => 'required|string|max:255',
+            'items.*.volume' => 'required|numeric|min:0.01',
+            'items.*.unit' => 'required|string|max:50',
+            'items.*.unit_price' => 'required|numeric|min:0',
         ]);
 
-        $budget->update([
-            ...$validated,
-            'version' => $budget->version + 1,
-        ]);
+        $amountMenjadi = (float) array_reduce($validated['items'], function ($sum, $item) {
+            return $sum + ($item['volume'] * $item['unit_price']);
+        }, 0.0);
 
-        return back()->with('success', 'Pagu anggaran berhasil diperbarui.');
+        DB::transaction(function () use ($validated, $budget, $amountMenjadi) {
+            // Create budget revision record
+            $revision = BudgetRevision::create([
+                'activity_budget_id' => $budget->id,
+                'revision_number' => $budget->version, // Old version
+                'description' => $validated['revision_description'],
+                'amount_semula' => (float) $budget->amount,
+                'amount_menjadi' => $amountMenjadi,
+                'revised_by' => Auth::id(),
+            ]);
+
+            $oldItems = $budget->budgetItems->keyBy('id');
+            /** @var array<int, array<string, mixed>> $validatedItems */
+            $validatedItems = $validated['items'];
+            $newItems = collect($validatedItems);
+            $newItemIds = $newItems->pluck('id')->filter()->toArray();
+
+            // 1. Process deleted items
+            foreach ($oldItems as $oldId => $oldItem) {
+                if (! in_array($oldId, $newItemIds)) {
+                    BudgetRevisionDetail::create([
+                        'budget_revision_id' => $revision->id,
+                        'budget_item_id' => $oldId,
+                        'name_semula' => $oldItem->name,
+                        'volume_semula' => $oldItem->volume,
+                        'unit_semula' => $oldItem->unit,
+                        'unit_price_semula' => $oldItem->unit_price,
+                        'total_semula' => $oldItem->total,
+                        'name_menjadi' => null,
+                        'volume_menjadi' => 0.0,
+                        'unit_menjadi' => null,
+                        'unit_price_menjadi' => 0.0,
+                        'total_menjadi' => 0.0,
+                    ]);
+
+                    $oldItem->delete();
+                }
+            }
+
+            // 2. Process new and updated items
+            foreach ($newItems as $item) {
+                if (isset($item['id']) && $oldItems->has($item['id'])) {
+                    $oldItem = $oldItems->get($item['id']);
+                    $totalMenjadi = (float) ($item['volume'] * $item['unit_price']);
+
+                    BudgetRevisionDetail::create([
+                        'budget_revision_id' => $revision->id,
+                        'budget_item_id' => $oldItem->id,
+                        'name_semula' => $oldItem->name,
+                        'volume_semula' => $oldItem->volume,
+                        'unit_semula' => $oldItem->unit,
+                        'unit_price_semula' => $oldItem->unit_price,
+                        'total_semula' => $oldItem->total,
+                        'name_menjadi' => $item['name'],
+                        'volume_menjadi' => $item['volume'],
+                        'unit_menjadi' => $item['unit'],
+                        'unit_price_menjadi' => $item['unit_price'],
+                        'total_menjadi' => $totalMenjadi,
+                    ]);
+
+                    $oldItem->update([
+                        'name' => $item['name'],
+                        'volume' => $item['volume'],
+                        'unit' => $item['unit'],
+                        'unit_price' => $item['unit_price'],
+                        'total' => $totalMenjadi,
+                    ]);
+                } else {
+                    $totalMenjadi = (float) ($item['volume'] * $item['unit_price']);
+
+                    $createdItem = BudgetItem::create([
+                        'activity_budget_id' => $budget->id,
+                        'name' => $item['name'],
+                        'volume' => $item['volume'],
+                        'unit' => $item['unit'],
+                        'unit_price' => $item['unit_price'],
+                        'total' => $totalMenjadi,
+                    ]);
+
+                    BudgetRevisionDetail::create([
+                        'budget_revision_id' => $revision->id,
+                        'budget_item_id' => $createdItem->id,
+                        'name_semula' => null,
+                        'volume_semula' => 0.0,
+                        'unit_semula' => null,
+                        'unit_price_semula' => 0.0,
+                        'total_semula' => 0.0,
+                        'name_menjadi' => $item['name'],
+                        'volume_menjadi' => $item['volume'],
+                        'unit_menjadi' => $item['unit'],
+                        'unit_price_menjadi' => $item['unit_price'],
+                        'total_menjadi' => $totalMenjadi,
+                    ]);
+                }
+            }
+
+            // Update parent budget
+            $budget->update([
+                'budget_category' => $validated['budget_category'],
+                'account_code' => $validated['account_code'],
+                'account_name' => $validated['account_name'],
+                'description' => $validated['description'],
+                'amount' => $amountMenjadi,
+                'version' => $budget->version + 1,
+            ]);
+        });
+
+        return back()->with('success', 'Pagu anggaran berhasil direvisi.');
     }
 
     public function deleteBudget(ActivityBudget $budget): RedirectResponse
@@ -126,7 +248,26 @@ class BudgetController extends Controller
             'activity.unit',
             'fiscalYear',
             'realizations.items',
+            'budgetItems',
         ]);
+
+        $budgetItems = $budget->budgetItems->map(function ($item) {
+            $realizedVolume = (float) RealizationItem::where('budget_item_id', $item->id)
+                ->sum('volume');
+
+            return [
+                'id' => $item->id,
+                'name' => $item->name,
+                'volume' => (float) $item->volume,
+                'unit' => $item->unit,
+                'unit_price' => (float) $item->unit_price,
+                'total' => (float) $item->total,
+                'realized_volume' => $realizedVolume,
+                'remaining_volume' => max(0.0, (float) $item->volume - $realizedVolume),
+            ];
+        });
+
+        $budget->setRelation('budgetItems', $budgetItems);
 
         $vendors = Vendor::orderBy('name')->get();
         $officers = User::orderBy('name')->get(['id', 'name', 'employee_id', 'rank']);
@@ -187,6 +328,7 @@ class BudgetController extends Controller
 
             // Items
             'items' => 'required|array|min:1',
+            'items.*.budget_item_id' => 'required|exists:budget_items,id',
             'items.*.name' => 'required|string|max:255',
             'items.*.volume' => 'required|numeric|min:0.01',
             'items.*.unit' => 'required|string|max:50',
@@ -198,6 +340,31 @@ class BudgetController extends Controller
             'items.*.tax_ppn' => 'nullable|numeric|min:0',
             'items.*.remarks' => 'nullable|string',
         ]);
+
+        // Perform item-level validation
+        foreach ($validated['items'] as $item) {
+            $budgetItem = BudgetItem::find($item['budget_item_id']);
+            if (! $budgetItem instanceof BudgetItem) {
+                continue;
+            }
+
+            // 1. Mark-up Prevention
+            if ((float) $item['unit_price'] > (float) $budgetItem->unit_price) {
+                throw ValidationException::withMessages([
+                    'items' => ["Harga satuan untuk item '{$item['name']}' (".number_format($item['unit_price'], 0, ',', '.').') melebihi standar pagu rencana POK ('.number_format($budgetItem->unit_price, 0, ',', '.').').'],
+                ]);
+            }
+
+            // 2. Volume Overage Prevention
+            $realizedVolume = (float) RealizationItem::where('budget_item_id', $budgetItem->id)->sum('volume');
+            $remainingVolume = (float) max(0.0, (float) $budgetItem->volume - $realizedVolume);
+
+            if ((float) $item['volume'] > $remainingVolume) {
+                throw ValidationException::withMessages([
+                    'items' => ["Volume kuantitas untuk item '{$item['name']}' ({$item['volume']}) melebihi sisa volume rencana POK (Sisa: {$remainingVolume} {$budgetItem->unit})."],
+                ]);
+            }
+        }
 
         DB::transaction(function () use ($validated) {
             $procurementId = null;
@@ -269,6 +436,7 @@ class BudgetController extends Controller
             // 4. Create Realization Items
             foreach ($validated['items'] as $item) {
                 $realization->items()->create([
+                    'budget_item_id' => $item['budget_item_id'],
                     'name' => $item['name'],
                     'volume' => $item['volume'],
                     'unit' => $item['unit'],

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
 /**
@@ -46,5 +47,23 @@ class BudgetItem extends Model
     public function activityBudget(): BelongsTo
     {
         return $this->belongsTo(ActivityBudget::class);
+    }
+
+    /**
+     * @return HasMany<RealizationItem, $this>
+     */
+    public function realizationItems(): HasMany
+    {
+        return $this->hasMany(RealizationItem::class, 'budget_item_id');
+    }
+
+    public function getRealizedVolumeAttribute(): float
+    {
+        return (float) $this->realizationItems()->sum('volume');
+    }
+
+    public function getRemainingVolumeAttribute(): float
+    {
+        return (float) max(0, $this->volume - $this->realized_volume);
     }
 }
