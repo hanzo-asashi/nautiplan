@@ -1,3 +1,27 @@
+## Release Update (2026-07-04)
+
+### 🚀 Features
+- feat: implement Filterable trait and ReportHelper (37c2428)
+- feat: migrate budget revision from modal to full-page form (7733b4b)
+
+### 🐛 Bug Fixes
+- fix: use import statement for LengthAwarePaginator in GetActivityRevisionsAction (69a49fe)
+- fix: report helper types and configure changelog generation on push to main (8fa3e04)
+- fix(phpstan): add generic type for Scope interface (a7dacfc)
+- fix(security): implement unit isolation and authorization rules (dd360e5)
+
+### 📝 Documentation
+- docs: fix missing item 10 in TOC (a0ad9c8)
+- docs: tambahkan seluruh fitur core yang sudah dibangun ke dalam USER_GUIDE (e9a1de8)
+- docs: hapus referensi perubahan UI dari panduan pengguna (68eb569)
+- docs: update user guide with new security and UI features (a02c666)
+
+### 📦 Other
+- Merge pull request #26 from hanzo-asashi/refactor/budget-action-pattern (b773575)
+- Merge pull request #25 from hanzo-asashi/fix/tenant-isolation-idor (0f12c80)
+- Merge pull request #24 from hanzo-asashi/feature/budget-edit-fullpage (4b30ccf)
+- Merge pull request #23 from hanzo-asashi/feature/deep-gaps-hardening (0d0eddc)
+
 # Changelog
 
 Seluruh perubahan penting pada proyek ini didokumentasikan dalam file ini.
