@@ -1,4 +1,4 @@
-## Release Update (2026-07-04)
+## [v0.18.0] - 2026-07-04
 
 ### 🚀 Features
 - feat: implement Filterable trait and ReportHelper (37c2428)
@@ -21,6 +21,8 @@
 - Merge pull request #25 from hanzo-asashi/fix/tenant-isolation-idor (0f12c80)
 - Merge pull request #24 from hanzo-asashi/feature/budget-edit-fullpage (4b30ccf)
 - Merge pull request #23 from hanzo-asashi/feature/deep-gaps-hardening (0d0eddc)
+
+[v0.18.0]: https://github.com/hanzo-asashi/nautiplan/compare/v0.17.0...v0.18.0
 
 # Changelog
 

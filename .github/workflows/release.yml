@@ -1,27 +1,32 @@
-name: Generate Changelog
+name: Release & Changelog
 
 on:
   push:
     branches:
       - main
+    tags:
+      - 'v*'
 
 permissions:
   contents: write
 
 jobs:
-  changelog:
-    name: Generate Changelog
-    if: "!contains(github.event.head_commit.message, 'skip ci')"
+  release:
+    name: Create GitHub Release
+    if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Generate Changelog from Commits
-        id: commits_changelog
+      - name: Get Tag Version
+        id: tag
+        run: echo "version=${GITHUB_REF#refs/tags/}" >> "$GITHUB_OUTPUT"
+
+      - name: Generate Release Notes from Commits
+        id: release_notes
         run: |
-          # Get previous tag or first commit if no tags
           PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
 
           if [ -z "$PREV_TAG" ]; then
@@ -30,7 +35,6 @@ jobs:
             COMMITS=$(git log --pretty=format:"- %s (%h)" ${PREV_TAG}..HEAD)
           fi
 
-          # Categorize commits
           FEATURES=$(echo "$COMMITS" | grep -i "^- feat" || true)
           FIXES=$(echo "$COMMITS" | grep -i "^- fix" || true)
           DOCS=$(echo "$COMMITS" | grep -i "^- docs" || true)
@@ -39,39 +43,89 @@ jobs:
           CHORE=$(echo "$COMMITS" | grep -iE "^- (chore|refactor|build|ci)" || true)
           OTHER=$(echo "$COMMITS" | grep -ivE "^- (feat|fix|docs|test|style|ui|design|chore|refactor|build|ci)" || true)
 
-          CHANGELOG="## Release Update ($(date +'%Y-%m-%d'))\n\n"
+          NOTES=""
+          [ -n "$FEATURES" ] && NOTES="${NOTES}## 🚀 Features\n${FEATURES}\n\n"
+          [ -n "$FIXES" ] && NOTES="${NOTES}## 🐛 Bug Fixes\n${FIXES}\n\n"
+          [ -n "$STYLE" ] && NOTES="${NOTES}## 🎨 UI/UX\n${STYLE}\n\n"
+          [ -n "$DOCS" ] && NOTES="${NOTES}## 📝 Documentation\n${DOCS}\n\n"
+          [ -n "$TESTS" ] && NOTES="${NOTES}## 🧪 Tests\n${TESTS}\n\n"
+          [ -n "$CHORE" ] && NOTES="${NOTES}## 🔧 Maintenance\n${CHORE}\n\n"
+          [ -n "$OTHER" ] && NOTES="${NOTES}## 📦 Other\n${OTHER}\n\n"
 
-          if [ -n "$FEATURES" ]; then
-            CHANGELOG="${CHANGELOG}### 🚀 Features\n${FEATURES}\n\n"
-          fi
-          if [ -n "$FIXES" ]; then
-            CHANGELOG="${CHANGELOG}### 🐛 Bug Fixes\n${FIXES}\n\n"
-          fi
-          if [ -n "$STYLE" ]; then
-            CHANGELOG="${CHANGELOG}### 🎨 UI/UX\n${STYLE}\n\n"
-          fi
-          if [ -n "$DOCS" ]; then
-            CHANGELOG="${CHANGELOG}### 📝 Documentation\n${DOCS}\n\n"
-          fi
-          if [ -n "$TESTS" ]; then
-            CHANGELOG="${CHANGELOG}### 🧪 Tests\n${TESTS}\n\n"
-          fi
-          if [ -n "$CHORE" ]; then
-            CHANGELOG="${CHANGELOG}### 🔧 Maintenance\n${CHORE}\n\n"
-          fi
-          if [ -n "$OTHER" ]; then
-            CHANGELOG="${CHANGELOG}### 📦 Other\n${OTHER}\n\n"
-          fi
+          {
+            echo "notes<<EOF"
+            echo -e "$NOTES"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
 
-          # Append to existing CHANGELOG.md
-          if [ -f "CHANGELOG.md" ]; then
-            echo -e "$CHANGELOG$(cat CHANGELOG.md)" > CHANGELOG.md
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: ${{ steps.tag.outputs.version }}
+          body: ${{ steps.release_notes.outputs.notes }}
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update CHANGELOG.md with Version
+        run: |
+          VERSION="${{ steps.tag.outputs.version }}"
+          DATE=$(date +'%Y-%m-%d')
+          PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+
+          if [ -z "$PREV_TAG" ]; then
+            COMMITS=$(git log --pretty=format:"- %s (%h)" HEAD)
           else
-            echo -e "$CHANGELOG" > CHANGELOG.md
+            COMMITS=$(git log --pretty=format:"- %s (%h)" ${PREV_TAG}..HEAD)
           fi
 
-      - name: Commit and Push CHANGELOG
+          FEATURES=$(echo "$COMMITS" | grep -i "^- feat" || true)
+          FIXES=$(echo "$COMMITS" | grep -i "^- fix" || true)
+          DOCS=$(echo "$COMMITS" | grep -i "^- docs" || true)
+          TESTS=$(echo "$COMMITS" | grep -i "^- test" || true)
+          STYLE=$(echo "$COMMITS" | grep -iE "^- (style|ui|design)" || true)
+          CHORE=$(echo "$COMMITS" | grep -iE "^- (chore|refactor|build|ci)" || true)
+          OTHER=$(echo "$COMMITS" | grep -ivE "^- (feat|fix|docs|test|style|ui|design|chore|refactor|build|ci)" || true)
+
+          CHANGELOG="## [${VERSION}] - ${DATE}\n\n"
+          [ -n "$FEATURES" ] && CHANGELOG="${CHANGELOG}### 🚀 Features\n${FEATURES}\n\n"
+          [ -n "$FIXES" ] && CHANGELOG="${CHANGELOG}### 🐛 Bug Fixes\n${FIXES}\n\n"
+          [ -n "$STYLE" ] && CHANGELOG="${CHANGELOG}### 🎨 UI/UX\n${STYLE}\n\n"
+          [ -n "$DOCS" ] && CHANGELOG="${CHANGELOG}### 📝 Documentation\n${DOCS}\n\n"
+          [ -n "$TESTS" ] && CHANGELOG="${CHANGELOG}### 🧪 Tests\n${TESTS}\n\n"
+          [ -n "$CHORE" ] && CHANGELOG="${CHANGELOG}### 🔧 Maintenance\n${CHORE}\n\n"
+          [ -n "$OTHER" ] && CHANGELOG="${CHANGELOG}### 📦 Other\n${OTHER}\n\n"
+
+          # Add compare link
+          if [ -n "$PREV_TAG" ]; then
+            CHANGELOG="${CHANGELOG}[${VERSION}]: https://github.com/${{ github.repository }}/compare/${PREV_TAG}...${VERSION}\n\n"
+          else
+            CHANGELOG="${CHANGELOG}[${VERSION}]: https://github.com/${{ github.repository }}/releases/tag/${VERSION}\n\n"
+          fi
+
+          if [ -f "CHANGELOG.md" ]; then
+            # Insert after first line (# Changelog header) or prepend
+            HEADER=$(head -n 1 CHANGELOG.md)
+            if echo "$HEADER" | grep -q "^# "; then
+              # Keep the main header, insert new version after it
+              {
+                head -n 4 CHANGELOG.md
+                echo ""
+                echo -e "$CHANGELOG"
+                tail -n +5 CHANGELOG.md
+              } > CHANGELOG.tmp
+              mv CHANGELOG.tmp CHANGELOG.md
+            else
+              echo -e "${CHANGELOG}$(cat CHANGELOG.md)" > CHANGELOG.md
+            fi
+          else
+            echo -e "# Changelog\n\n${CHANGELOG}" > CHANGELOG.md
+          fi
+
+      - name: Commit CHANGELOG
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "chore: update changelog [skip ci]"
+          commit_message: "chore: update changelog for ${{ steps.tag.outputs.version }} [skip ci]"
+          branch: main
           file_pattern: CHANGELOG.md
+
