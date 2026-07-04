@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Concerns\Filterable;
 use Database\Factories\ProgramFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -32,7 +33,19 @@ use Illuminate\Support\Carbon;
 class Program extends Model
 {
     /** @use HasFactory<ProgramFactory> */
-    use HasFactory, SoftDeletes;
+    use Filterable, HasFactory, SoftDeletes;
+
+    /** @return array<int, string> */
+    public function searchable(): array
+    {
+        return ['name', 'code'];
+    }
+
+    /** @return array<int, string> */
+    public function filterable(): array
+    {
+        return ['unit_id', 'fiscal_year_id'];
+    }
 
     protected $fillable = [
         'code',

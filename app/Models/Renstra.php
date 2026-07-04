@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Concerns\Filterable;
 use Database\Factories\RenstraFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -27,7 +28,13 @@ use Illuminate\Support\Carbon;
 class Renstra extends Model
 {
     /** @use HasFactory<RenstraFactory> */
-    use HasFactory, SoftDeletes;
+    use Filterable, HasFactory, SoftDeletes;
+
+    /** @return array<int, string> */
+    public function searchable(): array
+    {
+        return ['title', 'description'];
+    }
 
     protected $fillable = [
         'title',

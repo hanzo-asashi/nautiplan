@@ -135,8 +135,8 @@
         ];
         $monthName = $months[$bapDate->month];
         
-        $daySpelled = \App\Http\Controllers\ReportController::terbilang($bapDate->day);
-        $yearSpelled = \App\Http\Controllers\ReportController::terbilang($bapDate->year);
+        $daySpelled = \App\Helpers\FormatHelper::terbilang($bapDate->day);
+        $yearSpelled = \App\Helpers\FormatHelper::terbilang($bapDate->year);
         
         $dateSpelled = trim("{$daySpelled} bulan {$monthName} tahun {$yearSpelled}");
         

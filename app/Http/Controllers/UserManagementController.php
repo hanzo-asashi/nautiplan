@@ -16,27 +16,8 @@ class UserManagementController extends Controller
 {
     public function index(Request $request): Response
     {
-        $query = User::with(['unit', 'roles']);
-
-        if ($request->filled('search')) {
-            $search = $request->input('search');
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                    ->orWhere('email', 'like', "%{$search}%")
-                    ->orWhere('employee_id', 'like', "%{$search}%");
-            });
-        }
-
-        if ($request->filled('unit_id')) {
-            $query->where('unit_id', $request->input('unit_id'));
-        }
-
-        if ($request->filled('role_id')) {
-            $roleId = $request->input('role_id');
-            $query->whereHas('roles', function ($q) use ($roleId) {
-                $q->where('roles.id', $roleId);
-            });
-        }
+        $query = User::with(['unit', 'roles'])
+            ->filter($request->only('search', 'unit_id', 'role_id'));
 
         $users = $query->paginate(10)->withQueryString();
         $units = Unit::get(['id', 'name', 'code']);

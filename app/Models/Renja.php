@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Concerns\Filterable;
 use Database\Factories\RenjaFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -26,7 +27,19 @@ use Illuminate\Support\Carbon;
 class Renja extends Model
 {
     /** @use HasFactory<RenjaFactory> */
-    use HasFactory, SoftDeletes;
+    use Filterable, HasFactory, SoftDeletes;
+
+    /** @return array<int, string> */
+    public function searchable(): array
+    {
+        return ['title'];
+    }
+
+    /** @return array<int, string> */
+    public function filterable(): array
+    {
+        return ['fiscal_year_id', 'unit_id'];
+    }
 
     protected $fillable = [
         'title',

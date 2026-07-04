@@ -162,6 +162,18 @@ Guna menyelaraskan sistem dengan kebutuhan administrasi Pejabat Pembuat Komitmen
 
 ---
 
+## Technical Refactoring & Improvements (To Do)
+
+**Goal**: Standardize controller architecture using the Action Pattern and implement database transactions for complex operations.
+
+### Deliverables
+
+- Apply Action Pattern to all remaining controllers (`ProgramController`, `RenjaController`, etc.).
+- Move non-CRUD specific actions (like `revisions`, `updateSubActivityStatus`) into dedicated Action classes.
+- Implement Database Transactions (DB Transaction) for actions that modify multiple records or tables to ensure data integrity.
+
+---
+
 ## Technical Decisions
 
 | Decision           | Choice                  | Rationale                                    |

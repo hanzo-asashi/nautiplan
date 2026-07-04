@@ -165,7 +165,6 @@ test('pencairan documents and taxes can be saved and downloaded', function () {
     expect($item->tax_pph22)->toEqual(1500);
     expect($item->tax_pph23)->toEqual(2000);
 
-    // Verify PDF preview downloads stream
     $sppResponse = $this->get(route('reports.realization.spp', $realization->id));
     $sppResponse->assertOk();
     $sppResponse->assertHeader('content-disposition', 'inline; filename=spp-SPP-001.pdf');

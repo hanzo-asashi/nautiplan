@@ -3,9 +3,11 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Concerns\Filterable;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -40,7 +42,32 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
 class User extends Authenticatable implements PasskeyUser
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable, PasskeyAuthenticatable, TwoFactorAuthenticatable;
+    use Filterable, HasFactory, Notifiable, PasskeyAuthenticatable, TwoFactorAuthenticatable;
+
+    /** @return array<int, string> */
+    public function searchable(): array
+    {
+        return ['name', 'email', 'employee_id'];
+    }
+
+    /** @return array<int, string> */
+    public function filterable(): array
+    {
+        return ['unit_id'];
+    }
+
+    /**
+     * @param  Builder<User>  $query
+     * @param  array<string, mixed>  $filters
+     */
+    public function applyCustomFilters($query, array $filters): void
+    {
+        if (! empty($filters['role_id'])) {
+            $query->whereHas('roles', function ($q) use ($filters) {
+                $q->where('roles.id', $filters['role_id']);
+            });
+        }
+    }
 
     /**
      * Get the attributes that should be cast.

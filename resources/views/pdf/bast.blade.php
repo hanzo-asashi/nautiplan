@@ -1,63 +1,46 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <title>Berita Acara Serah Terima - {{ $realization->receipt_number }}</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            font-size: 10px;
-            line-height: 1.4;
-            color: #000;
-            margin: 0;
-            padding: 0;
-        }
-        .header {
-            margin-bottom: 10px;
-        }
-        .kop-table {
-            width: 100%;
-            border-collapse: collapse;
-            border-bottom: 2px solid #000;
-            padding-bottom: 6px;
-        }
-        .kop-logo {
-            width: 10%;
-            text-align: center;
-            vertical-align: middle;
-        }
-        .kop-text {
-            width: 90%;
-            text-align: center;
-        }
-        .kop-title-1 {
-            font-size: 11px;
-            font-weight: bold;
-        }
-        .kop-title-2 {
-            font-size: 9px;
-            font-weight: bold;
-        }
-        .kop-title-3 {
-            font-size: 12px;
-            font-weight: bold;
-            color: #1e3a8a;
-        }
-        .kop-subtitle {
-            font-size: 7px;
-            color: #555;
-        }
-        .title-block {
-            text-align: center;
-            margin-top: 10px;
-            margin-bottom: 10px;
-        }
-        .title {
-            font-size: 12px;
-            font-weight: bold;
-            text-decoration: underline;
-        }
-        .subtitle {
+@extends('layouts.print')
+
+@section('title', 'Berita Acara Serah Terima - ' . $realization->receipt_number)
+
+@section('styles')
+<style>
+    .signatures {
+        margin-top: 30px;
+        width: 100%;
+        page-break-inside: avoid;
+    }
+    .signature-table {
+        width: 100%;
+        border-collapse: collapse;
+        border: none;
+    }
+    .signature-table td {
+        width: 50%;
+        text-align: center;
+        vertical-align: top;
+        padding: 5px;
+        border: none;
+    }
+    .signature-space {
+        height: 60px;
+    }
+    .ttd-name {
+        font-weight: bold;
+        text-decoration: underline;
+    }
+    table, th, td {
+        border-collapse: collapse;
+    }
+    .mt-4 { margin-top: 15px; }
+    .mb-4 { margin-bottom: 15px; }
+</style>
+@endsection
+
+@section('content')
+    <div class="title-block">
+        <div class="title">BERITA ACARA SERAH TERIMA BARANG / PEKERJAAN</div>
+        <div class="subtitle">Nomor : {{ $realization->receipt_number ?? '-' }}</div>
+    </div>
             font-size: 10px;
         }
         .paragraph {
@@ -130,8 +113,8 @@
         ];
         $monthName = $months[$bastDate->month];
         
-        $daySpelled = \App\Http\Controllers\ReportController::terbilang($bastDate->day);
-        $yearSpelled = \App\Http\Controllers\ReportController::terbilang($bastDate->year);
+        $daySpelled = \App\Helpers\FormatHelper::terbilang($bastDate->day);
+        $yearSpelled = \App\Helpers\FormatHelper::terbilang($bastDate->year);
         
         $dateSpelled = trim("{$daySpelled} bulan {$monthName} tahun {$yearSpelled}");
     @endphp
@@ -274,6 +257,4 @@
     <div style="margin-top: 40px; border-top: 1px dashed #cbd5e1; padding-top: 8px; text-align: center; font-size: 8px; color: #64748b;">
         Dokumen ini dibuat dan diverifikasi secara digital melalui **Sistem Informasi & Monitoring Realisasi PPK (SIM-PPK) Politeknik Pelayaran Barombong**.
     </div>
-
-</body>
-</html>
+@endsection
