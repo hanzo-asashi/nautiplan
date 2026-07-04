@@ -104,6 +104,7 @@ test('finance/admin user can view budget page with vendors and officers', functi
 });
 
 test('user can store a normalized procurement realization with nested items', function () {
+    $this->activity->update(['status' => 'approved']);
     $payload = [
         'activity_budget_id' => $this->budget->id,
         'realization_type' => 'surat_pesanan',
