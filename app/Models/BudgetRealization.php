@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Concerns\HasAuditTrail;
+use App\Models\Scopes\UnitIsolationScope;
 use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -86,6 +87,11 @@ class BudgetRealization extends Model
             'sptjb_date' => 'date',
             'verified_at' => 'datetime',
         ];
+    }
+
+    protected static function booted(): void
+    {
+        static::addGlobalScope(new UnitIsolationScope);
     }
 
     /**

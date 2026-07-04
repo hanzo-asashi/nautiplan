@@ -247,6 +247,12 @@ class ActivityController extends Controller
             'indicators.*.quarter' => 'required|string|in:Q1,Q2,Q3,Q4,annual',
         ]);
 
+        $user = auth()->user();
+        $globalRoles = ['super-admin', 'admin', 'direktur', 'wakil-direktur', 'auditor', 'staf-keuangan', 'staf-perencanaan'];
+        if (! $user->isSuperAdmin() && ! $user->hasAnyRole(...$globalRoles) && $user->unit_id) {
+            $validated['unit_id'] = $user->unit_id;
+        }
+
         // Check local duplicates in request indicators array
         $indicators = $request->input('indicators', []);
         $pairs = [];

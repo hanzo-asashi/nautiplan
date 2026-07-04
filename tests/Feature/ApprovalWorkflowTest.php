@@ -12,19 +12,19 @@ use Illuminate\Support\Facades\Mail;
 beforeEach(function () {
     Mail::fake();
 
-    $this->user = User::factory()->create();
-
-    // Create roles
-    $this->roleOperator = Role::create(['name' => 'operator-unit', 'display_name' => 'Operator Unit']);
-    $this->roleKabag = Role::create(['name' => 'kepala-bagian', 'display_name' => 'Kepala Bagian']);
-    $this->roleWadir = Role::create(['name' => 'wakil-direktur', 'display_name' => 'Wakil Direktur']);
-    $this->roleDirektur = Role::create(['name' => 'direktur', 'display_name' => 'Direktur']);
-
     $this->unit = Unit::create([
         'code' => 'UNIT-APP',
         'name' => 'Unit Approval Test',
         'is_active' => true,
     ]);
+
+    $this->user = User::factory()->create([
+        'unit_id' => $this->unit->id,
+    ]);
+    $this->roleOperator = Role::create(['name' => 'operator-unit', 'display_name' => 'Operator Unit']);
+    $this->roleKabag = Role::create(['name' => 'kepala-bagian', 'display_name' => 'Kepala Bagian']);
+    $this->roleWadir = Role::create(['name' => 'wakil-direktur', 'display_name' => 'Wakil Direktur']);
+    $this->roleDirektur = Role::create(['name' => 'direktur', 'display_name' => 'Direktur']);
 
     $this->fiscalYear = FiscalYear::create([
         'year' => 2026,
@@ -101,7 +101,7 @@ test('full multi step approval chain success flow', function () {
     $approvalRequest = ApprovalRequest::where('approvable_id', $this->activity->id)->first();
 
     // 2. Step 1 (Kepala Bagian) approvals
-    $kabagUser = User::factory()->create();
+    $kabagUser = User::factory()->create(['unit_id' => $this->unit->id]);
     $kabagUser->roles()->attach($this->roleKabag->id, ['assigned_at' => now(), 'assigned_by' => 1]);
     $this->actingAs($kabagUser);
 
@@ -113,7 +113,7 @@ test('full multi step approval chain success flow', function () {
     $this->assertEquals(2, $approvalRequest->fresh()->current_step);
 
     // 3. Step 2 (Wakil Direktur) approvals
-    $wadirUser = User::factory()->create();
+    $wadirUser = User::factory()->create(['unit_id' => $this->unit->id]);
     $wadirUser->roles()->attach($this->roleWadir->id, ['assigned_at' => now(), 'assigned_by' => 1]);
     $this->actingAs($wadirUser);
 
@@ -125,7 +125,7 @@ test('full multi step approval chain success flow', function () {
     $this->assertEquals(3, $approvalRequest->fresh()->current_step);
 
     // 4. Step 3 (Direktur) approvals -> fully approved
-    $direkturUser = User::factory()->create();
+    $direkturUser = User::factory()->create(['unit_id' => $this->unit->id]);
     $direkturUser->roles()->attach($this->roleDirektur->id, ['assigned_at' => now(), 'assigned_by' => 1]);
     $this->actingAs($direkturUser);
 
@@ -145,8 +145,8 @@ test('reviewer can request revision and operator can resubmit', function () {
     $this->post(route('activities.submit-approval', ['activity' => $this->activity->id]));
     $approvalRequest = ApprovalRequest::where('approvable_id', $this->activity->id)->first();
 
-    // 2. Step 1 (Kepala Bagian) requests revision
-    $kabagUser = User::factory()->create();
+    // 2. Step 1 (Kepala Bagian) reviews and asks for revision
+    $kabagUser = User::factory()->create(['unit_id' => $this->unit->id]);
     $kabagUser->roles()->attach($this->roleKabag->id, ['assigned_at' => now(), 'assigned_by' => 1]);
     $this->actingAs($kabagUser);
 
