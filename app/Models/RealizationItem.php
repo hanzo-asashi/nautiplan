@@ -2,10 +2,9 @@
 
 namespace App\Models;
 
+use App\Concerns\HasAuditTrail;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Carbon;
-
 /**
  * @property int $id
  * @property int $budget_realization_id
@@ -22,8 +21,12 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  */
+use Illuminate\Support\Carbon;
+
 class RealizationItem extends Model
 {
+    use HasAuditTrail;
+
     protected $fillable = [
         'budget_realization_id',
         'budget_item_id',

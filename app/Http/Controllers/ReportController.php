@@ -1065,6 +1065,9 @@ class ReportController extends Controller
 
             $no = 1;
             foreach ($realizations as $real) {
+                if (! $real instanceof BudgetRealization) {
+                    continue;
+                }
                 $makCode = '';
                 $act = $real->activityBudget->activity;
                 if ($act) {

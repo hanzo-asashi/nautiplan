@@ -71,6 +71,10 @@ class ApprovalController extends Controller
 
     public function submit(Activity $activity): RedirectResponse
     {
+        if ($activity->fiscalYear->is_locked) {
+            return back()->with('error', 'Tahun anggaran sudah dikunci.');
+        }
+
         if ($activity->status !== 'draft') {
             abort(400, 'Kegiatan harus berstatus Draft untuk diajukan.');
         }
@@ -154,6 +158,11 @@ class ApprovalController extends Controller
 
     public function action(Request $request, ApprovalRequest $approvalRequest): RedirectResponse
     {
+        $activity = $approvalRequest->approvable;
+        if ($activity instanceof Activity && $activity->fiscalYear->is_locked) {
+            return back()->with('error', 'Tahun anggaran sudah dikunci.');
+        }
+
         $validated = $request->validate([
             'status' => 'required|in:approved,rejected,revision',
             'notes' => 'nullable|string',

@@ -2,11 +2,10 @@
 
 namespace App\Models;
 
+use App\Concerns\HasAuditTrail;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Carbon;
-
 /**
  * @property int $id
  * @property int $activity_budget_id
@@ -18,8 +17,12 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  */
+use Illuminate\Support\Carbon;
+
 class BudgetRevision extends Model
 {
+    use HasAuditTrail;
+
     protected $fillable = [
         'activity_budget_id',
         'revision_number',

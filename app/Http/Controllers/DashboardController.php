@@ -49,7 +49,7 @@ class DashboardController extends Controller
             ->latest()
             ->limit(5)
             ->get()
-            ->map(function ($realization) {
+            ->map(function (BudgetRealization $realization) {
                 return [
                     'id' => $realization->id,
                     'activity_name' => $realization->activityBudget->activity->name,

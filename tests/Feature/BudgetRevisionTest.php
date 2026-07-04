@@ -349,3 +349,129 @@ test('POK revision resets activity status to draft', function () {
     $this->activity->refresh();
     expect($this->activity->status)->toBe('draft');
 });
+
+test('prevent realization if fiscal year is locked', function () {
+    $this->activity->update(['status' => 'approved']);
+    $this->fiscalYear->update(['is_locked' => true]);
+
+    $payload = [
+        'activity_budget_id' => $this->budget->id,
+        'realization_type' => 'non_pengadaan',
+        'amount' => 100000,
+        'realization_date' => '2026-07-02',
+        'description' => 'Pembelian ATK Realisasi',
+        'receipt_number' => 'KWT-999',
+        'items' => [
+            [
+                'budget_item_id' => $this->budgetItem->id,
+                'name' => 'Kertas A4 80gr',
+                'volume' => 1,
+                'unit' => 'Rim',
+                'unit_price' => 100000,
+            ],
+        ],
+    ];
+
+    $response = $this->actingAs($this->user)
+        ->post(route('budgets.realizations.store'), $payload);
+
+    $response->assertSessionHasErrors('activity_budget_id');
+});
+
+test('prevent POK revision if fiscal year is locked', function () {
+    $this->fiscalYear->update(['is_locked' => true]);
+
+    $payload = [
+        'budget_category' => 'goods_services',
+        'account_code' => '521211',
+        'account_name' => 'Belanja Bahan',
+        'description' => 'Pembelian ATK Simulator',
+        'revision_description' => 'Revisi mengubah volume',
+        'items' => [
+            [
+                'id' => $this->budgetItem->id,
+                'name' => 'Kertas A4 80gr',
+                'volume' => 12,
+                'unit' => 'Rim',
+                'unit_price' => 100000,
+            ],
+        ],
+    ];
+
+    $response = $this->actingAs($this->user)
+        ->put(route('budgets.update', $this->budget), $payload);
+
+    $response->assertSessionHas('error');
+});
+
+test('prevent realization if date is out of range', function () {
+    $this->activity->update(['status' => 'approved']);
+
+    // Rentang fiscalYear: 2026-01-01 s.d. 2026-12-31
+    // Coba input tanggal di luar rentang: 2025-12-31
+    $payload = [
+        'activity_budget_id' => $this->budget->id,
+        'realization_type' => 'non_pengadaan',
+        'amount' => 100000,
+        'realization_date' => '2025-12-31',
+        'description' => 'Pembelian ATK Realisasi',
+        'receipt_number' => 'KWT-999',
+        'items' => [
+            [
+                'budget_item_id' => $this->budgetItem->id,
+                'name' => 'Kertas A4 80gr',
+                'volume' => 1,
+                'unit' => 'Rim',
+                'unit_price' => 100000,
+            ],
+        ],
+    ];
+
+    $response = $this->actingAs($this->user)
+        ->post(route('budgets.realizations.store'), $payload);
+
+    $response->assertSessionHasErrors('realization_date');
+});
+
+test('prevent realization if realization date is before procurement date', function () {
+    $this->activity->update(['status' => 'approved']);
+
+    $payload = [
+        'activity_budget_id' => $this->budget->id,
+        'realization_type' => 'surat_pesanan',
+        'amount' => 111000,
+        'realization_date' => '2026-07-01', // Before procurement_date
+        'description' => 'Belanja laptop dinas',
+        'receipt_number' => 'KWT-001',
+
+        'procurement_type' => 'spk',
+        'procurement_title' => 'Pengadaan Laptop Kantor',
+        'procurement_number' => 'SPK/123/2026',
+        'procurement_date' => '2026-07-02', // After realization_date!
+        'work_duration' => '7 hari',
+        'ppk_id' => $this->user->id,
+        'kpa_id' => $this->user->id,
+
+        'vendor_name' => 'CV. Teksas Jaya',
+        'vendor_npwp' => '01.234.567.8-091.000',
+        'vendor_address' => 'Jl. Barombong No. 10',
+        'bank_name' => 'Bank BTN',
+        'bank_account_number' => '987654321',
+        'bank_account_name' => 'CV Teksas Jaya',
+
+        'items' => [
+            [
+                'budget_item_id' => $this->budgetItem->id,
+                'name' => 'Kertas A4 80gr',
+                'volume' => 1,
+                'unit' => 'Rim',
+                'unit_price' => 100000,
+            ],
+        ],
+    ];
+
+    $response = $this->actingAs($this->user)
+        ->post(route('budgets.realizations.store'), $payload);
+
+    $response->assertSessionHasErrors('realization_date');
+});
