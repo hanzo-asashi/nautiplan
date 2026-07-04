@@ -16,20 +16,8 @@ class RenjaController extends Controller
 {
     public function index(Request $request): Response
     {
-        $query = Renja::with(['fiscalYear', 'renstra', 'unit', 'creator']);
-
-        if ($request->filled('search')) {
-            $search = $request->input('search');
-            $query->where('title', 'like', "%{$search}%");
-        }
-
-        if ($request->filled('fiscal_year_id')) {
-            $query->where('fiscal_year_id', $request->input('fiscal_year_id'));
-        }
-
-        if ($request->filled('unit_id')) {
-            $query->where('unit_id', $request->input('unit_id'));
-        }
+        $query = Renja::with(['fiscalYear', 'renstra', 'unit', 'creator'])
+            ->filter($request->only('search', 'fiscal_year_id', 'unit_id'));
 
         $renjas = $query->latest()->paginate(10)->withQueryString();
         $fiscalYears = FiscalYear::orderBy('year', 'desc')->get(['id', 'year']);

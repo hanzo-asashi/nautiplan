@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Concerns\Filterable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
@@ -22,6 +23,20 @@ use Illuminate\Support\Carbon;
  */
 class AuditLog extends Model
 {
+    use Filterable;
+
+    /** @return array<int, string> */
+    public function searchable(): array
+    {
+        return ['event', 'auditable_type', 'ip_address'];
+    }
+
+    /** @return array<int, string> */
+    public function filterable(): array
+    {
+        return ['user_id', 'event'];
+    }
+
     protected $fillable = [
         'user_id',
         'auditable_type',

@@ -14,13 +14,7 @@ class RenstraController extends Controller
 {
     public function index(Request $request): Response
     {
-        $query = Renstra::withCount('indicators');
-
-        if ($request->filled('search')) {
-            $search = $request->input('search');
-            $query->where('title', 'like', "%{$search}%")
-                ->orWhere('description', 'like', "%{$search}%");
-        }
+        $query = Renstra::withCount('indicators')->filter($request->only('search'));
 
         $renstras = $query->latest()->paginate(10)->withQueryString();
 

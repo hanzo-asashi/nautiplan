@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Concerns\Filterable;
 use App\Concerns\HasAuditTrail;
 use App\Models\Scopes\UnitIsolationScope;
 use Database\Factories\ActivityFactory;
@@ -37,7 +38,19 @@ use Illuminate\Support\Carbon;
 class Activity extends Model
 {
     /** @use HasFactory<ActivityFactory> */
-    use HasAuditTrail, HasFactory, SoftDeletes;
+    use Filterable, HasAuditTrail, HasFactory, SoftDeletes;
+
+    /** @return array<int, string> */
+    public function searchable(): array
+    {
+        return ['name', 'code'];
+    }
+
+    /** @return array<int, string> */
+    public function filterable(): array
+    {
+        return ['unit_id', 'fiscal_year_id', 'status'];
+    }
 
     protected $fillable = [
         'code',

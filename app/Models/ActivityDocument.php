@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Concerns\HasFileStorage;
 use App\Models\Scopes\UnitIsolationScope;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -22,6 +23,8 @@ use Illuminate\Support\Carbon;
  */
 class ActivityDocument extends Model
 {
+    use HasFileStorage;
+
     protected $fillable = [
         'activity_id',
         'parent_id',

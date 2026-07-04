@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\ReportController;
+use App\Helpers\FormatHelper;
 use App\Models\Activity;
 use App\Models\ActivityBudget;
 use App\Models\BudgetItem;
@@ -289,8 +289,8 @@ test('user can download PDFs even if the realization has no procurement', functi
 });
 
 test('terbilang helper returns correct Indonesian spelling', function () {
-    expect(ReportController::terbilang(17480000))->toBe('tujuh belas juta empat ratus delapan puluh ribu');
-    expect(ReportController::terbilang(1500000))->toBe('satu juta lima ratus ribu');
-    expect(ReportController::terbilang(120))->toBe('seratus dua puluh');
-    expect(ReportController::terbilang(1005000))->toBe('satu juta lima ribu');
+    expect(FormatHelper::terbilang(17480000))->toBe('tujuh belas juta empat ratus delapan puluh ribu');
+    expect(FormatHelper::terbilang(1500000))->toBe('satu juta lima ratus ribu');
+    expect(FormatHelper::terbilang(120))->toBe('seratus dua puluh');
+    expect(FormatHelper::terbilang(1005000))->toBe('satu juta lima ribu');
 });

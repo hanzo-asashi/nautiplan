@@ -17,23 +17,8 @@ class ProgramController extends Controller
 {
     public function index(Request $request): Response
     {
-        $query = Program::with(['unit', 'fiscalYear', 'renstra']);
-
-        if ($request->filled('search')) {
-            $search = $request->input('search');
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                    ->orWhere('code', 'like', "%{$search}%");
-            });
-        }
-
-        if ($request->filled('unit_id')) {
-            $query->where('unit_id', $request->input('unit_id'));
-        }
-
-        if ($request->filled('fiscal_year_id')) {
-            $query->where('fiscal_year_id', $request->input('fiscal_year_id'));
-        }
+        $query = Program::with(['unit', 'fiscalYear', 'renstra'])
+            ->filter($request->only('search', 'unit_id', 'fiscal_year_id'));
 
         $programs = $query->latest()->paginate(10)->withQueryString();
         $units = Unit::get(['id', 'name', 'code']);

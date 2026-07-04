@@ -13,15 +13,7 @@ class UnitController extends Controller
 {
     public function index(Request $request): Response
     {
-        $query = Unit::with(['parent', 'head']);
-
-        if ($request->filled('search')) {
-            $search = $request->input('search');
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                    ->orWhere('code', 'like', "%{$search}%");
-            });
-        }
+        $query = Unit::with(['parent', 'head'])->filter($request->only('search'));
 
         $units = $query->paginate(10)->withQueryString();
 
