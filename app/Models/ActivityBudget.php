@@ -2,11 +2,10 @@
 
 namespace App\Models;
 
+use App\Concerns\HasAuditTrail;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Carbon;
-
 /**
  * @property int $id
  * @property int|null $sub_component_id
@@ -19,8 +18,12 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  */
+use Illuminate\Support\Carbon;
+
 class ActivityBudget extends Model
 {
+    use HasAuditTrail;
+
     protected $fillable = [
         'activity_id',
         'sub_component_id',

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\ActivityBudget;
 use App\Models\BudgetRealization;
 use App\Models\Program;
+use Illuminate\Support\Carbon;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -55,7 +56,7 @@ class DashboardController extends Controller
                     'activity_name' => $realization->activityBudget->activity->name,
                     'unit_name' => $realization->activityBudget->activity->unit->name,
                     'amount' => (float) $realization->amount,
-                    'date' => $realization->realization_date->format('d M Y'),
+                    'date' => Carbon::parse($realization->realization_date)->format('d M Y'),
                     'description' => $realization->description,
                 ];
             });

@@ -16,6 +16,7 @@ use App\Models\User;
 use App\Models\Vendor;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -102,6 +103,10 @@ class BudgetController extends Controller
 
     public function updateBudget(Request $request, ActivityBudget $budget): RedirectResponse
     {
+        if ($budget->fiscalYear->is_locked) {
+            return back()->with('error', 'Tahun anggaran sudah dikunci.');
+        }
+
         $validated = $request->validate([
             'budget_category' => 'required|string|in:personnel,goods_services,capital,other',
             'account_code' => 'nullable|string|max:50',
@@ -257,6 +262,10 @@ class BudgetController extends Controller
 
     public function deleteBudget(ActivityBudget $budget): RedirectResponse
     {
+        if ($budget->fiscalYear->is_locked) {
+            return back()->with('error', 'Tahun anggaran sudah dikunci.');
+        }
+
         if ($budget->realizations()->exists()) {
             return back()->with('error', 'Tidak dapat menghapus pagu yang telah memiliki transaksi realisasi.');
         }
@@ -274,6 +283,10 @@ class BudgetController extends Controller
             'realizations.items',
             'budgetItems',
         ]);
+
+        if ($budget->fiscalYear->is_locked) {
+            return redirect()->route('budgets.index')->with('error', 'Tahun anggaran sudah dikunci.');
+        }
 
         if ($budget->activity->status !== 'approved') {
             return redirect()->route('budgets.index')->with('error', 'Realisasi anggaran hanya dapat dicatat untuk kegiatan yang sudah disetujui.');
@@ -374,10 +387,36 @@ class BudgetController extends Controller
             throw new \RuntimeException('Invalid activity budget.');
         }
 
+        if ($budget->fiscalYear->is_locked) {
+            throw ValidationException::withMessages([
+                'activity_budget_id' => ['Tahun anggaran sudah dikunci.'],
+            ]);
+        }
+
         if ($budget->activity->status !== 'approved') {
             throw ValidationException::withMessages([
                 'activity_budget_id' => ['Realisasi anggaran hanya dapat dicatat untuk kegiatan yang sudah disetujui.'],
             ]);
+        }
+
+        // Validate realization date within the range of start_date and end_date of Fiscal Year
+        $realizationDate = Carbon::parse($validated['realization_date']);
+        $fiscalYear = $budget->fiscalYear;
+
+        if ($realizationDate->lt($fiscalYear->start_date) || $realizationDate->gt($fiscalYear->end_date)) {
+            throw ValidationException::withMessages([
+                'realization_date' => ["Tanggal realisasi harus berada di dalam rentang tahun anggaran ({$fiscalYear->start_date->format('d-m-Y')} s.d. {$fiscalYear->end_date->format('d-m-Y')})."],
+            ]);
+        }
+
+        // Validate chronologically: realization_date >= procurement_date (if procurement)
+        if ($validated['realization_type'] === 'surat_pesanan' && isset($validated['procurement_date'])) {
+            $procurementDate = Carbon::parse($validated['procurement_date']);
+            if ($realizationDate->lt($procurementDate)) {
+                throw ValidationException::withMessages([
+                    'realization_date' => ['Tanggal realisasi belanja tidak boleh mendahului tanggal dokumen kontrak/surat pesanan.'],
+                ]);
+            }
         }
 
         // Perform item-level validation

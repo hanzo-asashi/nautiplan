@@ -1088,7 +1088,7 @@ class ReportController extends Controller
 
                     $writer->addRow(Row::fromValues([
                         $no++,
-                        $real->realization_date->format('Y-m-d'),
+                        \Illuminate\Support\Carbon::parse($real->realization_date)->format('Y-m-d'),
                         $real->receipt_number ?? '',
                         $real->description ?? '',
                         $makCode,

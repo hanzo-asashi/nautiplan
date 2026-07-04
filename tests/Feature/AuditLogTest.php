@@ -1,7 +1,14 @@
 <?php
 
+use App\Models\Activity;
+use App\Models\ActivityBudget;
 use App\Models\AuditLog;
+use App\Models\BudgetItem;
+use App\Models\BudgetRealization;
+use App\Models\FiscalYear;
+use App\Models\Program;
 use App\Models\Role;
+use App\Models\Unit;
 use App\Models\User;
 
 test('guests are redirected to the login page from audit logs', function () {
@@ -97,4 +104,101 @@ test('super-admin can filter audit logs by search query, user, and event', funct
         ->where('logs.data.0.event', 'created')
         ->has('logs.data', 1)
     );
+});
+
+test('model operations automatically write audit trail log entries', function () {
+    $user = User::factory()->create();
+    $this->actingAs($user);
+
+    $fiscalYear = FiscalYear::create([
+        'year' => 2026,
+        'start_date' => '2026-01-01',
+        'end_date' => '2026-12-31',
+        'is_active' => true,
+        'is_locked' => false,
+    ]);
+
+    $unit = Unit::create([
+        'code' => 'UNIT-01',
+        'name' => 'Unit Kerja',
+    ]);
+
+    $program = Program::create([
+        'code' => 'PRG-01',
+        'name' => 'Program Pengembangan',
+        'fiscal_year_id' => $fiscalYear->id,
+        'unit_id' => $unit->id,
+        'created_by' => $user->id,
+    ]);
+
+    $activity = Activity::create([
+        'code' => 'AUDIT-TEST',
+        'name' => 'Testing Audit Log Integration',
+        'program_id' => $program->id,
+        'unit_id' => $unit->id,
+        'fiscal_year_id' => $fiscalYear->id,
+        'status' => 'draft',
+    ]);
+
+    // 1. Create ActivityBudget
+    $budget = ActivityBudget::create([
+        'activity_id' => $activity->id,
+        'budget_category' => 'goods_services',
+        'account_code' => '521211',
+        'account_name' => 'Belanja Bahan',
+        'description' => 'ATK Uji Coba',
+        'amount' => 500000.0,
+        'fiscal_year_id' => $fiscalYear->id,
+        'version' => 1,
+    ]);
+
+    $this->assertDatabaseHas('audit_logs', [
+        'user_id' => $user->id,
+        'auditable_type' => 'App\Models\ActivityBudget',
+        'auditable_id' => $budget->id,
+        'event' => 'created',
+    ]);
+
+    // 2. Create BudgetItem
+    $item = BudgetItem::create([
+        'activity_budget_id' => $budget->id,
+        'name' => 'Kertas A4',
+        'volume' => 5,
+        'unit' => 'Rim',
+        'unit_price' => 100000.0,
+        'total' => 500000.0,
+    ]);
+
+    $this->assertDatabaseHas('audit_logs', [
+        'user_id' => $user->id,
+        'auditable_type' => 'App\Models\BudgetItem',
+        'auditable_id' => $item->id,
+        'event' => 'created',
+    ]);
+
+    // 3. Update BudgetItem
+    $item->update(['volume' => 10]);
+
+    $this->assertDatabaseHas('audit_logs', [
+        'user_id' => $user->id,
+        'auditable_type' => 'App\Models\BudgetItem',
+        'auditable_id' => $item->id,
+        'event' => 'updated',
+    ]);
+
+    // 4. Create BudgetRealization
+    $realization = BudgetRealization::create([
+        'activity_budget_id' => $budget->id,
+        'realization_type' => 'non_pengadaan',
+        'amount' => 200000.0,
+        'realization_date' => '2026-07-01',
+        'description' => 'Realisasi Uji Coba',
+    ]);
+
+    $this->assertDatabaseHas('audit_logs', [
+        'user_id' => $user->id,
+        'auditable_type' => 'App\Models\BudgetRealization',
+        'auditable_id' => $realization->id,
+        'event' => 'created',
+    ]);
 });
