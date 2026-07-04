@@ -15,6 +15,8 @@ Dokumen ini berisi panduan penggunaan fitur-fitur operasional tingkat lanjut yan
 8. [Pelacakan Revisi POK (Semula vs Menjadi)](#-pelacakan-revisi-pok-semula-vs-menjadi)
 9. [Tren Penyerapan & Early Warning System (EWS)](#-tren-penyerapan--early-warning-system-ews)
 10. [Laporan Monev Struktur DIPA APBN](#-laporan-monev-struktur-dipa-apbn)
+11. [Keamanan & Validasi Transaksi Lanjutan](#-keamanan--validasi-transaksi-lanjutan)
+12. [Tampilan Penuh Formulir (Full-Page Form)](#-tampilan-penuh-formulir-full-page-form)
 
 ---
 
@@ -159,3 +161,29 @@ Sistem menyediakan ekspor data yang komprehensif bagi pimpinan untuk melakukan p
 * Klik tab **Hub Impor & Ekspor** untuk mengunduh template rencana POK atau mengunggah data anggaran masal.
 * Klik tombol **Cetak Laporan** untuk mengunduh komparasi realisasi anggaran per Unit Kerja, per Program, maupun perbandingan realisasi multi-tahun.
 * Laporan realisasi per-hirarki (Output/Sub-Output/Komponen) dapat dicetak secara terstruktur guna melihat efisiensi penyerapan masing-masing pos anggaran.
+
+---
+
+## 🔒 Keamanan & Validasi Transaksi Lanjutan
+
+Sistem dilengkapi dengan proteksi integritas data dan validasi otomatis untuk mencegah kesalahan pencatatan administrasi.
+
+### 1. Penguncian Tahun Anggaran (Fiscal Year Lock):
+* KPA dapat mengunci (lock) tahun anggaran yang telah berakhir atau ditutup bukunya.
+* **Pencegahan Manipulasi**: Jika tahun anggaran terkunci, sistem akan memblokir seluruh upaya untuk merevisi POK, mencatat realisasi belanja baru, mengubah/menghapus anggaran, atau mengajukan persetujuan kegiatan pada tahun bersangkutan. Hal ini mengamankan laporan keuangan tahunan dari manipulasi retrospektif.
+
+### 2. Validasi Batas Tanggal (Date Boundaries):
+* **Rentang Tahun Anggaran**: Tanggal realisasi belanja yang diinputkan dijamin 100% harus berada di antara tanggal mulai (*start_date*) dan tanggal selesai (*end_date*) dari tahun anggaran tersebut. Mencegah kesalahan ketik (typo) tahun yang bisa mengacaukan perhitungan.
+* **Kronologis Kontrak Pihak Ketiga**: Untuk realisasi menggunakan surat pesanan/kontrak, sistem memastikan bahwa tanggal pembayaran/realisasi tidak mendahului tanggal penerbitan kontrak (Procurement Date).
+
+### 3. Rekaman Jejak Audit (Audit Trail) Lanjutan:
+* Setiap perubahan data anggaran krusial (termasuk kegiatan, rincian POK, catatan realisasi, dan revisi) kini terekam secara komprehensif dalam log audit sistem untuk menjamin akuntabilitas 100%.
+
+---
+
+## 🖥️ Tampilan Penuh Formulir (Full-Page Form)
+
+Untuk memfasilitasi formulir yang sangat padat dan memiliki teks yang panjang (seperti Revisi POK dan Pencatatan Realisasi), NautiPlan memigrasi tampilan formulir yang dulunya berbasis *Pop-up/Modal* menjadi Halaman Penuh (*Dedicated Page*).
+
+* **Visibilitas Maksimal**: Area pandang (viewport) lebih luas tanpa batasan modal, sehingga rincian item, angka, dan deskripsi revisi dapat terlihat secara utuh.
+* **Fokus Penuh**: Tidak terganggu oleh elemen latar belakang, memudahkan pengisian rincian belanja, perpajakan, dan harga satuan secara presisi.
