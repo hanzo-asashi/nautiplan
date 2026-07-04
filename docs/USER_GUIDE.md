@@ -14,8 +14,12 @@ Dokumen ini berisi panduan penggunaan fitur-fitur operasional tingkat lanjut yan
 7. [Administrasi Pencairan (SPP, SPM, SPTJB, & SSP Pajak)](#-administrasi-pencairan-spp-spm-sptjb--ssp-pajak)
 8. [Pelacakan Revisi POK (Semula vs Menjadi)](#-pelacakan-revisi-pok-semula-vs-menjadi)
 9. [Tren Penyerapan & Early Warning System (EWS)](#-tren-penyerapan--early-warning-system-ews)
-10. [Laporan Monev Struktur DIPA APBN](#-laporan-monev-struktur-dipa-apbn)
 11. [Keamanan & Validasi Transaksi Lanjutan](#-keamanan--validasi-transaksi-lanjutan)
+12. [Manajemen Otentikasi & Keamanan Akun (2FA & Passkeys)](#-manajemen-otentikasi--keamanan-akun-2fa--passkeys)
+13. [Alur Persetujuan Berjenjang (Workflow & Approvals)](#-alur-persetujuan-berjenjang-workflow--approvals)
+14. [Linimasa Gantt (Gantt Chart)](#-linimasa-gantt-gantt-chart)
+15. [Pemantauan Indikator Kinerja Utama (KPI Dashboard)](#-pemantauan-indikator-kinerja-utama-kpi-dashboard)
+16. [Manajemen Data Master & Renstra/Renja](#-manajemen-data-master--renstrarenja)
 
 ---
 
@@ -177,3 +181,53 @@ Sistem dilengkapi dengan proteksi integritas data dan validasi otomatis untuk me
 
 ### 3. Rekaman Jejak Audit (Audit Trail) Lanjutan:
 * Setiap perubahan data anggaran krusial (termasuk kegiatan, rincian POK, catatan realisasi, dan revisi) kini terekam secara komprehensif dalam log audit sistem untuk menjamin akuntabilitas 100%.
+
+---
+
+## 🔐 Manajemen Otentikasi & Keamanan Akun (2FA & Passkeys)
+
+Keamanan akses pengguna diatur dengan standar tertinggi melalui fitur otentikasi multi-lapis.
+
+* **Otentikasi Dua Langkah (2FA)**: Pengguna dapat mengamankan akun menggunakan aplikasi authenticator (Google Authenticator, Authy, dll.) berbasis TOTP.
+* **Passkeys (WebAuthn)**: Login biometrik (sidik jari, FaceID, atau Windows Hello) tanpa perlu mengingat kata sandi. Cepat, aman, dan kebal terhadap pishing.
+* **Manajemen Sesi & Perangkat**: Pantau dan cabut akses (logout jarak jauh) dari perangkat yang tidak dikenal melalui halaman Keamanan Akun.
+
+---
+
+## 📝 Alur Persetujuan Berjenjang (Workflow & Approvals)
+
+Setiap pengajuan kegiatan atau revisi POK dapat melalui mekanisme persetujuan berjenjang sebelum dapat dieksekusi.
+
+* **Pengajuan (*Submit*)**: Pengguna/KPA dapat mengajukan persetujuan untuk sebuah kegiatan.
+* **Review & Verifikasi**: Pihak berwenang (misal PPK atau SPI) dapat melihat daftar usulan yang masuk.
+* **Tindakan (Setuju / Tolak / Revisi)**: Verifikator dapat menyetujui, menolak, atau mengembalikan usulan dengan catatan perbaikan yang jelas.
+* **Jejak Persetujuan**: Semua riwayat status dan catatan diverifikasi secara transparan pada riwayat kegiatan.
+
+---
+
+## 📈 Linimasa Gantt (Gantt Chart)
+
+Modul Linimasa Gantt memberikan visualisasi proyek dan kegiatan lintas waktu yang sangat berguna untuk perencanaan makro.
+
+* **Tampilan Interaktif**: Memvisualisasikan rentang waktu (*start_date* hingga *end_date*) dari setiap kegiatan.
+* **Garis Waktu Geser (*Drag & Pan*)**: Geser dan zoom grafik rentang waktu untuk melihat perencanaan bulanan hingga tahunan secara mudah.
+* **Identifikasi Tumpang Tindih (*Overlap*)**: Sangat membantu pimpinan untuk mengalokasikan sumber daya agar tidak ada kegiatan berat yang bertumpuk pada bulan yang sama.
+
+---
+
+## 🎯 Pemantauan Indikator Kinerja Utama (KPI Dashboard)
+
+Dashboard khusus (Capaian KPI) mengukur kinerja nyata terhadap target strategis politeknik.
+
+* **Metrik Kinerja (IKU)**: Melacak ketercapaian Indikator Kinerja Utama institusi (seperti persentase kelulusan, daya serap lulusan, dll).
+* **Visualisasi Target vs Realisasi**: Grafik perbandingan yang mudah dipahami (Gauge / Bar) untuk menunjukkan seberapa dekat instansi dengan target Renstra yang telah ditetapkan.
+
+---
+
+## 🗄️ Manajemen Data Master & Renstra/Renja
+
+Sistem NautiPlan juga mencakup modul administratif untuk mengatur seluruh data pondasi aplikasi.
+
+* **Rencana Strategis (Renstra)**: Pengelolaan visi, misi, dan tujuan jangka panjang instansi.
+* **Rencana Kerja (Renja)**: Pengelolaan sasaran program prioritas tahunan.
+* **Unit Organisasi & Pengguna**: Manajemen unit pelaksana teknis (Bagian/Subbagian/Pusat) serta hak akses pengguna (Roles/Permissions) sesuai peran organisasinya.
