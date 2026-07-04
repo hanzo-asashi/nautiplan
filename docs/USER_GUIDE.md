@@ -14,6 +14,7 @@ Dokumen ini berisi panduan penggunaan fitur-fitur operasional tingkat lanjut yan
 7. [Administrasi Pencairan (SPP, SPM, SPTJB, & SSP Pajak)](#-administrasi-pencairan-spp-spm-sptjb--ssp-pajak)
 8. [Pelacakan Revisi POK (Semula vs Menjadi)](#-pelacakan-revisi-pok-semula-vs-menjadi)
 9. [Tren Penyerapan & Early Warning System (EWS)](#-tren-penyerapan--early-warning-system-ews)
+10. [Laporan Monev Struktur DIPA APBN](#-laporan-monev-struktur-dipa-apbn)
 11. [Keamanan & Validasi Transaksi Lanjutan](#-keamanan--validasi-transaksi-lanjutan)
 12. [Manajemen Otentikasi & Keamanan Akun (2FA & Passkeys)](#-manajemen-otentikasi--keamanan-akun-2fa--passkeys)
 13. [Alur Persetujuan Berjenjang (Workflow & Approvals)](#-alur-persetujuan-berjenjang-workflow--approvals)
