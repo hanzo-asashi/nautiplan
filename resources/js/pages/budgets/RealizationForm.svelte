@@ -92,6 +92,7 @@
         // Items list
         items: [
             {
+                budget_item_id: '',
                 name: budget.description || '',
                 volume: 1,
                 unit: 'Paket',
@@ -104,6 +105,7 @@
                 remarks: '',
             },
         ] as Array<{
+            budget_item_id: string;
             name: string;
             volume: number;
             unit: string;
@@ -131,6 +133,7 @@
         form.items = [
             ...form.items,
             {
+                budget_item_id: '',
                 name: '',
                 volume: 1,
                 unit: 'Pcs',
@@ -155,6 +158,29 @@
         form.amount = form.items.reduce(
             (sum, item) => sum + Number(item.volume) * Number(item.unit_price),
             0,
+        );
+    }
+
+    function handleBudgetItemSelect(index: number, budgetItemId: string) {
+        const item = budget.budget_items?.find(
+            (bi: any) => bi.id.toString() === budgetItemId,
+        );
+
+        if (item) {
+            form.items[index].budget_item_id = budgetItemId;
+            form.items[index].name = item.name;
+            form.items[index].unit = item.unit;
+            form.items[index].unit_price = item.unit_price;
+        } else {
+            form.items[index].budget_item_id = '';
+        }
+
+        calculateTotal();
+    }
+
+    function getSelectedBudgetItem(budgetItemId: string) {
+        return budget.budget_items?.find(
+            (bi: any) => bi.id.toString() === budgetItemId,
         );
     }
 
@@ -352,6 +378,9 @@
                 <!-- Responsive Items List -->
                 <div class="space-y-4">
                     {#each form.items as item, index}
+                        {@const selectedBi = getSelectedBudgetItem(
+                            item.budget_item_id,
+                        )}
                         <div
                             class="p-4 bg-zinc-50/50 dark:bg-zinc-950/20 rounded-xl border border-zinc-150 dark:border-zinc-800/80 space-y-3"
                         >
@@ -374,11 +403,43 @@
                             </div>
 
                             <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+                                <!-- POK Item Dropdown -->
+                                <div class="md:col-span-2 space-y-1">
+                                    <label
+                                        class="text-[10px] font-bold text-foreground"
+                                        >Pilih Rencana Rincian POK <span
+                                            class="text-rose-500">*</span
+                                        ></label
+                                    >
+                                    <select
+                                        value={item.budget_item_id}
+                                        onchange={(e) =>
+                                            handleBudgetItemSelect(
+                                                index,
+                                                e.currentTarget.value,
+                                            )}
+                                        class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary font-medium cursor-pointer"
+                                        required
+                                    >
+                                        <option value=""
+                                            >-- Pilih Rincian Anggaran POK --</option
+                                        >
+                                        {#each budget.budget_items || [] as bi}
+                                            <option value={bi.id.toString()}>
+                                                {bi.name} (Pagu: {bi.remaining_volume}
+                                                {bi.unit} @ {formatRupiah(
+                                                    bi.unit_price,
+                                                )})
+                                            </option>
+                                        {/each}
+                                    </select>
+                                </div>
+
                                 <!-- Name -->
                                 <div class="md:col-span-2 space-y-1">
                                     <label
                                         class="text-[10px] font-bold text-foreground"
-                                        >Nama Barang / Jasa <span
+                                        >Nama Realisasi Barang / Jasa <span
                                             class="text-rose-500">*</span
                                         ></label
                                     >
@@ -390,6 +451,9 @@
                                         required
                                     />
                                 </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
                                 <!-- Volume -->
                                 <div class="space-y-1">
                                     <label
@@ -407,8 +471,21 @@
                                         class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary font-medium text-center"
                                         required
                                     />
+                                    {#if selectedBi}
+                                        <div
+                                            class="text-[9px] mt-1 font-semibold {Number(
+                                                item.volume,
+                                            ) >
+                                            Number(selectedBi.remaining_volume)
+                                                ? 'text-rose-500 font-bold animate-pulse'
+                                                : 'text-emerald-600 dark:text-emerald-400'}"
+                                        >
+                                            Sisa POK: {selectedBi.remaining_volume}
+                                            {selectedBi.unit}
+                                        </div>
+                                    {/if}
                                 </div>
-                                <!-- Unit -->
+                                <!-- Satuan -->
                                 <div class="space-y-1">
                                     <label
                                         class="text-[10px] font-bold text-foreground"
@@ -424,9 +501,6 @@
                                         required
                                     />
                                 </div>
-                            </div>
-
-                            <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
                                 <!-- Unit Price -->
                                 <div class="space-y-1">
                                     <label
@@ -443,18 +517,31 @@
                                         class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary font-bold text-right"
                                         required
                                     />
+                                    {#if selectedBi}
+                                        <div
+                                            class="text-[9px] mt-1 font-semibold {Number(
+                                                item.unit_price,
+                                            ) > Number(selectedBi.unit_price)
+                                                ? 'text-rose-500 font-bold animate-pulse'
+                                                : 'text-emerald-600 dark:text-emerald-400'}"
+                                        >
+                                            Maks Pagu: {formatRupiah(
+                                                selectedBi.unit_price,
+                                            )}
+                                        </div>
+                                    {/if}
                                 </div>
 
                                 <!-- Remarks -->
-                                <div class="md:col-span-3 space-y-1">
+                                <div class="space-y-1">
                                     <label
                                         class="text-[10px] font-bold text-foreground"
-                                        >Spesifikasi / Keterangan Tambahan</label
+                                        >Keterangan</label
                                     >
                                     <input
                                         type="text"
                                         bind:value={item.remarks}
-                                        placeholder="E.g., Merk Sinar Dunia, Warna Putih"
+                                        placeholder="E.g., Merk Sinar Dunia"
                                         class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary font-medium"
                                     />
                                 </div>

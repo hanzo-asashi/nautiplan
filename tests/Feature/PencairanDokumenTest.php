@@ -2,6 +2,7 @@
 
 use App\Models\Activity;
 use App\Models\ActivityBudget;
+use App\Models\BudgetItem;
 use App\Models\BudgetRealization;
 use App\Models\Component;
 use App\Models\FiscalYear;
@@ -92,6 +93,15 @@ test('pencairan documents and taxes can be saved and downloaded', function () {
         'version' => 1,
     ]);
 
+    $budgetItem = BudgetItem::create([
+        'activity_budget_id' => $budget->id,
+        'name' => 'Item 1',
+        'volume' => 10,
+        'unit' => 'Pcs',
+        'unit_price' => 50000,
+        'total' => 500000,
+    ]);
+
     $payload = [
         'activity_budget_id' => $budget->id,
         'realization_type' => 'surat_pesanan',
@@ -126,6 +136,7 @@ test('pencairan documents and taxes can be saved and downloaded', function () {
         'bank_account_name' => 'CV Test Vendor Account',
         'items' => [
             [
+                'budget_item_id' => $budgetItem->id,
                 'name' => 'Item 1',
                 'volume' => 2,
                 'unit' => 'Pcs',

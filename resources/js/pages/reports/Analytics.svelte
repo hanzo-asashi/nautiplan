@@ -33,6 +33,8 @@
         unitsData = [],
         programsData = [],
         multiYearData = [],
+        monthlyTrend = [],
+        criticalBudgets = [],
         fiscalYears = [],
         filters = { fiscal_year_id: null },
         importErrors = null,
@@ -47,6 +49,21 @@
             realisasi: number;
             kpi_achievement: number;
         }>;
+        monthlyTrend: Array<{
+            month: string;
+            amount: number;
+            cumulative: number;
+        }>;
+        criticalBudgets: Array<{
+            id: number;
+            account_code: string;
+            description: string;
+            unit: string;
+            pagu: number;
+            realisasi: number;
+            sisa: number;
+            percentage: number;
+        }>;
         fiscalYears: Array<{ id: number; year: number; is_active: boolean }>;
         filters: { fiscal_year_id: number | null };
         importErrors: Array<{
@@ -56,6 +73,10 @@
         }> | null;
         success: string | null;
     } = $props();
+
+    const totalYearPagu = $derived(
+        unitsData.reduce((sum, u) => sum + u.value1, 0),
+    );
 
     let selectedYearId = $state(
         filters.fiscal_year_id ||
@@ -209,6 +230,198 @@
                         title="Realisasi Anggaran Per Program Kerja ({selectedYear})"
                         data={programsData}
                     />
+                {/if}
+            </div>
+
+            <!-- Monthly Absorption Trend Widget -->
+            <div
+                class="rounded-xl border border-sidebar-border/50 bg-card/45 backdrop-blur-md p-6 shadow-sm space-y-6"
+            >
+                <h3 class="text-base font-bold text-foreground">
+                    Tren Penyerapan Bulanan (Kumulatif)
+                </h3>
+                <div
+                    class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"
+                >
+                    {#each monthlyTrend as trend}
+                        {@const pct =
+                            totalYearPagu > 0
+                                ? (trend.cumulative / totalYearPagu) * 100
+                                : 0}
+                        <div
+                            class="bg-zinc-50 dark:bg-zinc-900/35 border border-zinc-200/50 dark:border-zinc-800 rounded-xl p-4 space-y-2 relative overflow-hidden transition-all hover:shadow-md"
+                        >
+                            <div
+                                class="absolute bottom-0 left-0 right-0 h-1 bg-zinc-200 dark:bg-zinc-800"
+                            >
+                                <div
+                                    class="h-full bg-emerald-500 transition-all duration-500"
+                                    style="width: {pct}%"
+                                ></div>
+                            </div>
+                            <div
+                                class="flex justify-between items-center text-xs text-muted-foreground font-semibold"
+                            >
+                                <span>{trend.month}</span>
+                                <span
+                                    class="text-[10px] bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-1.5 py-0.5 rounded-full font-extrabold"
+                                    >{pct.toFixed(1)}%</span
+                                >
+                            </div>
+                            <div class="space-y-0.5">
+                                <div class="text-[10px] text-muted-foreground">
+                                    Kumulatif:
+                                </div>
+                                <div class="text-xs font-black text-foreground">
+                                    {formatRupiah(trend.cumulative, true)}
+                                </div>
+                            </div>
+                            <div
+                                class="text-[9px] text-muted-foreground pt-1 border-t border-zinc-200/50 dark:border-zinc-800"
+                            >
+                                Penyerapan: <strong
+                                    class="text-foreground font-bold"
+                                    >{formatRupiah(trend.amount, true)}</strong
+                                >
+                            </div>
+                        </div>
+                    {/each}
+                </div>
+            </div>
+
+            <!-- Early Warning System Pagu Kritis Widget -->
+            <div
+                class="rounded-xl border border-sidebar-border/50 bg-card/45 backdrop-blur-md p-6 shadow-sm space-y-4"
+            >
+                <div
+                    class="flex items-center gap-2 border-b border-sidebar-border/20 pb-3"
+                >
+                    <span class="text-amber-500 text-lg">⚠️</span>
+                    <div>
+                        <h3 class="text-base font-bold text-foreground">
+                            Early Warning System (EWS) — Pagu Kritis
+                        </h3>
+                        <p class="text-xs text-muted-foreground">
+                            Daftar pagu belanja dengan sisa dana di bawah 15%
+                            atau pagu kritis lainnya.
+                        </p>
+                    </div>
+                </div>
+
+                {#if criticalBudgets.length === 0}
+                    <div
+                        class="text-center py-8 text-xs text-muted-foreground/60 italic"
+                    >
+                        Semua pagu anggaran dalam kondisi aman (belum kritis).
+                    </div>
+                {:else}
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {#each criticalBudgets as budget}
+                            {@const isExtremelyCritical =
+                                budget.percentage >= 90.0 ||
+                                budget.sisa <= 1000000}
+                            <div
+                                class="bg-zinc-50 dark:bg-zinc-900/35 border {isExtremelyCritical
+                                    ? 'border-rose-300 dark:border-rose-950/60 bg-rose-50/10'
+                                    : 'border-amber-300 dark:border-amber-950/60 bg-amber-50/10'} rounded-xl p-4 space-y-3 relative overflow-hidden transition-all hover:shadow-md"
+                            >
+                                <div
+                                    class="flex justify-between items-start gap-2"
+                                >
+                                    <div>
+                                        <span
+                                            class="text-[9px] font-bold px-2 py-0.5 rounded uppercase {isExtremelyCritical
+                                                ? 'bg-rose-500/10 text-rose-600'
+                                                : 'bg-amber-500/10 text-amber-600'}"
+                                        >
+                                            {isExtremelyCritical
+                                                ? 'Sangat Kritis (Depleted)'
+                                                : 'Peringatan (Warning)'}
+                                        </span>
+                                        <h4
+                                            class="text-xs font-bold text-foreground mt-1.5 font-sans leading-tight"
+                                        >
+                                            {budget.account_code
+                                                ? `[${budget.account_code}] `
+                                                : ''}{budget.description}
+                                        </h4>
+                                        <p
+                                            class="text-[10px] text-muted-foreground"
+                                        >
+                                            Unit: {budget.unit}
+                                        </p>
+                                    </div>
+                                    <div class="text-right shrink-0">
+                                        <span
+                                            class="text-xs font-black {isExtremelyCritical
+                                                ? 'text-rose-500'
+                                                : 'text-amber-500'}"
+                                            >{budget.percentage}%</span
+                                        >
+                                        <span
+                                            class="text-[9px] text-muted-foreground block font-bold"
+                                            >Terpakai</span
+                                        >
+                                    </div>
+                                </div>
+
+                                <div
+                                    class="h-2 w-full bg-zinc-200 dark:bg-zinc-800 rounded-full overflow-hidden"
+                                >
+                                    <div
+                                        class="h-full {isExtremelyCritical
+                                            ? 'bg-rose-500'
+                                            : 'bg-amber-500'} transition-all duration-500"
+                                        style="width: {budget.percentage}%"
+                                    ></div>
+                                </div>
+
+                                <div
+                                    class="grid grid-cols-3 gap-2 pt-2 border-t border-zinc-200/50 dark:border-zinc-800 text-[10px]"
+                                >
+                                    <div>
+                                        <span
+                                            class="text-muted-foreground block"
+                                            >Pagu Awal</span
+                                        >
+                                        <span class="font-bold text-foreground"
+                                            >{formatRupiah(
+                                                budget.pagu,
+                                                true,
+                                            )}</span
+                                        >
+                                    </div>
+                                    <div>
+                                        <span
+                                            class="text-muted-foreground block"
+                                            >Realisasi</span
+                                        >
+                                        <span class="font-bold text-foreground"
+                                            >{formatRupiah(
+                                                budget.realisasi,
+                                                true,
+                                            )}</span
+                                        >
+                                    </div>
+                                    <div>
+                                        <span
+                                            class="text-muted-foreground block"
+                                            >Sisa Dana</span
+                                        >
+                                        <span
+                                            class="font-black {isExtremelyCritical
+                                                ? 'text-rose-600 dark:text-rose-400'
+                                                : 'text-amber-600 dark:text-amber-400'}"
+                                            >{formatRupiah(
+                                                budget.sisa,
+                                                true,
+                                            )}</span
+                                        >
+                                    </div>
+                                </div>
+                            </div>
+                        {/each}
+                    </div>
                 {/if}
             </div>
         {:else if activeTab === 'multi-year'}

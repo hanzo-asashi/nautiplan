@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Activity;
+use App\Models\ActivityBudget;
 use App\Models\BudgetRealization;
+use App\Models\BudgetRevision;
 use App\Models\FiscalYear;
 use App\Models\Program;
 use App\Models\Unit;
@@ -158,10 +160,65 @@ class ReportController extends Controller
             ->values()
             ->all();
 
+        // 1. Monthly Absorption Trend
+        $months = [
+            1 => 'Jan', 2 => 'Feb', 3 => 'Mar', 4 => 'Apr', 5 => 'May', 6 => 'Jun',
+            7 => 'Jul', 8 => 'Aug', 9 => 'Sep', 10 => 'Oct', 11 => 'Nov', 12 => 'Dec',
+        ];
+
+        $realizationsQuery = BudgetRealization::whereHas('activityBudget', function ($q) use ($selectedYearId) {
+            $q->where('fiscal_year_id', $selectedYearId);
+        })->get();
+
+        $monthlyTrend = [];
+        $runningSum = 0;
+        foreach ($months as $mNum => $mName) {
+            $mAmount = (float) $realizationsQuery->filter(function ($r) use ($mNum) {
+                return Carbon::parse($r->realization_date)->month === $mNum;
+            })->sum('amount');
+
+            $runningSum += $mAmount;
+
+            $monthlyTrend[] = [
+                'month' => $mName,
+                'amount' => $mAmount,
+                'cumulative' => $runningSum,
+            ];
+        }
+
+        // 2. Early Warning System (Pagu Kritis)
+        $criticalBudgets = ActivityBudget::where('fiscal_year_id', $selectedYearId)
+            ->with(['activity.unit', 'realizations'])
+            ->get()
+            ->map(function ($budget) {
+                $realisasi = $budget->realizations->sum('amount');
+                $remaining = $budget->amount - $realisasi;
+                $pct = $budget->amount > 0 ? ($realisasi / $budget->amount) * 100 : 0;
+
+                return [
+                    'id' => $budget->id,
+                    'account_code' => $budget->account_code,
+                    'description' => $budget->description,
+                    'unit' => $budget->activity->unit->name ?? '-',
+                    'pagu' => (float) $budget->amount,
+                    'realisasi' => (float) $realisasi,
+                    'sisa' => (float) $remaining,
+                    'percentage' => round($pct, 1),
+                ];
+            })
+            ->filter(function ($b) {
+                return ($b['percentage'] >= 85.0 && $b['sisa'] > 0) || ($b['sisa'] > 0 && $b['sisa'] <= 2000000.0);
+            })
+            ->sortBy('sisa')
+            ->values()
+            ->all();
+
         return Inertia::render('reports/Analytics', [
             'unitsData' => $unitsData,
             'programsData' => $programsData,
             'multiYearData' => $multiYearData,
+            'monthlyTrend' => $monthlyTrend,
+            'criticalBudgets' => $criticalBudgets,
             'fiscalYears' => $fiscalYears,
             'filters' => [
                 'fiscal_year_id' => $selectedYearId ? (int) $selectedYearId : null,
@@ -1100,5 +1157,21 @@ class ReportController extends Controller
         $yearName = $fiscalYear !== null ? (string) $fiscalYear->year : '';
 
         return $pdf->stream('laporan-rekap-komponen-'.$yearName.'.pdf');
+    }
+
+    public function downloadPdfRevision(BudgetRevision $revision): \Illuminate\Http\Response
+    {
+        $revision->load([
+            'activityBudget.activity.program',
+            'activityBudget.activity.unit',
+            'activityBudget.activity.fiscalYear',
+            'details',
+            'revisedBy',
+        ]);
+
+        $pdf = Pdf::loadView('pdf.revision-report', compact('revision'))
+            ->setPaper('a4', 'portrait');
+
+        return $pdf->stream("laporan-revisi-POK-rev-{$revision->revision_number}.pdf");
     }
 }
