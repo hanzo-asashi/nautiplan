@@ -25,7 +25,7 @@ class ReportHelper
         $temp = '';
 
         if ($number < 12) {
-            $temp = ' '.$words[$number];
+            $temp = ' '.$words[(int) $number];
         } elseif ($number < 20) {
             $temp = self::terbilang($number - 10).' belas';
         } elseif ($number < 100) {
@@ -54,7 +54,10 @@ class ReportHelper
      */
     public static function formatTanggal(string|Carbon $date): string
     {
-        return Carbon::parse($date)->locale('id')->translatedFormat('d F Y');
+        $c = $date instanceof Carbon ? $date->copy() : Carbon::parse($date);
+        $c->locale('id');
+
+        return $c->translatedFormat('d F Y');
     }
 
     /**
@@ -62,7 +65,10 @@ class ReportHelper
      */
     public static function formatTanggalWaktu(string|Carbon $date): string
     {
-        return Carbon::parse($date)->locale('id')->translatedFormat('d F Y H:i');
+        $c = $date instanceof Carbon ? $date->copy() : Carbon::parse($date);
+        $c->locale('id');
+
+        return $c->translatedFormat('d F Y H:i');
     }
 
     /**
@@ -70,7 +76,10 @@ class ReportHelper
      */
     public static function namaHari(string|Carbon $date): string
     {
-        return Carbon::parse($date)->locale('id')->translatedFormat('l');
+        $c = $date instanceof Carbon ? $date->copy() : Carbon::parse($date);
+        $c->locale('id');
+
+        return $c->translatedFormat('l');
     }
 
     /**
@@ -78,6 +87,9 @@ class ReportHelper
      */
     public static function namaBulan(string|Carbon $date): string
     {
-        return Carbon::parse($date)->locale('id')->translatedFormat('F');
+        $c = $date instanceof Carbon ? $date->copy() : Carbon::parse($date);
+        $c->locale('id');
+
+        return $c->translatedFormat('F');
     }
 }
