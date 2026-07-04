@@ -19,7 +19,7 @@ uses(RefreshDatabase::class);
 beforeEach(function () {
     // Create roles
     Role::create(['name' => 'super-admin', 'display_name' => 'Super Admin']);
-    $this->financeRole = Role::create(['name' => 'keuangan', 'display_name' => 'Bagian Keuangan']);
+    $this->financeRole = Role::create(['name' => 'staf-keuangan', 'display_name' => 'Bagian Keuangan']);
 
     // Create unit
     $this->unit = Unit::create(['name' => 'Teknologi Informasi', 'code' => 'TI']);

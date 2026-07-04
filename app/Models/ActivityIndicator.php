@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Scopes\UnitIsolationScope;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
@@ -41,6 +42,11 @@ class ActivityIndicator extends Model
             'target_value' => 'decimal:2',
             'actual_value' => 'decimal:2',
         ];
+    }
+
+    protected static function booted(): void
+    {
+        static::addGlobalScope(new UnitIsolationScope);
     }
 
     /**

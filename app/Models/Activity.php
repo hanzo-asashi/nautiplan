@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Concerns\HasAuditTrail;
+use App\Models\Scopes\UnitIsolationScope;
 use Database\Factories\ActivityFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -65,6 +66,11 @@ class Activity extends Model
             'end_date' => 'date',
             'progress_percentage' => 'integer',
         ];
+    }
+
+    protected static function booted(): void
+    {
+        static::addGlobalScope(new UnitIsolationScope);
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Activity;
 use App\Models\ActivityBudget;
 use App\Models\BudgetItem;
 use App\Models\BudgetRealization;
@@ -19,6 +20,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -87,7 +90,7 @@ class BudgetController extends Controller
     public function storeBudget(Request $request): RedirectResponse
     {
         $validated = $request->validate([
-            'activity_id' => 'required|exists:activities,id',
+            'activity_id' => ['required', Rule::exists(Activity::class, 'id')],
             'budget_category' => 'required|string|in:personnel,goods_services,capital,other',
             'account_code' => 'nullable|string|max:50',
             'account_name' => 'nullable|string|max:255',
@@ -103,6 +106,8 @@ class BudgetController extends Controller
 
     public function editBudget(ActivityBudget $budget): Response|RedirectResponse
     {
+        Gate::authorize('update', $budget);
+
         if ($budget->fiscalYear->is_locked) {
             return back()->with('error', 'Tahun anggaran sudah dikunci.');
         }
@@ -123,6 +128,8 @@ class BudgetController extends Controller
 
     public function updateBudget(Request $request, ActivityBudget $budget): RedirectResponse
     {
+        Gate::authorize('update', $budget);
+
         if ($budget->fiscalYear->is_locked) {
             return back()->with('error', 'Tahun anggaran sudah dikunci.');
         }
@@ -282,6 +289,8 @@ class BudgetController extends Controller
 
     public function deleteBudget(ActivityBudget $budget): RedirectResponse
     {
+        Gate::authorize('delete', $budget);
+
         if ($budget->fiscalYear->is_locked) {
             return back()->with('error', 'Tahun anggaran sudah dikunci.');
         }
@@ -343,7 +352,7 @@ class BudgetController extends Controller
     public function storeRealization(Request $request): RedirectResponse
     {
         $validated = $request->validate([
-            'activity_budget_id' => 'required|exists:activity_budgets,id',
+            'activity_budget_id' => ['required', Rule::exists(ActivityBudget::class, 'id')],
             'realization_type' => 'required|string|in:surat_pesanan,non_pengadaan',
             'amount' => 'required|numeric|min:0',
             'realization_date' => 'required|date',

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Scopes\UnitIsolationScope;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
@@ -42,6 +43,11 @@ class SubActivity extends Model
             'end_date' => 'date',
             'progress_percentage' => 'integer',
         ];
+    }
+
+    protected static function booted(): void
+    {
+        static::addGlobalScope(new UnitIsolationScope);
     }
 
     /**

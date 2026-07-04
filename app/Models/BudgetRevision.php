@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Concerns\HasAuditTrail;
+use App\Models\Scopes\UnitIsolationScope;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -42,6 +43,11 @@ class BudgetRevision extends Model
             'amount_semula' => 'float',
             'amount_menjadi' => 'float',
         ];
+    }
+
+    protected static function booted(): void
+    {
+        static::addGlobalScope(new UnitIsolationScope);
     }
 
     /**

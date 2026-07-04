@@ -73,7 +73,7 @@ it('restricts kanban board access to authorized users', function () {
     // Unauthorized user should be forbidden
     $this->actingAs($this->unauthorizedUser)
         ->get(route('activities.kanban', $this->activity))
-        ->assertStatus(403);
+        ->assertNotFound();
 
     // Authorized user should be allowed
     $this->actingAs($this->authorizedUser)
@@ -90,7 +90,7 @@ it('restricts revisions access to authorized users', function () {
     // Unauthorized user should be forbidden
     $this->actingAs($this->unauthorizedUser)
         ->get(route('activities.revisions', $this->activity))
-        ->assertStatus(403);
+        ->assertNotFound();
 
     // Authorized user should be allowed
     $this->actingAs($this->authorizedUser)
@@ -101,11 +101,8 @@ it('restricts revisions access to authorized users', function () {
 it('restricts sub activity status updates to authorized users', function () {
     // Unauthorized user should be forbidden
     $this->actingAs($this->unauthorizedUser)
-        ->put(route('sub-activities.update-status', $this->subActivity), [
-            'status' => 'in_progress',
-            'progress_percentage' => 50,
-        ])
-        ->assertStatus(403);
+        ->put(route('sub-activities.update-status', $this->subActivity), ['status' => 'completed', 'progress_percentage' => 100])
+        ->assertNotFound();
 
     // Authorized user should be allowed
     $this->actingAs($this->authorizedUser)
@@ -123,10 +120,9 @@ it('restricts document upload to authorized users', function () {
     // Unauthorized user should be forbidden
     $this->actingAs($this->unauthorizedUser)
         ->post(route('activities.documents.upload', $this->activity), [
-            'file' => $file,
-            'description' => 'Test description',
+            'file' => UploadedFile::fake()->create('document.pdf', 100, 'application/pdf'),
         ])
-        ->assertStatus(403);
+        ->assertNotFound();
 
     // Authorized user should be allowed
     $this->actingAs($this->authorizedUser)
@@ -149,10 +145,10 @@ it('restricts document deletion to owner/responsible/admin', function () {
         'version' => 1,
     ]);
 
-    // Unauthorized user should be forbidden
+    // Unauthorized user should be forbidden (will throw 404 due to UnitIsolationScope)
     $this->actingAs($this->unauthorizedUser)
         ->delete(route('activities.documents.delete', $doc))
-        ->assertStatus(403);
+        ->assertNotFound();
 
     // Authorized user (responsible user / same unit) should be allowed
     $this->actingAs($this->authorizedUser)

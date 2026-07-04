@@ -187,6 +187,14 @@ class ApprovalController extends Controller
             abort(403, 'Anda tidak memiliki wewenang untuk menyetujui langkah ini.');
         }
 
+        // Enforce unit isolation
+        $globalRoles = ['super-admin', 'admin', 'direktur', 'wakil-direktur', 'auditor', 'staf-keuangan', 'staf-perencanaan'];
+        $hasGlobalRole = $user->isSuperAdmin() || $user->hasAnyRole(...$globalRoles);
+
+        if ($activity instanceof Activity && ! $hasGlobalRole && $user->unit_id !== $activity->unit_id) {
+            abort(403, 'Anda tidak dapat menyetujui kegiatan di luar unit Anda.');
+        }
+
         $notes = $validated['notes'] ?? null;
 
         /** @var Activity $activity */
