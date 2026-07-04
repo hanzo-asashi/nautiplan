@@ -198,6 +198,33 @@
         }
     }
 
+    function autoCalculateTax(
+        index: number,
+        taxType: 'ppn' | 'pph21' | 'pph22' | 'pph23',
+        rate: number,
+    ) {
+        const item = form.items[index];
+        const subtotal =
+            Number(item.volume || 0) * Number(item.unit_price || 0);
+        const calculated = Math.round(subtotal * rate);
+
+        if (taxType === 'ppn') {
+            form.items[index].tax_ppn = calculated;
+        }
+
+        if (taxType === 'pph21') {
+            form.items[index].tax_pph21 = calculated;
+        }
+
+        if (taxType === 'pph22') {
+            form.items[index].tax_pph22 = calculated;
+        }
+
+        if (taxType === 'pph23') {
+            form.items[index].tax_pph23 = calculated;
+        }
+    }
+
     function handleSubmit(e: Event) {
         e.preventDefault();
 
@@ -560,10 +587,26 @@
                                     class="grid grid-cols-2 sm:grid-cols-4 gap-2"
                                 >
                                     <div class="space-y-0.5">
-                                        <label
-                                            class="text-[9px] font-bold text-muted-foreground block"
-                                            >PPN</label
+                                        <div
+                                            class="flex justify-between items-center"
                                         >
+                                            <label
+                                                class="text-[9px] font-bold text-muted-foreground block"
+                                                >PPN</label
+                                            >
+                                            <button
+                                                type="button"
+                                                onclick={() =>
+                                                    autoCalculateTax(
+                                                        index,
+                                                        'ppn',
+                                                        0.11,
+                                                    )}
+                                                class="text-[8px] text-primary hover:underline font-bold"
+                                                title="Hitung 11% dari subtotal"
+                                                >11%</button
+                                            >
+                                        </div>
                                         <input
                                             type="number"
                                             bind:value={item.tax_ppn}
@@ -572,10 +615,26 @@
                                         />
                                     </div>
                                     <div class="space-y-0.5">
-                                        <label
-                                            class="text-[9px] font-bold text-muted-foreground block"
-                                            >PPh 21</label
+                                        <div
+                                            class="flex justify-between items-center"
                                         >
+                                            <label
+                                                class="text-[9px] font-bold text-muted-foreground block"
+                                                >PPh 21</label
+                                            >
+                                            <button
+                                                type="button"
+                                                onclick={() =>
+                                                    autoCalculateTax(
+                                                        index,
+                                                        'pph21',
+                                                        0.05,
+                                                    )}
+                                                class="text-[8px] text-primary hover:underline font-bold"
+                                                title="Hitung 5% dari subtotal"
+                                                >5%</button
+                                            >
+                                        </div>
                                         <input
                                             type="number"
                                             bind:value={item.tax_pph21}
@@ -584,10 +643,26 @@
                                         />
                                     </div>
                                     <div class="space-y-0.5">
-                                        <label
-                                            class="text-[9px] font-bold text-muted-foreground block"
-                                            >PPh 22</label
+                                        <div
+                                            class="flex justify-between items-center"
                                         >
+                                            <label
+                                                class="text-[9px] font-bold text-muted-foreground block"
+                                                >PPh 22</label
+                                            >
+                                            <button
+                                                type="button"
+                                                onclick={() =>
+                                                    autoCalculateTax(
+                                                        index,
+                                                        'pph22',
+                                                        0.015,
+                                                    )}
+                                                class="text-[8px] text-primary hover:underline font-bold"
+                                                title="Hitung 1.5% dari subtotal"
+                                                >1.5%</button
+                                            >
+                                        </div>
                                         <input
                                             type="number"
                                             bind:value={item.tax_pph22}
@@ -596,10 +671,26 @@
                                         />
                                     </div>
                                     <div class="space-y-0.5">
-                                        <label
-                                            class="text-[9px] font-bold text-muted-foreground block"
-                                            >PPh 23</label
+                                        <div
+                                            class="flex justify-between items-center"
                                         >
+                                            <label
+                                                class="text-[9px] font-bold text-muted-foreground block"
+                                                >PPh 23</label
+                                            >
+                                            <button
+                                                type="button"
+                                                onclick={() =>
+                                                    autoCalculateTax(
+                                                        index,
+                                                        'pph23',
+                                                        0.02,
+                                                    )}
+                                                class="text-[8px] text-primary hover:underline font-bold"
+                                                title="Hitung 2% dari subtotal"
+                                                >2%</button
+                                            >
+                                        </div>
                                         <input
                                             type="number"
                                             bind:value={item.tax_pph23}

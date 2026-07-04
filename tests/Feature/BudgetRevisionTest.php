@@ -3,10 +3,12 @@
 use App\Models\Activity;
 use App\Models\ActivityBudget;
 use App\Models\BudgetItem;
+use App\Models\BudgetRealization;
 use App\Models\BudgetRevision;
 use App\Models\BudgetRevisionDetail;
 use App\Models\FiscalYear;
 use App\Models\Program;
+use App\Models\RealizationItem;
 use App\Models\Role;
 use App\Models\Unit;
 use App\Models\User;
@@ -83,6 +85,7 @@ beforeEach(function () {
 });
 
 test('prevent realization item markup price', function () {
+    $this->activity->update(['status' => 'approved']);
     $payload = [
         'activity_budget_id' => $this->budget->id,
         'realization_type' => 'non_pengadaan',
@@ -111,6 +114,7 @@ test('prevent realization item markup price', function () {
 });
 
 test('prevent realization item exceeding remaining volume', function () {
+    $this->activity->update(['status' => 'approved']);
     $payload = [
         'activity_budget_id' => $this->budget->id,
         'realization_type' => 'non_pengadaan',
@@ -242,4 +246,106 @@ test('user can download PDF revision comparative report', function () {
 
     $response->assertSuccessful();
     $response->assertHeader('content-type', 'application/pdf');
+});
+
+test('prevent realization if activity is not approved', function () {
+    // Activity status is draft by default in setup
+    $payload = [
+        'activity_budget_id' => $this->budget->id,
+        'realization_type' => 'non_pengadaan',
+        'amount' => 100000,
+        'realization_date' => '2026-07-02',
+        'description' => 'Pembelian ATK Realisasi',
+        'receipt_number' => 'KWT-999',
+        'items' => [
+            [
+                'budget_item_id' => $this->budgetItem->id,
+                'name' => 'Kertas A4 80gr',
+                'volume' => 1,
+                'unit' => 'Rim',
+                'unit_price' => 100000,
+            ],
+        ],
+    ];
+
+    $response = $this->actingAs($this->user)
+        ->post(route('budgets.realizations.store'), $payload);
+
+    $response->assertSessionHasErrors('activity_budget_id');
+});
+
+test('prevent POK item deletion if it has realizations', function () {
+    $this->activity->update(['status' => 'approved']);
+
+    // Create a realization for the item first
+    $realization = BudgetRealization::create([
+        'activity_budget_id' => $this->budget->id,
+        'realization_type' => 'non_pengadaan',
+        'amount' => 100000,
+        'realization_date' => '2026-07-02',
+        'description' => 'Pembelian ATK Realisasi',
+        'receipt_number' => 'KWT-999',
+    ]);
+
+    RealizationItem::create([
+        'budget_realization_id' => $realization->id,
+        'budget_item_id' => $this->budgetItem->id,
+        'name' => 'Kertas A4 80gr',
+        'volume' => 1,
+        'unit' => 'Rim',
+        'unit_price' => 100000,
+        'total' => 100000,
+    ]);
+
+    // Try to delete the item during budget update (POK revision)
+    // Payload omits the item id (which means delete)
+    $payload = [
+        'budget_category' => 'goods_services',
+        'account_code' => '521211',
+        'account_name' => 'Belanja Bahan',
+        'description' => 'Pembelian ATK Simulator',
+        'revision_description' => 'Revisi menghapus item terrealisasi',
+        'items' => [
+            [
+                'name' => 'Tinta Printer EPSON',
+                'volume' => 2,
+                'unit' => 'Botol',
+                'unit_price' => 150000,
+            ],
+        ],
+    ];
+
+    $response = $this->actingAs($this->user)
+        ->put(route('budgets.update', $this->budget), $payload);
+
+    $response->assertSessionHasErrors('items');
+});
+
+test('POK revision resets activity status to draft', function () {
+    $this->activity->update(['status' => 'approved']);
+
+    $payload = [
+        'budget_category' => 'goods_services',
+        'account_code' => '521211',
+        'account_name' => 'Belanja Bahan',
+        'description' => 'Pembelian ATK Simulator',
+        'revision_description' => 'Revisi mengubah volume',
+        'items' => [
+            [
+                'id' => $this->budgetItem->id,
+                'name' => 'Kertas A4 80gr',
+                'volume' => 12,
+                'unit' => 'Rim',
+                'unit_price' => 100000,
+            ],
+        ],
+    ];
+
+    $response = $this->actingAs($this->user)
+        ->put(route('budgets.update', $this->budget), $payload);
+
+    $response->assertRedirect();
+
+    $this->activity->refresh();
+    expect($this->activity->status)->toBe('draft');
 });

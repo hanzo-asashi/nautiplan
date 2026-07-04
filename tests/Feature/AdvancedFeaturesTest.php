@@ -189,6 +189,7 @@ it('can manage budget ceiling with account code and name', function () {
 });
 
 it('can log realization with type and vendor details', function () {
+    $this->activity->update(['status' => 'approved']);
     $budget = ActivityBudget::create([
         'activity_id' => $this->activity->id,
         'budget_category' => 'goods_services',

@@ -8,6 +8,7 @@ use App\Models\BudgetRealization;
 use App\Models\BudgetRevision;
 use App\Models\BudgetRevisionDetail;
 use App\Models\FiscalYear;
+use App\Models\Notification;
 use App\Models\Procurement;
 use App\Models\RealizationItem;
 use App\Models\Unit;
@@ -121,7 +122,24 @@ class BudgetController extends Controller
             return $sum + ($item['volume'] * $item['unit_price']);
         }, 0.0);
 
-        DB::transaction(function () use ($validated, $budget, $amountMenjadi) {
+        $oldItems = $budget->budgetItems->keyBy('id');
+        /** @var array<int, array<string, mixed>> $validatedItems */
+        $validatedItems = $validated['items'];
+        $newItems = collect($validatedItems);
+        $newItemIds = $newItems->pluck('id')->filter()->toArray();
+
+        // Prevent deletion of items that already have realizations
+        foreach ($oldItems as $oldId => $oldItem) {
+            if (! in_array($oldId, $newItemIds)) {
+                if (RealizationItem::where('budget_item_id', $oldId)->exists()) {
+                    throw ValidationException::withMessages([
+                        'items' => ["Item POK '{$oldItem->name}' tidak dapat dihapus karena sudah memiliki data realisasi belanja."],
+                    ]);
+                }
+            }
+        }
+
+        DB::transaction(function () use ($validated, $budget, $amountMenjadi, $oldItems, $newItems, $newItemIds) {
             // Create budget revision record
             $revision = BudgetRevision::create([
                 'activity_budget_id' => $budget->id,
@@ -131,12 +149,6 @@ class BudgetController extends Controller
                 'amount_menjadi' => $amountMenjadi,
                 'revised_by' => Auth::id(),
             ]);
-
-            $oldItems = $budget->budgetItems->keyBy('id');
-            /** @var array<int, array<string, mixed>> $validatedItems */
-            $validatedItems = $validated['items'];
-            $newItems = collect($validatedItems);
-            $newItemIds = $newItems->pluck('id')->filter()->toArray();
 
             // 1. Process deleted items
             foreach ($oldItems as $oldId => $oldItem) {
@@ -226,6 +238,18 @@ class BudgetController extends Controller
                 'amount' => $amountMenjadi,
                 'version' => $budget->version + 1,
             ]);
+
+            // Reset activity status to draft if it was approved
+            if ($budget->activity->status === 'approved') {
+                $budget->activity->update(['status' => 'draft']);
+
+                Notification::create([
+                    'user_id' => $budget->activity->responsible_user_id ?: Auth::id(),
+                    'title' => 'Persetujuan Kegiatan Direset (Revisi POK)',
+                    'message' => "POK untuk kegiatan [{$budget->activity->code}] {$budget->activity->name} telah direvisi. Persetujuan direset ke Draft dan harus diajukan ulang.",
+                    'type' => 'approval',
+                ]);
+            }
         });
 
         return back()->with('success', 'Pagu anggaran berhasil direvisi.');
@@ -242,7 +266,7 @@ class BudgetController extends Controller
         return back()->with('success', 'Pagu anggaran berhasil dihapus.');
     }
 
-    public function createRealization(ActivityBudget $budget): Response
+    public function createRealization(ActivityBudget $budget): Response|RedirectResponse
     {
         $budget->load([
             'activity.unit',
@@ -250,6 +274,10 @@ class BudgetController extends Controller
             'realizations.items',
             'budgetItems',
         ]);
+
+        if ($budget->activity->status !== 'approved') {
+            return redirect()->route('budgets.index')->with('error', 'Realisasi anggaran hanya dapat dicatat untuk kegiatan yang sudah disetujui.');
+        }
 
         $budgetItems = $budget->budgetItems->map(function ($item) {
             $realizedVolume = (float) RealizationItem::where('budget_item_id', $item->id)
@@ -340,6 +368,17 @@ class BudgetController extends Controller
             'items.*.tax_ppn' => 'nullable|numeric|min:0',
             'items.*.remarks' => 'nullable|string',
         ]);
+
+        $budget = ActivityBudget::findOrFail($validated['activity_budget_id']);
+        if (! $budget instanceof ActivityBudget) {
+            throw new \RuntimeException('Invalid activity budget.');
+        }
+
+        if ($budget->activity->status !== 'approved') {
+            throw ValidationException::withMessages([
+                'activity_budget_id' => ['Realisasi anggaran hanya dapat dicatat untuk kegiatan yang sudah disetujui.'],
+            ]);
+        }
 
         // Perform item-level validation
         foreach ($validated['items'] as $item) {
