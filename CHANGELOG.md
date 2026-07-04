@@ -1,3 +1,22 @@
+## [v0.18.1] - 2026-07-04
+
+### 🐛 Bug Fixes
+- fix: restore GitHub Release creation and add version to CHANGELOG entries (89e6ec2)
+- fix: use import statement for LengthAwarePaginator in GetActivityRevisionsAction (69a49fe)
+- fix: report helper types and configure changelog generation on push to main (8fa3e04)
+
+### 📝 Documentation
+- docs: backfill CHANGELOG.md with all historical releases (v0.2.0 - v0.18.0) [skip ci] (08ccd12)
+
+### 🔧 Maintenance
+- chore: release v0.18.1 (9fc6da3)
+- chore: update changelog [skip ci] (85ad056)
+
+### 📦 Other
+- Merge pull request #26 from hanzo-asashi/refactor/budget-action-pattern (b773575)
+
+[v0.18.1]: https://github.com/hanzo-asashi/nautiplan/compare/v0.18.0...v0.18.1
+
 ﻿# Changelog
 
 Seluruh perubahan penting pada proyek ini didokumentasikan dalam file ini.
@@ -306,4 +325,3 @@ dan proyek ini mengikuti [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 [v0.3.0]: https://github.com/hanzo-asashi/nautiplan/compare/v0.2.1...v0.3.0
 [v0.2.1]: https://github.com/hanzo-asashi/nautiplan/compare/v0.2.0...v0.2.1
 [v0.2.0]: https://github.com/hanzo-asashi/nautiplan/releases/tag/v0.2.0
-
