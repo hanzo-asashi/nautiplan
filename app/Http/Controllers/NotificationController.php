@@ -27,8 +27,9 @@ class NotificationController extends Controller
     public function stream(): StreamedResponse
     {
         return response()->stream(function () {
+            set_time_limit(0);
             $userId = auth()->id();
-            
+
             // Unlock session to prevent blocking other requests
             session_write_close();
 
