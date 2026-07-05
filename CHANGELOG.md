@@ -1,3 +1,13 @@
+## [v0.18.6] - 2026-07-05
+
+### 🐛 Bug Fixes
+- fix: resolve svelte accessibility warning in POK dropdown container (3c45034)
+
+### 🔧 Maintenance
+- chore: update changelog for v0.18.5 [skip ci] (11fd5f1)
+
+[v0.18.6]: https://github.com/hanzo-asashi/nautiplan/compare/v0.18.5...v0.18.6
+
 ## [v0.18.5] - 2026-07-05
 
 ### 🚀 Features
