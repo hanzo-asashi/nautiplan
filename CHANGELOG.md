@@ -1,3 +1,13 @@
+## [v0.18.3] - 2026-07-05
+
+### 🐛 Bug Fixes
+- fix: prevent session locking in SSE stream by calling session_write_close() (1f3830d)
+
+### 🔧 Maintenance
+- chore: update changelog for v0.18.2 [skip ci] (1d1787d)
+
+[v0.18.3]: https://github.com/hanzo-asashi/nautiplan/compare/v0.18.2...v0.18.3
+
 ## [v0.18.2] - 2026-07-05
 
 ### 🐛 Bug Fixes
