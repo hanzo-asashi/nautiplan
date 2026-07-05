@@ -1,3 +1,13 @@
+## [v0.18.2] - 2026-07-05
+
+### 🐛 Bug Fixes
+- fix: remove invalid :global() pseudo-class from app.css to resolve lightningcss build warnings (6676a03)
+
+### 🔧 Maintenance
+- chore: update changelog for v0.18.1 [skip ci] (b2b7404)
+
+[v0.18.2]: https://github.com/hanzo-asashi/nautiplan/compare/v0.18.1...v0.18.2
+
 ## [v0.18.1] - 2026-07-04
 
 ### 🐛 Bug Fixes
