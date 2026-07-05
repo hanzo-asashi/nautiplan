@@ -481,7 +481,10 @@
 
                                         {#if openDropdowns[index]}
                                             <div
+                                                role="presentation"
                                                 onclick={(e) =>
+                                                    e.stopPropagation()}
+                                                onkeydown={(e) =>
                                                     e.stopPropagation()}
                                                 class="absolute z-50 mt-1 w-full bg-popover text-popover-foreground border border-zinc-200 dark:border-zinc-800 rounded-lg shadow-lg p-1.5 space-y-1 bg-white dark:bg-zinc-900"
                                             >
