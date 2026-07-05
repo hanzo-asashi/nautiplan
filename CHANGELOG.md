@@ -1,3 +1,13 @@
+## [v0.18.5] - 2026-07-05
+
+### 🚀 Features
+- feat: add searchable POK budget items dropdown in realization form (1ddd079)
+
+### 🔧 Maintenance
+- chore: update changelog for v0.18.4 [skip ci] (00720b2)
+
+[v0.18.5]: https://github.com/hanzo-asashi/nautiplan/compare/v0.18.4...v0.18.5
+
 ## [v0.18.4] - 2026-07-05
 
 ### 🐛 Bug Fixes
