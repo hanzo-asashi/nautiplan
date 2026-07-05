@@ -2,6 +2,7 @@
     import type { Snippet } from 'svelte';
     import { Link } from '@inertiajs/svelte';
     import AppLogoIcon from '@/components/AppLogoIcon.svelte';
+    import { Toaster } from '@/components/ui/sonner';
     import { home } from '@/routes';
 
     let {
@@ -53,3 +54,5 @@
         </div>
     </div>
 </div>
+
+<Toaster richColors position="top-right" expand={true} />

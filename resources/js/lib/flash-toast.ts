@@ -1,16 +1,17 @@
-import type { FlashToast } from '@/types/ui';
 import { router } from '@inertiajs/svelte';
 import { toast } from 'svelte-sonner';
 
 export function initializeFlashToast(): void {
-    router.on('flash', (event) => {
-        const flash = (event as CustomEvent).detail?.flash;
-        const data = flash?.toast as FlashToast | undefined;
+    router.on('navigate', (event) => {
+        const page = (event as CustomEvent).detail?.page;
+        const flash = page?.props?.flash as { success?: string; error?: string } | undefined;
 
-        if (!data) {
-            return;
+        if (flash?.success) {
+            toast.success(flash.success);
         }
-
-        toast[data.type](data.message);
+        
+        if (flash?.error) {
+            toast.error(flash.error);
+        }
     });
 }

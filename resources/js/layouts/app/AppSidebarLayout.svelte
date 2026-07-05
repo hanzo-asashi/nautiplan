@@ -22,5 +22,5 @@
         <AppSidebarHeader {breadcrumbs} />
         {@render children?.()}
     </AppContent>
-    <Toaster />
+    <Toaster richColors position="top-right" expand={true} />
 </AppShell>
