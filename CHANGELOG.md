@@ -1,3 +1,17 @@
+## [v0.18.4] - 2026-07-05
+
+### 🐛 Bug Fixes
+- fix: resolve missing flash toast notifications on Inertia visits (037da8f)
+- fix: add set_time_limit(0) to SSE stream to prevent 30s timeout (8da88b7)
+
+### 🎨 UI/UX
+- style: run prettier format on flash-toast.ts (24e9401)
+
+### 🔧 Maintenance
+- chore: update changelog for v0.18.3 [skip ci] (637edbc)
+
+[v0.18.4]: https://github.com/hanzo-asashi/nautiplan/compare/v0.18.3...v0.18.4
+
 ## [v0.18.3] - 2026-07-05
 
 ### 🐛 Bug Fixes
