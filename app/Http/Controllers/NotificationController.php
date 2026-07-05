@@ -28,6 +28,9 @@ class NotificationController extends Controller
     {
         return response()->stream(function () {
             $userId = auth()->id();
+            
+            // Unlock session to prevent blocking other requests
+            session_write_close();
 
             // Send initial batch of unread notifications
             $unreadNotifications = Notification::where(function ($q) use ($userId) {
