@@ -24,8 +24,10 @@
     import { Link, useForm } from '@inertiajs/svelte';
     import AlertTriangle from 'lucide-svelte/icons/alert-triangle';
     import ArrowLeft from 'lucide-svelte/icons/arrow-left';
+    import ChevronDown from 'lucide-svelte/icons/chevron-down';
     import Plus from 'lucide-svelte/icons/plus';
     import Save from 'lucide-svelte/icons/save';
+    import Search from 'lucide-svelte/icons/search';
     import Trash2 from 'lucide-svelte/icons/trash-2';
     import AppHead from '@/components/AppHead.svelte';
     import PageHeader from '@/components/PageHeader.svelte';
@@ -238,7 +240,27 @@
 
         form.post(toUrl(storeReal()));
     }
+
+    let openDropdowns = $state<Record<number, boolean>>({});
+    let searchQueries = $state<Record<number, string>>({});
+
+    function toggleDropdown(index: number) {
+        const isOpen = openDropdowns[index];
+        openDropdowns = {}; // close all first
+
+        if (!isOpen) {
+            openDropdowns[index] = true;
+            searchQueries[index] = '';
+        }
+    }
+
+    function selectBudgetItem(index: number, budgetItemId: string) {
+        handleBudgetItemSelect(index, budgetItemId);
+        openDropdowns[index] = false;
+    }
 </script>
+
+<svelte:window onclick={() => (openDropdowns = {})} />
 
 <AppHead title="Catat Realisasi Belanja" />
 
@@ -438,28 +460,101 @@
                                             class="text-rose-500">*</span
                                         ></label
                                     >
-                                    <select
-                                        value={item.budget_item_id}
-                                        onchange={(e) =>
-                                            handleBudgetItemSelect(
-                                                index,
-                                                e.currentTarget.value,
-                                            )}
-                                        class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary font-medium cursor-pointer"
-                                        required
-                                    >
-                                        <option value=""
-                                            >-- Pilih Rincian Anggaran POK --</option
+                                    <div class="relative">
+                                        <button
+                                            type="button"
+                                            onclick={(e) => {
+                                                e.stopPropagation();
+                                                toggleDropdown(index);
+                                            }}
+                                            class="w-full px-3 py-1.5 text-left text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary font-medium cursor-pointer flex justify-between items-center h-8"
                                         >
-                                        {#each budget.budget_items || [] as bi}
-                                            <option value={bi.id.toString()}>
-                                                {bi.name} (Pagu: {bi.remaining_volume}
-                                                {bi.unit} @ {formatRupiah(
-                                                    bi.unit_price,
-                                                )})
-                                            </option>
-                                        {/each}
-                                    </select>
+                                            <span class="truncate pr-4">
+                                                {selectedBi
+                                                    ? `${selectedBi.name} (Pagu: ${selectedBi.remaining_volume} ${selectedBi.unit} @ ${formatRupiah(selectedBi.unit_price)})`
+                                                    : '-- Pilih Rincian Anggaran POK --'}
+                                            </span>
+                                            <ChevronDown
+                                                class="w-3.5 h-3.5 text-zinc-400 shrink-0"
+                                            />
+                                        </button>
+
+                                        {#if openDropdowns[index]}
+                                            <div
+                                                onclick={(e) =>
+                                                    e.stopPropagation()}
+                                                class="absolute z-50 mt-1 w-full bg-popover text-popover-foreground border border-zinc-200 dark:border-zinc-800 rounded-lg shadow-lg p-1.5 space-y-1 bg-white dark:bg-zinc-900"
+                                            >
+                                                <div
+                                                    class="relative flex items-center"
+                                                >
+                                                    <Search
+                                                        class="absolute left-2.5 w-3.5 h-3.5 text-zinc-400"
+                                                    />
+                                                    <input
+                                                        type="text"
+                                                        placeholder="Cari rincian POK..."
+                                                        bind:value={
+                                                            searchQueries[index]
+                                                        }
+                                                        class="w-full pl-8 pr-2 py-1 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded outline-none focus:border-primary font-medium"
+                                                    />
+                                                </div>
+
+                                                <div
+                                                    class="max-h-60 overflow-y-auto pt-1 space-y-0.5"
+                                                >
+                                                    <button
+                                                        type="button"
+                                                        onclick={() =>
+                                                            selectBudgetItem(
+                                                                index,
+                                                                '',
+                                                            )}
+                                                        class="w-full text-left px-2.5 py-1.5 text-xs rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 font-medium text-muted-foreground transition-colors"
+                                                    >
+                                                        -- Pilih Rincian
+                                                        Anggaran POK --
+                                                    </button>
+
+                                                    {#each (budget.budget_items || []).filter((bi) => !searchQueries[index] || bi.name
+                                                                .toLowerCase()
+                                                                .includes(searchQueries[index].toLowerCase())) as bi (bi.id)}
+                                                        <button
+                                                            type="button"
+                                                            onclick={() =>
+                                                                selectBudgetItem(
+                                                                    index,
+                                                                    bi.id.toString(),
+                                                                )}
+                                                            class="w-full text-left px-2.5 py-1.5 text-xs rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 font-medium transition-colors {item.budget_item_id ===
+                                                            bi.id.toString()
+                                                                ? 'bg-primary/10 text-primary dark:bg-primary/20'
+                                                                : ''}"
+                                                        >
+                                                            {bi.name} (Pagu: {bi.remaining_volume}
+                                                            {bi.unit} @ {formatRupiah(
+                                                                bi.unit_price,
+                                                            )})
+                                                        </button>
+                                                    {:else}
+                                                        <div
+                                                            class="px-2 py-3 text-xs text-muted-foreground text-center italic"
+                                                        >
+                                                            Tidak ada data yang
+                                                            cocok
+                                                        </div>
+                                                    {/each}
+                                                </div>
+                                            </div>
+                                        {/if}
+                                    </div>
+                                    <input
+                                        type="hidden"
+                                        name="budget_item_id"
+                                        value={item.budget_item_id}
+                                        required
+                                    />
                                 </div>
 
                                 <!-- Name -->
