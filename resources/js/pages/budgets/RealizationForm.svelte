@@ -329,6 +329,37 @@
         form.post(toUrl(storeReal()));
     }
 
+    function generateAutoNumbers() {
+        const year = new Date().getFullYear();
+        const month = String(new Date().getMonth() + 1).padStart(2, '0');
+        const randomNum = Math.floor(100 + Math.random() * 900);
+        const randomSp2dReceipt = `${Math.floor(3000000 + Math.random() * 900000)}-${Math.floor(400000 + Math.random() * 90000)}-${year}`;
+
+        form.receipt_number = `${Math.floor(3000000 + Math.random() * 900000)}-${Math.floor(400000 + Math.random() * 90000)}-${year}`;
+        form.procurement_number = `PL.107/67/${Math.floor(1 + Math.random() * 50)}/POLTEKPEL.B/${year}`;
+        form.procurement_date = `${year}-${month}-12`;
+        form.work_duration = '5 (lima) Hari Kalender';
+        form.procurement_title = form.description || 'Pekerjaan Pengadaan';
+        form.nota_dinas_number = `${randomNum}/PPK-BLU/POLTEKPEL.B/XII/${year}`;
+        form.nota_dinas_date = `${year}-${month}-10`;
+        form.ba_pl_number = `PL.107/67/${Math.floor(1 + Math.random() * 50)}/POLTEKPEL.B/${year}`;
+        form.ba_pl_date = `${year}-${month}-12`;
+        form.bast_number = `PL.109/57/${Math.floor(1 + Math.random() * 50)}/POLTEKPEL.B-${year}`;
+        form.bast_date = `${year}-${month}-16`;
+        form.bap_number = `PL.109/57/${Math.floor(1 + Math.random() * 50)}/POLTEKPEL.B-${year}`;
+        form.bap_date = `${year}-${month}-17`;
+        form.ba_penyerahan_number = `PL.109/57/${Math.floor(1 + Math.random() * 50)}/POLTEKPEL.B-${year}`;
+        form.ba_penyerahan_date = `${year}-${month}-16`;
+        form.sp2d_number = `SP2D/${randomSp2dReceipt}`;
+        form.sp2d_date = `${year}-${month}-17`;
+        form.spp_number = `${randomNum}/SPP-BLU/POLTEKPEL.B/XII/${year}`;
+        form.spp_date = `${year}-${month}-17`;
+        form.spm_number = `${randomNum}/SPM-BLU/POLTEKPEL.B/XII/${year}`;
+        form.spm_date = `${year}-${month}-17`;
+        form.sptjb_number = `${randomNum}/SPTJB-BLU/POLTEKPEL.B/XII/${year}`;
+        form.sptjb_date = `${year}-${month}-17`;
+    }
+
     let openDropdowns = $state<Record<number, boolean>>({});
     let searchQueries = $state<Record<number, string>>({});
 
@@ -382,14 +413,25 @@
             <div
                 class="bg-card/45 backdrop-blur-md p-6 rounded-xl border border-sidebar-border/50 shadow-sm space-y-4"
             >
-                <h3
-                    class="text-sm font-bold text-foreground flex items-center gap-2 border-b border-sidebar-border/20 pb-2"
+                <div
+                    class="flex items-center justify-between border-b border-sidebar-border/20 pb-2"
                 >
-                    <span class="p-1 bg-primary/10 text-primary rounded"
-                        >📝</span
+                    <h3
+                        class="text-sm font-bold text-foreground flex items-center gap-2"
                     >
-                    Informasi Realisasi Dasar
-                </h3>
+                        <span class="p-1 bg-primary/10 text-primary rounded"
+                            >📝</span
+                        >
+                        Informasi Realisasi Dasar
+                    </h3>
+                    <button
+                        type="button"
+                        onclick={generateAutoNumbers}
+                        class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold bg-primary/10 text-primary hover:bg-primary hover:text-white rounded-lg transition-colors cursor-pointer"
+                    >
+                        ⚡ Generate Semua Nomor
+                    </button>
+                </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div class="space-y-1.5">
