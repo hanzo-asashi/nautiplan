@@ -842,11 +842,48 @@
                                             >
                                         </div>
                                         <input
-                                            type="number"
-                                            step="any"
-                                            bind:value={item.tax_ppn}
-                                            oninput={() => {
+                                            type="text"
+                                            value={formatIndonesianInput(
+                                                item.tax_ppn,
+                                            )}
+                                            oninput={(e) => {
+                                                const target =
+                                                    e.target as HTMLInputElement;
+                                                const cursorPosition =
+                                                    target.selectionStart;
+                                                const originalLength =
+                                                    target.value.length;
+
+                                                const cleanVal = target.value
+                                                    .replace(/\./g, '')
+                                                    .replace(',', '.');
+                                                const parsed =
+                                                    parseFloat(cleanVal);
+                                                item.tax_ppn = isNaN(parsed)
+                                                    ? 0
+                                                    : parsed;
                                                 item.tax_ppn_rate = 0;
+
+                                                target.value =
+                                                    formatIndonesianInput(
+                                                        target.value,
+                                                    );
+
+                                                const newLength =
+                                                    target.value.length;
+
+                                                if (cursorPosition !== null) {
+                                                    target.setSelectionRange(
+                                                        cursorPosition +
+                                                            (newLength -
+                                                                originalLength),
+                                                        cursorPosition +
+                                                            (newLength -
+                                                                originalLength),
+                                                    );
+                                                }
+
+                                                calculateTotal();
                                             }}
                                             class="w-full px-2 py-1 bg-background border border-zinc-200 dark:border-zinc-800 rounded-md text-[11px] text-right font-semibold"
                                             placeholder="0"
@@ -877,11 +914,48 @@
                                             >
                                         </div>
                                         <input
-                                            type="number"
-                                            step="any"
-                                            bind:value={item.tax_pph21}
-                                            oninput={() => {
+                                            type="text"
+                                            value={formatIndonesianInput(
+                                                item.tax_pph21,
+                                            )}
+                                            oninput={(e) => {
+                                                const target =
+                                                    e.target as HTMLInputElement;
+                                                const cursorPosition =
+                                                    target.selectionStart;
+                                                const originalLength =
+                                                    target.value.length;
+
+                                                const cleanVal = target.value
+                                                    .replace(/\./g, '')
+                                                    .replace(',', '.');
+                                                const parsed =
+                                                    parseFloat(cleanVal);
+                                                item.tax_pph21 = isNaN(parsed)
+                                                    ? 0
+                                                    : parsed;
                                                 item.tax_pph21_rate = 0;
+
+                                                target.value =
+                                                    formatIndonesianInput(
+                                                        target.value,
+                                                    );
+
+                                                const newLength =
+                                                    target.value.length;
+
+                                                if (cursorPosition !== null) {
+                                                    target.setSelectionRange(
+                                                        cursorPosition +
+                                                            (newLength -
+                                                                originalLength),
+                                                        cursorPosition +
+                                                            (newLength -
+                                                                originalLength),
+                                                    );
+                                                }
+
+                                                calculateTotal();
                                             }}
                                             class="w-full px-2 py-1 bg-background border border-zinc-200 dark:border-zinc-800 rounded-md text-[11px] text-right font-semibold"
                                             placeholder="0"
@@ -912,11 +986,48 @@
                                             >
                                         </div>
                                         <input
-                                            type="number"
-                                            step="any"
-                                            bind:value={item.tax_pph22}
-                                            oninput={() => {
+                                            type="text"
+                                            value={formatIndonesianInput(
+                                                item.tax_pph22,
+                                            )}
+                                            oninput={(e) => {
+                                                const target =
+                                                    e.target as HTMLInputElement;
+                                                const cursorPosition =
+                                                    target.selectionStart;
+                                                const originalLength =
+                                                    target.value.length;
+
+                                                const cleanVal = target.value
+                                                    .replace(/\./g, '')
+                                                    .replace(',', '.');
+                                                const parsed =
+                                                    parseFloat(cleanVal);
+                                                item.tax_pph22 = isNaN(parsed)
+                                                    ? 0
+                                                    : parsed;
                                                 item.tax_pph22_rate = 0;
+
+                                                target.value =
+                                                    formatIndonesianInput(
+                                                        target.value,
+                                                    );
+
+                                                const newLength =
+                                                    target.value.length;
+
+                                                if (cursorPosition !== null) {
+                                                    target.setSelectionRange(
+                                                        cursorPosition +
+                                                            (newLength -
+                                                                originalLength),
+                                                        cursorPosition +
+                                                            (newLength -
+                                                                originalLength),
+                                                    );
+                                                }
+
+                                                calculateTotal();
                                             }}
                                             class="w-full px-2 py-1 bg-background border border-zinc-200 dark:border-zinc-800 rounded-md text-[11px] text-right font-semibold"
                                             placeholder="0"
@@ -947,11 +1058,48 @@
                                             >
                                         </div>
                                         <input
-                                            type="number"
-                                            step="any"
-                                            bind:value={item.tax_pph23}
-                                            oninput={() => {
+                                            type="text"
+                                            value={formatIndonesianInput(
+                                                item.tax_pph23,
+                                            )}
+                                            oninput={(e) => {
+                                                const target =
+                                                    e.target as HTMLInputElement;
+                                                const cursorPosition =
+                                                    target.selectionStart;
+                                                const originalLength =
+                                                    target.value.length;
+
+                                                const cleanVal = target.value
+                                                    .replace(/\./g, '')
+                                                    .replace(',', '.');
+                                                const parsed =
+                                                    parseFloat(cleanVal);
+                                                item.tax_pph23 = isNaN(parsed)
+                                                    ? 0
+                                                    : parsed;
                                                 item.tax_pph23_rate = 0;
+
+                                                target.value =
+                                                    formatIndonesianInput(
+                                                        target.value,
+                                                    );
+
+                                                const newLength =
+                                                    target.value.length;
+
+                                                if (cursorPosition !== null) {
+                                                    target.setSelectionRange(
+                                                        cursorPosition +
+                                                            (newLength -
+                                                                originalLength),
+                                                        cursorPosition +
+                                                            (newLength -
+                                                                originalLength),
+                                                    );
+                                                }
+
+                                                calculateTotal();
                                             }}
                                             class="w-full px-2 py-1 bg-background border border-zinc-200 dark:border-zinc-800 rounded-md text-[11px] text-right font-semibold"
                                             placeholder="0"
