@@ -76,6 +76,18 @@
         );
     }
 
+    function formatIndonesianInput(value: string | number): string {
+        if (value === undefined || value === null || value === '') {
+            return '';
+        }
+
+        let clean = String(value).replace(/[^\d,]/g, '');
+        let parts = clean.split(',');
+        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+
+        return parts.slice(0, 2).join(',');
+    }
+
     function handleSubmit(e: Event) {
         e.preventDefault();
 
@@ -292,11 +304,48 @@
                                     </td>
                                     <td class="py-3 pr-3">
                                         <input
-                                            type="number"
-                                            bind:value={item.unit_price}
-                                            oninput={calculateTotal}
-                                            min="0"
-                                            step="any"
+                                            type="text"
+                                            value={formatIndonesianInput(
+                                                item.unit_price,
+                                            )}
+                                            oninput={(e) => {
+                                                const target =
+                                                    e.target as HTMLInputElement;
+                                                const cursorPosition =
+                                                    target.selectionStart;
+                                                const originalLength =
+                                                    target.value.length;
+
+                                                const cleanVal = target.value
+                                                    .replace(/\./g, '')
+                                                    .replace(',', '.');
+                                                const parsed =
+                                                    parseFloat(cleanVal);
+                                                item.unit_price = isNaN(parsed)
+                                                    ? 0
+                                                    : parsed;
+
+                                                target.value =
+                                                    formatIndonesianInput(
+                                                        target.value,
+                                                    );
+
+                                                const newLength =
+                                                    target.value.length;
+
+                                                if (cursorPosition !== null) {
+                                                    target.setSelectionRange(
+                                                        cursorPosition +
+                                                            (newLength -
+                                                                originalLength),
+                                                        cursorPosition +
+                                                            (newLength -
+                                                                originalLength),
+                                                    );
+                                                }
+
+                                                calculateTotal();
+                                            }}
                                             class="w-full px-3 py-2 bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary text-right font-medium text-sm"
                                             required
                                         />
