@@ -499,7 +499,7 @@
                                             class="w-full px-2.5 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-md outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
                                         />
                                     </div>
-                                    <div class="grid gap-2 grid-cols-2">
+                                    <div class="grid gap-2 grid-cols-3">
                                         <div class="space-y-1">
                                             <label
                                                 class="text-xs font-semibold text-foreground"
@@ -532,6 +532,17 @@
                                             <input
                                                 type="date"
                                                 bind:value={sub.start_date}
+                                                class="w-full px-2.5 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-md outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+                                            />
+                                        </div>
+                                        <div class="space-y-1">
+                                            <label
+                                                class="text-xs font-semibold text-foreground"
+                                                >Tgl Selesai</label
+                                            >
+                                            <input
+                                                type="date"
+                                                bind:value={sub.end_date}
                                                 class="w-full px-2.5 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-md outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
                                             />
                                         </div>
