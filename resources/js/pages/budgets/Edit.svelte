@@ -81,7 +81,13 @@
             return '';
         }
 
-        let clean = String(value).replace(/[^\d,]/g, '');
+        let strVal = String(value);
+
+        if (typeof value === 'number') {
+            strVal = strVal.replace('.', ',');
+        }
+
+        let clean = strVal.replace(/[^\d,]/g, '');
         let parts = clean.split(',');
         parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 
@@ -108,6 +114,9 @@
 
     // Revision history panel toggle
     let showRevisionHistory = $state(false);
+
+    // Calculate total on page load
+    calculateTotal();
 </script>
 
 <AppHead title="Revisi POK — {budget.activity?.name || 'Anggaran'}" />

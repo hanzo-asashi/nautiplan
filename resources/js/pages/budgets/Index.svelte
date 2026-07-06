@@ -255,10 +255,10 @@
         <div class="space-y-6">
             {#each budgets.data as bud (bud.id)}
                 {@const totalSpent = bud.realizations.reduce(
-                    (sum, r) => sum + r.amount,
+                    (sum, r) => sum + Number(r.amount),
                     0,
                 )}
-                {@const remaining = bud.amount - totalSpent}
+                {@const remaining = Number(bud.amount) - totalSpent}
 
                 <div
                     class="rounded-xl border border-sidebar-border/50 bg-card/45 backdrop-blur-md p-6 shadow-sm space-y-4 transition-all duration-200 {bud.realizations.some(
