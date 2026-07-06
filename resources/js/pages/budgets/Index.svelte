@@ -484,6 +484,20 @@
                                                         >
                                                     {/if}
                                                 </p>
+                                                {#if real.items && real.items.length > 0}
+                                                    <div
+                                                        class="mt-1.5 pl-3 border-l border-zinc-200 dark:border-zinc-800 text-[10px] text-muted-foreground/80 space-y-0.5"
+                                                    >
+                                                        {#each real.items as item}
+                                                            <div>
+                                                                • {item.name} ({item.volume}
+                                                                {item.unit} @ {formatRupiah(
+                                                                    item.unit_price,
+                                                                )})
+                                                            </div>
+                                                        {/each}
+                                                    </div>
+                                                {/if}
                                             </div>
 
                                             <div
