@@ -1,3 +1,16 @@
+## [v0.18.8] - 2026-07-06
+
+### 🐛 Bug Fixes
+- fix: format activity and sub-activity dates for input binding, add Tgl Selesai field, and seed sub-activities for second demo activity (211bb50)
+
+### 🔧 Maintenance
+- chore: update changelog for v0.18.7 [skip ci] (2715aa4)
+
+### 📦 Other
+- Merge pull request #27 from hanzo-asashi/fix/realization-decimals-ppn (8b8afc7)
+
+[v0.18.8]: https://github.com/hanzo-asashi/nautiplan/compare/v0.18.7...v0.18.8
+
 ## [v0.18.7] - 2026-07-06
 
 ### 🚀 Features
