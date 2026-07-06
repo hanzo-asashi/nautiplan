@@ -104,6 +104,10 @@
                 tax_pph22: 0,
                 tax_pph23: 0,
                 tax_ppn: 0,
+                tax_ppn_rate: 0,
+                tax_pph21_rate: 0,
+                tax_pph22_rate: 0,
+                tax_pph23_rate: 0,
                 remarks: '',
             },
         ] as Array<{
@@ -117,6 +121,10 @@
             tax_pph22: number;
             tax_pph23: number;
             tax_ppn: number;
+            tax_ppn_rate?: number;
+            tax_pph21_rate?: number;
+            tax_pph22_rate?: number;
+            tax_pph23_rate?: number;
             remarks: string;
         }>,
     });
@@ -145,6 +153,10 @@
                 tax_pph22: 0,
                 tax_pph23: 0,
                 tax_ppn: 0,
+                tax_ppn_rate: 0,
+                tax_pph21_rate: 0,
+                tax_pph22_rate: 0,
+                tax_pph23_rate: 0,
                 remarks: '',
             },
         ];
@@ -157,10 +169,31 @@
     }
 
     function calculateTotal() {
-        form.amount = form.items.reduce(
-            (sum, item) => sum + Number(item.volume) * Number(item.unit_price),
-            0,
-        );
+        form.amount = form.items.reduce((sum, item) => {
+            const vol = parseFloat(String(item.volume).replace(',', '.'));
+            const price = parseFloat(String(item.unit_price).replace(',', '.'));
+            const subtotal =
+                (isNaN(vol) ? 0 : vol) * (isNaN(price) ? 0 : price);
+
+            // Automatically recalculate taxes if rate is active
+            if (item.tax_ppn_rate) {
+                item.tax_ppn = Math.round(subtotal * item.tax_ppn_rate);
+            }
+
+            if (item.tax_pph21_rate) {
+                item.tax_pph21 = Math.round(subtotal * item.tax_pph21_rate);
+            }
+
+            if (item.tax_pph22_rate) {
+                item.tax_pph22 = Math.round(subtotal * item.tax_pph22_rate);
+            }
+
+            if (item.tax_pph23_rate) {
+                item.tax_pph23 = Math.round(subtotal * item.tax_pph23_rate);
+            }
+
+            return sum + subtotal;
+        }, 0);
     }
 
     function handleBudgetItemSelect(index: number, budgetItemId: string) {
@@ -206,29 +239,65 @@
         rate: number,
     ) {
         const item = form.items[index];
-        const subtotal =
-            Number(item.volume || 0) * Number(item.unit_price || 0);
+        const vol = parseFloat(String(item.volume).replace(',', '.'));
+        const price = parseFloat(String(item.unit_price).replace(',', '.'));
+        const subtotal = (isNaN(vol) ? 0 : vol) * (isNaN(price) ? 0 : price);
         const calculated = Math.round(subtotal * rate);
 
         if (taxType === 'ppn') {
             form.items[index].tax_ppn = calculated;
+            form.items[index].tax_ppn_rate = rate;
         }
 
         if (taxType === 'pph21') {
             form.items[index].tax_pph21 = calculated;
+            form.items[index].tax_pph21_rate = rate;
         }
 
         if (taxType === 'pph22') {
             form.items[index].tax_pph22 = calculated;
+            form.items[index].tax_pph22_rate = rate;
         }
 
         if (taxType === 'pph23') {
             form.items[index].tax_pph23 = calculated;
+            form.items[index].tax_pph23_rate = rate;
         }
     }
 
     function handleSubmit(e: Event) {
         e.preventDefault();
+
+        // Sanitize volume and unit_price replacing decimal comma with dot
+        form.items = form.items.map((item) => {
+            const volumeStr = String(item.volume).replace(',', '.');
+            const priceStr = String(item.unit_price).replace(',', '.');
+
+            return {
+                ...item,
+                volume: isNaN(parseFloat(volumeStr))
+                    ? 0
+                    : parseFloat(volumeStr),
+                unit_price: isNaN(parseFloat(priceStr))
+                    ? 0
+                    : parseFloat(priceStr),
+                tax_ppn: isNaN(parseFloat(String(item.tax_ppn)))
+                    ? 0
+                    : parseFloat(String(item.tax_ppn)),
+                tax_pph21: isNaN(parseFloat(String(item.tax_pph21)))
+                    ? 0
+                    : parseFloat(String(item.tax_pph21)),
+                tax_pph22: isNaN(parseFloat(String(item.tax_pph22)))
+                    ? 0
+                    : parseFloat(String(item.tax_pph22)),
+                tax_pph23: isNaN(parseFloat(String(item.tax_pph23)))
+                    ? 0
+                    : parseFloat(String(item.tax_pph23)),
+            };
+        });
+
+        // Recalculate total amount with clean values
+        calculateTotal();
 
         if (form.amount > remainingBudgetBefore + 1) {
             alert(
@@ -639,22 +708,37 @@
                                         bind:value={item.unit_price}
                                         oninput={calculateTotal}
                                         min="0"
+                                        step="any"
                                         class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary font-bold text-right"
                                         required
                                     />
-                                    {#if selectedBi}
-                                        <div
-                                            class="text-[9px] mt-1 font-semibold {Number(
-                                                item.unit_price,
-                                            ) > Number(selectedBi.unit_price)
-                                                ? 'text-rose-500 font-bold animate-pulse'
-                                                : 'text-emerald-600 dark:text-emerald-400'}"
-                                        >
-                                            Maks Pagu: {formatRupiah(
-                                                selectedBi.unit_price,
-                                            )}
-                                        </div>
-                                    {/if}
+                                    <div
+                                        class="flex justify-between items-center mt-1 text-[9px] font-semibold"
+                                    >
+                                        {#if item.unit_price}
+                                            <div
+                                                class="text-zinc-500 dark:text-zinc-400"
+                                            >
+                                                Format: {formatRupiah(
+                                                    item.unit_price,
+                                                )}
+                                            </div>
+                                        {:else}
+                                            <div></div>
+                                        {/if}
+                                        {#if selectedBi}
+                                            <div
+                                                class={Number(item.unit_price) >
+                                                Number(selectedBi.unit_price)
+                                                    ? 'text-rose-500 font-bold animate-pulse'
+                                                    : 'text-emerald-600 dark:text-emerald-400'}
+                                            >
+                                                Maks Pagu: {formatRupiah(
+                                                    selectedBi.unit_price,
+                                                )}
+                                            </div>
+                                        {/if}
+                                    </div>
                                 </div>
 
                                 <!-- Remarks -->
@@ -700,14 +784,21 @@
                                                         'ppn',
                                                         0.11,
                                                     )}
-                                                class="text-[8px] text-primary hover:underline font-bold"
+                                                class="text-[8px] hover:underline font-bold {item.tax_ppn_rate ===
+                                                0.11
+                                                    ? 'text-emerald-600 dark:text-emerald-400 font-extrabold'
+                                                    : 'text-primary'}"
                                                 title="Hitung 11% dari subtotal"
                                                 >11%</button
                                             >
                                         </div>
                                         <input
                                             type="number"
+                                            step="any"
                                             bind:value={item.tax_ppn}
+                                            oninput={() => {
+                                                item.tax_ppn_rate = 0;
+                                            }}
                                             class="w-full px-2 py-1 bg-background border border-zinc-200 dark:border-zinc-800 rounded-md text-[11px] text-right font-semibold"
                                             placeholder="0"
                                         />
@@ -728,14 +819,21 @@
                                                         'pph21',
                                                         0.05,
                                                     )}
-                                                class="text-[8px] text-primary hover:underline font-bold"
+                                                class="text-[8px] hover:underline font-bold {item.tax_pph21_rate ===
+                                                0.05
+                                                    ? 'text-emerald-600 dark:text-emerald-400 font-extrabold'
+                                                    : 'text-primary'}"
                                                 title="Hitung 5% dari subtotal"
                                                 >5%</button
                                             >
                                         </div>
                                         <input
                                             type="number"
+                                            step="any"
                                             bind:value={item.tax_pph21}
+                                            oninput={() => {
+                                                item.tax_pph21_rate = 0;
+                                            }}
                                             class="w-full px-2 py-1 bg-background border border-zinc-200 dark:border-zinc-800 rounded-md text-[11px] text-right font-semibold"
                                             placeholder="0"
                                         />
@@ -756,14 +854,21 @@
                                                         'pph22',
                                                         0.015,
                                                     )}
-                                                class="text-[8px] text-primary hover:underline font-bold"
+                                                class="text-[8px] hover:underline font-bold {item.tax_pph22_rate ===
+                                                0.015
+                                                    ? 'text-emerald-600 dark:text-emerald-400 font-extrabold'
+                                                    : 'text-primary'}"
                                                 title="Hitung 1.5% dari subtotal"
                                                 >1.5%</button
                                             >
                                         </div>
                                         <input
                                             type="number"
+                                            step="any"
                                             bind:value={item.tax_pph22}
+                                            oninput={() => {
+                                                item.tax_pph22_rate = 0;
+                                            }}
                                             class="w-full px-2 py-1 bg-background border border-zinc-200 dark:border-zinc-800 rounded-md text-[11px] text-right font-semibold"
                                             placeholder="0"
                                         />
@@ -784,14 +889,21 @@
                                                         'pph23',
                                                         0.02,
                                                     )}
-                                                class="text-[8px] text-primary hover:underline font-bold"
+                                                class="text-[8px] hover:underline font-bold {item.tax_pph23_rate ===
+                                                0.02
+                                                    ? 'text-emerald-600 dark:text-emerald-400 font-extrabold'
+                                                    : 'text-primary'}"
                                                 title="Hitung 2% dari subtotal"
                                                 >2%</button
                                             >
                                         </div>
                                         <input
                                             type="number"
+                                            step="any"
                                             bind:value={item.tax_pph23}
+                                            oninput={() => {
+                                                item.tax_pph23_rate = 0;
+                                            }}
                                             class="w-full px-2 py-1 bg-background border border-zinc-200 dark:border-zinc-800 rounded-md text-[11px] text-right font-semibold"
                                             placeholder="0"
                                         />

@@ -63,6 +63,6 @@ export function formatRupiah(
         style: 'currency',
         currency: 'IDR',
         minimumFractionDigits: 0,
-        maximumFractionDigits: 0,
+        maximumFractionDigits: 2,
     }).format(num);
 }
