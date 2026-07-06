@@ -104,7 +104,7 @@
                 tax_pph22: 0,
                 tax_pph23: 0,
                 tax_ppn: 0,
-                tax_ppn_rate: 0,
+                tax_ppn_rate: 0.11, // Default to 11% PPN
                 tax_pph21_rate: 0,
                 tax_pph22_rate: 0,
                 tax_pph23_rate: 0,
@@ -139,6 +139,18 @@
 
     const remainingBudgetAfter = $derived(remainingBudgetBefore - form.amount);
 
+    function formatIndonesianInput(value: string | number): string {
+        if (value === undefined || value === null || value === '') {
+            return '';
+        }
+
+        let clean = String(value).replace(/[^\d,]/g, '');
+        let parts = clean.split(',');
+        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+
+        return parts.slice(0, 2).join(',');
+    }
+
     function addItem() {
         form.items = [
             ...form.items,
@@ -153,7 +165,7 @@
                 tax_pph22: 0,
                 tax_pph23: 0,
                 tax_ppn: 0,
-                tax_ppn_rate: 0,
+                tax_ppn_rate: 0.11, // Default to 11% PPN
                 tax_pph21_rate: 0,
                 tax_pph22_rate: 0,
                 tax_pph23_rate: 0,
@@ -206,6 +218,7 @@
             form.items[index].name = item.name;
             form.items[index].unit = item.unit;
             form.items[index].unit_price = item.unit_price;
+            form.items[index].tax_ppn_rate = 0.11; // Default to 11% PPN on POK select
         } else {
             form.items[index].budget_item_id = '';
         }
@@ -704,11 +717,47 @@
                                         ></label
                                     >
                                     <input
-                                        type="number"
-                                        bind:value={item.unit_price}
-                                        oninput={calculateTotal}
-                                        min="0"
-                                        step="any"
+                                        type="text"
+                                        value={formatIndonesianInput(
+                                            item.unit_price,
+                                        )}
+                                        oninput={(e) => {
+                                            const target =
+                                                e.target as HTMLInputElement;
+                                            const cursorPosition =
+                                                target.selectionStart;
+                                            const originalLength =
+                                                target.value.length;
+
+                                            const cleanVal = target.value
+                                                .replace(/\./g, '')
+                                                .replace(',', '.');
+                                            const parsed = parseFloat(cleanVal);
+                                            item.unit_price = isNaN(parsed)
+                                                ? 0
+                                                : parsed;
+
+                                            target.value =
+                                                formatIndonesianInput(
+                                                    target.value,
+                                                );
+
+                                            const newLength =
+                                                target.value.length;
+
+                                            if (cursorPosition !== null) {
+                                                target.setSelectionRange(
+                                                    cursorPosition +
+                                                        (newLength -
+                                                            originalLength),
+                                                    cursorPosition +
+                                                        (newLength -
+                                                            originalLength),
+                                                );
+                                            }
+
+                                            calculateTotal();
+                                        }}
                                         class="w-full px-3 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-lg outline-none focus:border-primary font-bold text-right"
                                         required
                                     />
