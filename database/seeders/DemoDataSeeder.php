@@ -324,6 +324,40 @@ class DemoDataSeeder extends Seeder
             'assigned_to' => $operatorUser->id,
         ]);
 
+        // Sub Activities for Pemeliharaan
+        SubActivity::create([
+            'activity_id' => $actPemeliharaan->id,
+            'name' => 'Persiapan dan Inventarisasi Alat',
+            'description' => 'Inventarisasi hardware/software simulator yang perlu kalibrasi dan perbaikan.',
+            'status' => 'completed',
+            'start_date' => '2026-03-01',
+            'end_date' => '2026-03-15',
+            'progress_percentage' => 100,
+            'assigned_to' => $plannerUser->id,
+        ]);
+
+        SubActivity::create([
+            'activity_id' => $actPemeliharaan->id,
+            'name' => 'Kalibrasi dan Uji Fungsi Simulator',
+            'description' => 'Kalibrasi sistem navigasi simulator Bridge Room bekerjasama dengan vendor resmi.',
+            'status' => 'in_progress',
+            'start_date' => '2026-04-01',
+            'end_date' => '2026-08-31',
+            'progress_percentage' => 45,
+            'assigned_to' => $plannerUser->id,
+        ]);
+
+        SubActivity::create([
+            'activity_id' => $actPemeliharaan->id,
+            'name' => 'Sertifikasi Uji Layak Simulator',
+            'description' => 'Pengurusan sertifikat kelaikan simulator pelayaran dari kementerian perhubungan.',
+            'status' => 'pending',
+            'start_date' => '2026-09-01',
+            'end_date' => '2026-10-20',
+            'progress_percentage' => 0,
+            'assigned_to' => $plannerUser->id,
+        ]);
+
         // 7. Seed Budgets (ActivityBudgets)
         // Budgets for Diklat Activity
         $bud1 = ActivityBudget::create([

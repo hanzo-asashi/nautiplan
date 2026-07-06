@@ -95,13 +95,19 @@
             : activity.responsible_user_id) as any,
         status: activity.status,
         priority: activity.priority,
-        start_date: activity.start_date || '',
-        end_date: activity.end_date || '',
+        start_date: activity.start_date
+            ? activity.start_date.substring(0, 10)
+            : '',
+        end_date: activity.end_date ? activity.end_date.substring(0, 10) : '',
         progress_percentage: activity.progress_percentage || 0,
         location: activity.location || '',
         sub_activities: activity.sub_activities
             ? activity.sub_activities.map((sub) => ({
                   ...sub,
+                  start_date: sub.start_date
+                      ? sub.start_date.substring(0, 10)
+                      : '',
+                  end_date: sub.end_date ? sub.end_date.substring(0, 10) : '',
                   assigned_to: (sub.assigned_to === null
                       ? ''
                       : sub.assigned_to) as any,
@@ -552,7 +558,7 @@
                                             class="w-full px-2.5 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-md outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
                                         />
                                     </div>
-                                    <div class="grid gap-2 grid-cols-2">
+                                    <div class="grid gap-2 grid-cols-3">
                                         <div class="space-y-1">
                                             <label
                                                 class="text-xs font-semibold text-foreground"
@@ -585,6 +591,17 @@
                                             <input
                                                 type="date"
                                                 bind:value={sub.start_date}
+                                                class="w-full px-2.5 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-md outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+                                            />
+                                        </div>
+                                        <div class="space-y-1">
+                                            <label
+                                                class="text-xs font-semibold text-foreground"
+                                                >Tgl Selesai</label
+                                            >
+                                            <input
+                                                type="date"
+                                                bind:value={sub.end_date}
                                                 class="w-full px-2.5 py-1.5 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-md outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
                                             />
                                         </div>
