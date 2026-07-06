@@ -31,8 +31,7 @@
     import EmptyState from '@/components/EmptyState.svelte';
     import PageHeader from '@/components/PageHeader.svelte';
     import StatsCard from '@/components/StatsCard.svelte';
-    import { toUrl } from '@/lib/utils';
-    import { formatRupiah } from '@/lib/utils';
+    import { toUrl, formatRupiah, formatDateIndonesian } from '@/lib/utils';
     import { deleteMethod, edit } from '@/routes/budgets';
     import {
         verify as verifyReal,
@@ -464,7 +463,9 @@
                                                 <p
                                                     class="text-[10px] text-muted-foreground"
                                                 >
-                                                    Tanggal Transaksi: {real.realization_date}
+                                                    Tanggal Transaksi: {formatDateIndonesian(
+                                                        real.realization_date,
+                                                    )}
                                                     {#if real.vendor_name}
                                                         | Vendor: <strong
                                                             class="text-foreground"

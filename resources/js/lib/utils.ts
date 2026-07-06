@@ -67,3 +67,27 @@ export function formatRupiah(
         maximumFractionDigits: 2,
     }).format(num);
 }
+
+export function formatDateIndonesian(
+    dateString: string | null | undefined,
+): string {
+    if (!dateString) {
+        return '-';
+    }
+
+    try {
+        const date = new Date(dateString);
+
+        if (isNaN(date.getTime())) {
+            return dateString;
+        }
+
+        return new Intl.DateTimeFormat('id-ID', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+        }).format(date);
+    } catch {
+        return dateString;
+    }
+}
