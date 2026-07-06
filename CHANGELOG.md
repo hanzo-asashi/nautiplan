@@ -1,3 +1,26 @@
+## [v0.18.7] - 2026-07-06
+
+### 🚀 Features
+- feat: add automatic document numbers generator button to realization form (6070e5b)
+- feat: add formatDateIndonesian helper and apply to realization history date (d6427b6)
+- feat: show realization items breakdown under each transaction row (8354bbc)
+
+### 🐛 Bug Fixes
+- fix: cast realization amounts to number in index page reduce, fix formatIndonesianInput to support decimal dots on page load (dff7117)
+- fix: make unit price input live formatted text in budget edit page (8f49c96)
+- fix: make PPN and PPh inputs live formatted text fields (602880f)
+- fix: make unit price input live formatted text, default PPN rate to 11% (bbfad2b)
+- fix: replace comma with dot in formatRupiah helper to parse strings with decimal comma correctly (45cfe18)
+- fix: support decimals in unit price, implement auto-recalculating taxes, and display price format preview (7e687ad)
+- fix: remove unused page import in NotificationBell to pass eslint check (ee1bb32)
+- fix: change flash-toast event listener from navigate to success to show notifications on back redirects (6b46ec7)
+
+### 🔧 Maintenance
+- refactor: replace SSE stream with polling in NotificationBell and NotificationController to resolve PHP worker starvation (cb29247)
+- chore: update changelog for v0.18.6 [skip ci] (6f97e09)
+
+[v0.18.7]: https://github.com/hanzo-asashi/nautiplan/compare/v0.18.6...v0.18.7
+
 ## [v0.18.6] - 2026-07-05
 
 ### 🐛 Bug Fixes
