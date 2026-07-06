@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { router, page } from '@inertiajs/svelte';
+    import { router } from '@inertiajs/svelte';
     import Bell from 'lucide-svelte/icons/bell';
     import Check from 'lucide-svelte/icons/check';
     import Info from 'lucide-svelte/icons/info';
@@ -42,6 +42,7 @@
 
             if (response.ok) {
                 const data = await response.json();
+
                 if (Array.isArray(data)) {
                     notifications = data;
                 }
