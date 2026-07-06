@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Notification;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
-use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class NotificationController extends Controller
 {
@@ -24,67 +24,19 @@ class NotificationController extends Controller
         ]);
     }
 
-    public function stream(): StreamedResponse
+    public function stream(): JsonResponse
     {
-        return response()->stream(function () {
-            set_time_limit(0);
-            $userId = auth()->id();
+        $userId = auth()->id();
 
-            // Unlock session to prevent blocking other requests
-            session_write_close();
+        $unreadNotifications = Notification::where(function ($q) use ($userId) {
+            $q->where('user_id', $userId)->orWhereNull('user_id');
+        })
+            ->whereNull('read_at')
+            ->latest()
+            ->limit(10)
+            ->get();
 
-            // Send initial batch of unread notifications
-            $unreadNotifications = Notification::where(function ($q) use ($userId) {
-                $q->where('user_id', $userId)->orWhereNull('user_id');
-            })
-                ->whereNull('read_at')
-                ->latest()
-                ->limit(10)
-                ->get();
-
-            echo "event: initial\n";
-            echo 'data: '.json_encode($unreadNotifications)."\n\n";
-            if (ob_get_level() > 0) {
-                ob_flush();
-            }
-            flush();
-
-            // Track last execution time
-            $lastCheck = now();
-
-            while (true) {
-                if (connection_aborted()) {
-                    break;
-                }
-
-                // Poll for notifications created since the last check
-                $newNotifications = Notification::where(function ($q) use ($userId) {
-                    $q->where('user_id', $userId)->orWhereNull('user_id');
-                })
-                    ->whereNull('read_at')
-                    ->where('created_at', '>=', $lastCheck)
-                    ->latest()
-                    ->get();
-
-                $lastCheck = now();
-
-                if ($newNotifications->isNotEmpty()) {
-                    echo "event: new-notification\n";
-                    echo 'data: '.json_encode($newNotifications)."\n\n";
-                    if (ob_get_level() > 0) {
-                        ob_flush();
-                    }
-                    flush();
-                }
-
-                sleep(2);
-            }
-        }, 200, [
-            'Content-Type' => 'text/event-stream',
-            'Cache-Control' => 'no-cache',
-            'Connection' => 'keep-alive',
-            'X-Accel-Buffering' => 'no',
-        ]);
+        return response()->json($unreadNotifications);
     }
 
     public function markAsRead(Notification $notification): RedirectResponse

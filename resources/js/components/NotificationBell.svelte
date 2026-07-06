@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { router } from '@inertiajs/svelte';
+    import { router, page } from '@inertiajs/svelte';
     import Bell from 'lucide-svelte/icons/bell';
     import Check from 'lucide-svelte/icons/check';
     import Info from 'lucide-svelte/icons/info';
@@ -28,45 +28,32 @@
         notifications.filter((n) => !n.read_at).length,
     );
 
-    let eventSource: EventSource | null = null;
+    let pollTimer: ReturnType<typeof setInterval> | null = null;
+
+    async function fetchNotifications() {
+        try {
+            const url = toUrl(notificationsRoute.stream());
+            const response = await fetch(url, {
+                headers: {
+                    Accept: 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                if (Array.isArray(data)) {
+                    notifications = data;
+                }
+            }
+        } catch {
+            // Silently ignore fetch errors
+        }
+    }
 
     onMount(() => {
-        // Connect to Server-Sent Events stream
-        const url = toUrl(notificationsRoute.stream());
-        eventSource = new EventSource(url);
-
-        eventSource.addEventListener('initial', (e: MessageEvent) => {
-            try {
-                notifications = JSON.parse(e.data);
-            } catch (err) {
-                console.error('Failed to parse initial notifications', err);
-            }
-        });
-
-        eventSource.addEventListener('new-notification', (e: MessageEvent) => {
-            try {
-                const newItems = JSON.parse(e.data) as typeof notifications;
-                // Prepend new notifications and filter out duplicates
-                notifications = [
-                    ...newItems,
-                    ...notifications.filter(
-                        (n) => !newItems.some((ni) => ni.id === n.id),
-                    ),
-                ].slice(0, 20); // Keep max 20 items
-
-                // Trigger browser desktop notification if permitted
-                if (
-                    Notification.permission === 'granted' &&
-                    newItems.length > 0
-                ) {
-                    newItems.forEach((item) => {
-                        new Notification(item.title, { body: item.message });
-                    });
-                }
-            } catch (err) {
-                console.error('Failed to parse new notifications', err);
-            }
-        });
+        fetchNotifications();
+        pollTimer = setInterval(fetchNotifications, 30000); // Poll every 30 seconds
 
         // Request browser notification permission
         if (
@@ -79,8 +66,8 @@
     });
 
     onDestroy(() => {
-        if (eventSource) {
-            eventSource.close();
+        if (pollTimer) {
+            clearInterval(pollTimer);
         }
     });
 
