@@ -21,7 +21,8 @@ export function formatRupiah(
         return 'Rp 0';
     }
 
-    const num = typeof value === 'string' ? parseFloat(value) : value;
+    const num =
+        typeof value === 'string' ? parseFloat(value.replace(',', '.')) : value;
 
     if (isNaN(num)) {
         return 'Rp 0';
@@ -63,6 +64,30 @@ export function formatRupiah(
         style: 'currency',
         currency: 'IDR',
         minimumFractionDigits: 0,
-        maximumFractionDigits: 0,
+        maximumFractionDigits: 2,
     }).format(num);
+}
+
+export function formatDateIndonesian(
+    dateString: string | null | undefined,
+): string {
+    if (!dateString) {
+        return '-';
+    }
+
+    try {
+        const date = new Date(dateString);
+
+        if (isNaN(date.getTime())) {
+            return dateString;
+        }
+
+        return new Intl.DateTimeFormat('id-ID', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+        }).format(date);
+    } catch {
+        return dateString;
+    }
 }

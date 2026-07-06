@@ -31,8 +31,7 @@
     import EmptyState from '@/components/EmptyState.svelte';
     import PageHeader from '@/components/PageHeader.svelte';
     import StatsCard from '@/components/StatsCard.svelte';
-    import { toUrl } from '@/lib/utils';
-    import { formatRupiah } from '@/lib/utils';
+    import { toUrl, formatRupiah, formatDateIndonesian } from '@/lib/utils';
     import { deleteMethod, edit } from '@/routes/budgets';
     import {
         verify as verifyReal,
@@ -255,10 +254,10 @@
         <div class="space-y-6">
             {#each budgets.data as bud (bud.id)}
                 {@const totalSpent = bud.realizations.reduce(
-                    (sum, r) => sum + r.amount,
+                    (sum, r) => sum + Number(r.amount),
                     0,
                 )}
-                {@const remaining = bud.amount - totalSpent}
+                {@const remaining = Number(bud.amount) - totalSpent}
 
                 <div
                     class="rounded-xl border border-sidebar-border/50 bg-card/45 backdrop-blur-md p-6 shadow-sm space-y-4 transition-all duration-200 {bud.realizations.some(
@@ -464,7 +463,9 @@
                                                 <p
                                                     class="text-[10px] text-muted-foreground"
                                                 >
-                                                    Tanggal Transaksi: {real.realization_date}
+                                                    Tanggal Transaksi: {formatDateIndonesian(
+                                                        real.realization_date,
+                                                    )}
                                                     {#if real.vendor_name}
                                                         | Vendor: <strong
                                                             class="text-foreground"
@@ -484,6 +485,20 @@
                                                         >
                                                     {/if}
                                                 </p>
+                                                {#if real.items && real.items.length > 0}
+                                                    <div
+                                                        class="mt-1.5 pl-3 border-l border-zinc-200 dark:border-zinc-800 text-[10px] text-muted-foreground/80 space-y-0.5"
+                                                    >
+                                                        {#each real.items as item}
+                                                            <div>
+                                                                • {item.name} ({item.volume}
+                                                                {item.unit} @ {formatRupiah(
+                                                                    item.unit_price,
+                                                                )})
+                                                            </div>
+                                                        {/each}
+                                                    </div>
+                                                {/if}
                                             </div>
 
                                             <div
