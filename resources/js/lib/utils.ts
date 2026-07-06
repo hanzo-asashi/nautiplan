@@ -21,7 +21,7 @@ export function formatRupiah(
         return 'Rp 0';
     }
 
-    const num = typeof value === 'string' ? parseFloat(value) : value;
+    const num = typeof value === 'string' ? parseFloat(value.replace(',', '.')) : value;
 
     if (isNaN(num)) {
         return 'Rp 0';
