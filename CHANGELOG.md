@@ -1,3 +1,20 @@
+## [v0.20.0] - 2026-07-13
+
+### 🚀 Features
+- feat(pdf): fix pdf external logo rendering with local files and resolve indonesian date format issues (4d49a75)
+
+### 🐛 Bug Fixes
+- fix(ci): fix checkout branch ref in release workflow to prevent detached head errors (fc2c310)
+
+### 🔧 Maintenance
+- chore: update changelog for v2.5.0 [skip ci] (28d9a26)
+
+### 📦 Other
+- Merge pull request #31 from hanzo-asashi/feature/extension-phase-6 (783b88d)
+- Merge pull request #30 from hanzo-asashi/feature/extension-phase-5 (fdc597b)
+
+[v0.20.0]: https://github.com/hanzo-asashi/nautiplan/compare/v0.19.0...v0.20.0
+
 ## [v2.5.0] - 2026-07-13
 
 ### 🚀 Features
