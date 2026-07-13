@@ -102,6 +102,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('reports/export/rekap-komponen', [ReportController::class, 'downloadPdfRekapKomponen'])->name('reports.export.rekap-komponen');
     Route::get('reports/non-procurement/pdf', [ReportController::class, 'downloadPdfNonProcurement'])->name('reports.non-procurement.pdf');
     Route::get('reports/vendor/pdf', [ReportController::class, 'downloadPdfVendor'])->name('reports.vendor.pdf');
+    Route::get('reports/realization/{realization}/sp2d', [ReportController::class, 'downloadPdfSp2d'])->name('reports.realization.sp2d');
+    Route::get('reports/realization/{realization}/bast-internal', [ReportController::class, 'downloadPdfBastInternal'])->name('reports.realization.bast-internal');
+    Route::get('reports/export/rekap-sub-output', [ReportController::class, 'downloadPdfRekapSubOutput'])->name('reports.export.rekap-sub-output');
+    Route::get('reports/export/rekap-jenis-belanja', [ReportController::class, 'downloadPdfRekapJenisBelanja'])->name('reports.export.rekap-jenis-belanja');
     Route::get('reports/revision/{revision}/pdf', [ReportController::class, 'downloadPdfRevision'])->name('reports.revision.pdf');
 
     // Notifications Workflow

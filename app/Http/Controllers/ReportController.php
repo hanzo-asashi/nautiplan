@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Actions\Report\DownloadActivityTemplateAction;
+use App\Actions\Report\DownloadPdfRekapJenisBelanjaAction;
 use App\Actions\Report\DownloadPdfRekapKomponenAction;
 use App\Actions\Report\DownloadPdfRekapOutputAction;
+use App\Actions\Report\DownloadPdfRekapSubOutputAction;
 use App\Actions\Report\DownloadPdfRevisionAction;
 use App\Actions\Report\ExportActivityExcelAction;
 use App\Actions\Report\ExportPokRealizationExcelAction;
@@ -324,6 +326,63 @@ class ReportController extends Controller
     }
 
     public function downloadPdfRekapKomponen(Request $request, DownloadPdfRekapKomponenAction $action): \Illuminate\Http\Response
+    {
+        return $action->execute($request);
+    }
+
+    public function downloadPdfSp2d(BudgetRealization $realization): \Illuminate\Http\Response
+    {
+        $realization->load([
+            'activityBudget.activity.program',
+            'activityBudget.activity.unit',
+            'activityBudget.activity.fiscalYear',
+            'procurement.vendor',
+            'procurement.ppk',
+            'procurement.kpa',
+            'items.budgetItem',
+        ]);
+
+        $terbilang = FormatHelper::terbilang($realization->amount).' rupiah';
+
+        $context = stream_context_create([
+            'ssl' => [
+                'verify_peer' => false,
+                'verify_peer_name' => false,
+                'allow_self_signed' => true,
+            ],
+        ]);
+
+        $pdf = Pdf::loadView('pdf.sp2d', compact('realization', 'terbilang'));
+        $pdf->getDomPDF()->setHttpContext($context);
+
+        $safeSp2dNumber = str_replace(['/', '\\'], '-', $realization->sp2d_number ?? 'draft');
+
+        return $pdf->stream('sp2d-'.$safeSp2dNumber.'.pdf');
+    }
+
+    public function downloadPdfBastInternal(BudgetRealization $realization): \Illuminate\Http\Response
+    {
+        $realization->load([
+            'activityBudget.activity.program',
+            'activityBudget.activity.unit',
+            'activityBudget.activity.fiscalYear',
+            'activityBudget.activity.responsibleUser',
+            'procurement.vendor',
+            'procurement.ppk',
+            'items.budgetItem',
+        ]);
+
+        $pdf = Pdf::loadView('pdf.bast-internal', compact('realization'));
+
+        return $pdf->stream("bast-internal-{$realization->id}.pdf");
+    }
+
+    public function downloadPdfRekapSubOutput(Request $request, DownloadPdfRekapSubOutputAction $action): \Illuminate\Http\Response
+    {
+        return $action->execute($request);
+    }
+
+    public function downloadPdfRekapJenisBelanja(Request $request, DownloadPdfRekapJenisBelanjaAction $action): \Illuminate\Http\Response
     {
         return $action->execute($request);
     }

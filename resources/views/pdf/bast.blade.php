@@ -1,4 +1,4 @@
-@extends('layouts.print')
+@extends('layouts.print', ['hideHeader' => true])
 
 @section('title', 'Berita Acara Serah Terima - ' . $realization->receipt_number)
 
@@ -33,71 +33,45 @@
     }
     .mt-4 { margin-top: 15px; }
     .mb-4 { margin-bottom: 15px; }
+    
+    .paragraph {
+        text-align: justify;
+        margin-bottom: 8px;
+        text-indent: 30px;
+    }
+    .ident-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-left: 20px;
+        margin-bottom: 10px;
+    }
+    .ident-table td {
+        padding: 2px 4px;
+        vertical-align: top;
+    }
+    .data-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+    .data-table th, .data-table td {
+        border: 1px solid #000;
+        padding: 5px 7px;
+        text-align: left;
+    }
+    .data-table th {
+        background-color: #f2f2f2;
+        font-weight: bold;
+        text-align: center;
+    }
+    .font-bold {
+        font-weight: bold;
+    }
 </style>
 @endsection
 
 @section('content')
-    <div class="title-block">
-        <div class="title">BERITA ACARA SERAH TERIMA BARANG / PEKERJAAN</div>
-        <div class="subtitle">Nomor : {{ $realization->receipt_number ?? '-' }}</div>
-    </div>
-            font-size: 10px;
-        }
-        .paragraph {
-            text-align: justify;
-            margin-bottom: 8px;
-            text-indent: 30px;
-        }
-        .ident-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-left: 20px;
-            margin-bottom: 10px;
-        }
-        .ident-table td {
-            padding: 2px 4px;
-            vertical-align: top;
-        }
-        .data-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-            margin-bottom: 10px;
-        }
-        .data-table th, .data-table td {
-            border: 1px solid #000;
-            padding: 5px 7px;
-            text-align: left;
-        }
-        .data-table th {
-            background-color: #f2f2f2;
-            font-weight: bold;
-            text-align: center;
-        }
-        .text-center {
-            text-align: center;
-        }
-        .signature-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        .signature-table td {
-            width: 50%;
-            text-align: center;
-            vertical-align: top;
-            padding: 5px;
-        }
-        .signature-space {
-            height: 50px;
-        }
-        .font-bold {
-            font-weight: bold;
-        }
-    </style>
-</head>
-<body>
-
     @php
         $bastDate = $realization->bast_date ? \Carbon\Carbon::parse($realization->bast_date) : \Carbon\Carbon::parse($realization->realization_date);
         
@@ -124,7 +98,7 @@
         <table class="kop-table">
             <tr>
                 <td class="kop-logo">
-                    <span style="font-size: 24px;">⚓</span>
+                    <img src="{{ public_path("images/logo-poltekpel.png") }}" height="50" alt="Logo Kemenhub">
                 </td>
                 <td class="kop-text">
                     <div class="kop-title-1">KEMENTERIAN PERHUBUNGAN</div>
@@ -198,7 +172,7 @@
     </table>
 
     <div class="paragraph" style="text-indent: 0;">
-        Kedua belah pihak menyetujui untuk menerima/menyerahkan barang-barang sesuai {{ strtoupper($realization->procurement?->procurement_type ?? 'Surat Pesanan') }} Nomor {{ $realization->procurement?->document_number ?? '-' }} tanggal {{ ($realization->procurement?->document_date) ? \Carbon\Carbon::parse($realization->procurement->document_date)->format('d December Y') : '-' }} sebagai berikut :
+        Kedua belah pihak menyetujui untuk menerima/menyerahkan barang-barang sesuai {{ strtoupper($realization->procurement?->procurement_type ?? 'Surat Pesanan') }} Nomor {{ $realization->procurement?->document_number ?? '-' }} tanggal {{ ($realization->procurement?->document_date) ? App\Helpers\FormatHelper::tanggal($realization->procurement->document_date) : '-' }} sebagai berikut :
     </div>
 
     <!-- Items Table -->

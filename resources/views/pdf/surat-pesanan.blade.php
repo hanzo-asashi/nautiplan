@@ -101,7 +101,7 @@
         <table style="width: 100%; border-collapse: collapse;">
             <tr>
                 <td style="width: 12%; text-align: center; vertical-align: middle; padding-right: 10px;">
-                    <span style="font-size: 28px; font-weight: bold; color: #1e3a8a;">⚓</span>
+                    <img src="{{ public_path("images/logo-poltekpel.png") }}" height="50" alt="Logo Kemenhub">
                 </td>
                 <td style="width: 88%; text-align: center;">
                     <div style="font-size: 12px; font-weight: bold; letter-spacing: 0.5px; text-transform: uppercase;">KEMENTERIAN PERHUBUNGAN</div>
@@ -118,7 +118,7 @@
     <!-- Title Dokumen -->
     <div class="title-block">
         <div class="title">SURAT PESANAN (SP)</div>
-        <div class="subtitle">Nomor SP: {{ $realization->procurement_number ?: '-' }} | Tanggal SP: {{ $realization->procurement_date ? \Carbon\Carbon::parse($realization->procurement_date)->format('d M Y') : '-' }}</div>
+        <div class="subtitle">Nomor SP: {{ $realization->procurement_number ?: '-' }} | Tanggal SP: {{ $realization->procurement_date ? App\Helpers\FormatHelper::tanggal($realization->procurement_date) : '-' }}</div>
     </div>
 
     <!-- Pihak Terlibat -->

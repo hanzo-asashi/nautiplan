@@ -139,7 +139,7 @@
         <table class="kop-table">
             <tr>
                 <td class="kop-logo">
-                    <span style="font-size: 24px;">⚓</span>
+                    <img src="{{ public_path("images/logo-poltekpel.png") }}" height="50" alt="Logo Kemenhub">
                 </td>
                 <td class="kop-text">
                     <div class="kop-title-1">KEMENTERIAN PERHUBUNGAN</div>
@@ -169,7 +169,7 @@
                 </div>
                 <div class="spk-meta-row" style="margin-bottom: 8px;">
                     <span class="spk-meta-label">Tanggal Nota Dinas</span>
-                    <span>: {{ $realization->procurement?->nota_dinas_date ? \Carbon\Carbon::parse($realization->procurement->nota_dinas_date)->format('d December Y') : '-' }}</span>
+                    <span>: {{ $realization->procurement?->nota_dinas_date ? App\Helpers\FormatHelper::tanggal($realization->procurement->nota_dinas_date) : '-' }}</span>
                 </div>
                 <div class="spk-meta-row">
                     <span class="spk-meta-label">Dan berdasarkan BA HP Langsung</span>
@@ -177,7 +177,7 @@
                 </div>
                 <div class="spk-meta-row" style="margin-bottom: 8px;">
                     <span class="spk-meta-label">Tanggal BA HP Langsung</span>
-                    <span>: {{ $realization->procurement?->ba_pl_date ? \Carbon\Carbon::parse($realization->procurement->ba_pl_date)->format('d December Y') : '-' }}</span>
+                    <span>: {{ $realization->procurement?->ba_pl_date ? App\Helpers\FormatHelper::tanggal($realization->procurement->ba_pl_date) : '-' }}</span>
                 </div>
                 <div class="spk-meta-row">
                     <span class="spk-meta-label font-bold">SURAT PERINTAH KERJA (SPK)</span>
@@ -185,7 +185,7 @@
                 </div>
                 <div class="spk-meta-row">
                     <span class="spk-meta-label">Tanggal SPK</span>
-                    <span>: {{ $realization->procurement?->document_date ? \Carbon\Carbon::parse($realization->procurement->document_date)->format('d December Y') : '-' }}</span>
+                    <span>: {{ $realization->procurement?->document_date ? App\Helpers\FormatHelper::tanggal($realization->procurement->document_date) : '-' }}</span>
                 </div>
             </td>
         </tr>
