@@ -12,14 +12,18 @@
 </script>
 
 <script lang="ts">
+    import CheckCircle from 'lucide-svelte/icons/check-circle';
     import Coins from 'lucide-svelte/icons/coins';
     import Folder from 'lucide-svelte/icons/folder';
+    import Info from 'lucide-svelte/icons/info';
     import Landmark from 'lucide-svelte/icons/landmark';
     import PiggyBank from 'lucide-svelte/icons/piggy-bank';
+    import { onDestroy, onMount } from 'svelte';
     import AppHead from '@/components/AppHead.svelte';
     import BarChart from '@/components/charts/BarChart.svelte';
     import StatsCard from '@/components/StatsCard.svelte';
-    import { formatRupiah } from '@/lib/utils';
+    import { formatRupiah, toUrl } from '@/lib/utils';
+    import notificationsRoute from '@/routes/notifications';
 
     let {
         stats,
@@ -50,6 +54,84 @@
             description: string;
         }>;
     } = $props();
+
+    // Live Activity Stream
+    let liveActivities = $state<
+        Array<{
+            id: string;
+            title: string;
+            message: string;
+            type: string;
+            created_at: string;
+        }>
+    >([]);
+
+    let pollTimer: ReturnType<typeof setInterval> | null = null;
+
+    async function fetchLiveActivities() {
+        try {
+            const url = toUrl(notificationsRoute.stream());
+            const response = await fetch(url, {
+                headers: {
+                    Accept: 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+
+                if (Array.isArray(data)) {
+                    liveActivities = data;
+                }
+            }
+        } catch {
+            // ignore
+        }
+    }
+
+    onMount(() => {
+        fetchLiveActivities();
+        pollTimer = setInterval(fetchLiveActivities, 15000); // Check every 15 seconds
+    });
+
+    onDestroy(() => {
+        if (pollTimer) {
+            clearInterval(pollTimer);
+        }
+    });
+
+    function formatTimeAgo(dateStr: string): string {
+        try {
+            const date = new Date(dateStr);
+            const seconds = Math.floor(
+                (new Date().getTime() - date.getTime()) / 1000,
+            );
+
+            if (seconds < 60) {
+                return 'Baru saja';
+            }
+
+            const minutes = Math.floor(seconds / 60);
+
+            if (minutes < 60) {
+                return `${minutes} menit lalu`;
+            }
+
+            const hours = Math.floor(minutes / 60);
+
+            if (hours < 24) {
+                return `${hours} jam lalu`;
+            }
+
+            return date.toLocaleDateString('id-ID', {
+                day: 'numeric',
+                month: 'short',
+            });
+        } catch {
+            return '';
+        }
+    }
 
     // Prepare chart data format
     const chartData = $derived(
@@ -164,6 +246,70 @@
                 </div>
             {/if}
         </div>
+    </div>
+
+    <!-- Live Activity Feed -->
+    <div
+        class="rounded-xl border border-sidebar-border/50 bg-card/40 backdrop-blur-md p-6 shadow-sm flex flex-col"
+    >
+        <div class="flex items-center justify-between mb-4">
+            <h3
+                class="text-base font-semibold text-foreground flex items-center gap-2"
+            >
+                <span class="relative flex h-2 w-2">
+                    <span
+                        class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"
+                    ></span>
+                    <span
+                        class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"
+                    ></span>
+                </span>
+                Umpan Aktivitas Real-time (Live Feed)
+            </h3>
+            <span class="text-xs text-muted-foreground italic"
+                >Update otomatis setiap 15 detik</span
+            >
+        </div>
+
+        {#if liveActivities.length === 0}
+            <div
+                class="flex flex-col items-center justify-center text-center p-8 text-muted-foreground text-sm border-2 border-dashed border-sidebar-border/40 rounded-lg"
+            >
+                Belum ada aktivitas atau notifikasi masuk.
+            </div>
+        {:else}
+            <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {#each liveActivities as item (item.id)}
+                    <div
+                        class="p-4 rounded-lg border border-sidebar-border/30 bg-background/50 hover:bg-background/80 transition-colors flex items-start gap-3"
+                    >
+                        <div class="mt-0.5 shrink-0">
+                            {#if item.type === 'success'}
+                                <CheckCircle class="h-5 w-5 text-emerald-500" />
+                            {:else}
+                                <Info class="h-5 w-5 text-blue-500" />
+                            {/if}
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p
+                                class="text-sm font-semibold text-foreground truncate"
+                            >
+                                {item.title}
+                            </p>
+                            <p
+                                class="text-xs text-muted-foreground line-clamp-2 mt-1"
+                            >
+                                {item.message}
+                            </p>
+                            <span
+                                class="text-[10px] text-muted-foreground/75 mt-2 block"
+                                >{formatTimeAgo(item.created_at)}</span
+                            >
+                        </div>
+                    </div>
+                {/each}
+            </div>
+        {/if}
     </div>
 
     <!-- Detailed Program Breakdown Table -->

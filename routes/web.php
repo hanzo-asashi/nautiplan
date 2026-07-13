@@ -46,6 +46,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('budgets/{budget}/edit', [BudgetController::class, 'editBudget'])->name('budgets.edit');
     Route::put('budgets/{budget}', [BudgetController::class, 'updateBudget'])->name('budgets.update');
     Route::delete('budgets/{budget}', [BudgetController::class, 'deleteBudget'])->name('budgets.delete');
+    Route::post('budgets/transfer', [BudgetController::class, 'transferBudget'])->name('budgets.transfer');
     Route::get('budgets/{budget}/realizations/create', [BudgetController::class, 'createRealization'])->name('budgets.realizations.create');
     Route::post('budgets/realizations', [BudgetController::class, 'storeRealization'])->name('budgets.realizations.store');
     Route::post('budgets/realizations/{realization}/verify', [BudgetController::class, 'verifyRealization'])->name('budgets.realizations.verify');
