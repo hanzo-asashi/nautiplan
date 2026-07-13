@@ -63,10 +63,27 @@
     let selectedUnitId = $state(filters.unit_id || '');
     let searchQuery = $state('');
     let expandedActivities = $state<Record<number, boolean>>({});
+    let showQuarterView = $state(false);
 
     const selectedYear = $derived(
         fiscalYears.find((f) => f.id === selectedYearId)?.year || 2026,
     );
+
+    // Calculate current date position
+    const currentLineLeft = $derived.by(() => {
+        const now = new Date();
+
+        if (now.getFullYear() !== selectedYear) {
+            return null;
+        }
+
+        const yearStart = new Date(selectedYear, 0, 1);
+        const yearEnd = new Date(selectedYear, 11, 31, 23, 59, 59);
+        const totalMs = yearEnd.getTime() - yearStart.getTime();
+        const elapsedMs = now.getTime() - yearStart.getTime();
+
+        return Math.max(0, Math.min(100, (elapsedMs / totalMs) * 100));
+    });
 
     const filteredActivities = $derived(
         activities.filter((act) => {
@@ -96,6 +113,9 @@
         'Nov',
         'Des',
     ];
+
+    const quarters = ['Kuartal I', 'Kuartal II', 'Kuartal III', 'Kuartal IV'];
+    const columns = $derived(showQuarterView ? quarters : months);
 
     function toggleExpand(id: number) {
         expandedActivities[id] = !expandedActivities[id];
@@ -237,16 +257,26 @@
         </div>
 
         <!-- Search input -->
-        <div class="relative w-full md:max-w-xs">
-            <Search
-                class="absolute left-2.5 top-2.5 size-4 text-muted-foreground"
-            />
-            <input
-                type="text"
-                placeholder="Cari kegiatan..."
-                bind:value={searchQuery}
-                class="w-full pl-9 pr-3 py-2 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-md outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
-            />
+        <!-- Search input & View Options -->
+        <div class="flex items-center gap-3 w-full md:max-w-md">
+            <div class="relative flex-1">
+                <Search
+                    class="absolute left-2.5 top-2.5 size-4 text-muted-foreground"
+                />
+                <input
+                    type="text"
+                    placeholder="Cari kegiatan..."
+                    bind:value={searchQuery}
+                    class="w-full pl-9 pr-3 py-2 text-xs bg-background border border-zinc-200 dark:border-zinc-800 rounded-md outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+                />
+            </div>
+
+            <button
+                onclick={() => (showQuarterView = !showQuarterView)}
+                class="px-3 py-2 text-xs bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-foreground font-semibold rounded-md border border-sidebar-border transition-colors cursor-pointer shrink-0"
+            >
+                Tampilan: {showQuarterView ? 'Kuartal' : 'Bulanan'}
+            </button>
         </div>
     </div>
 
@@ -269,11 +299,11 @@
                     </div>
                     <!-- Right Timeline Months Header -->
                     <div class="flex-1 flex relative">
-                        {#each months as month}
+                        {#each columns as col}
                             <div
-                                class="flex-1 text-center p-3 text-xs font-bold text-muted-foreground border-r border-sidebar-border/30 last:border-r-0"
+                                class="flex-1 text-center p-3 text-xs font-bold text-muted-foreground border-r border-sidebar-border/30 last:border-r-0 animate-fade-in"
                             >
-                                {month}
+                                {col}
                             </div>
                         {/each}
                     </div>
@@ -363,12 +393,26 @@
                                     <div
                                         class="absolute inset-0 flex pointer-events-none"
                                     >
-                                        {#each months as _}
+                                        {#each columns as _}
                                             <div
                                                 class="flex-1 border-r border-sidebar-border/10 last:border-r-0 h-full"
                                             ></div>
                                         {/each}
                                     </div>
+
+                                    <!-- Current date indicator vertical line -->
+                                    {#if currentLineLeft !== null}
+                                        <div
+                                            class="absolute top-0 bottom-0 w-0.5 bg-rose-500/80 z-20 pointer-events-none shadow-[0_0_8px_rgba(244,63,94,0.5)]"
+                                            style="left: {currentLineLeft}%;"
+                                            title="Hari Ini"
+                                        >
+                                            <span
+                                                class="absolute top-0 -translate-x-1/2 bg-rose-500 text-white font-bold text-[8px] px-1 rounded"
+                                                >Hari Ini</span
+                                            >
+                                        </div>
+                                    {/if}
 
                                     <!-- Activity Timeline Bar -->
                                     {#if coords.width > 0}
@@ -488,12 +532,20 @@
                                             <div
                                                 class="absolute inset-0 flex pointer-events-none"
                                             >
-                                                {#each months as _}
+                                                {#each columns as _}
                                                     <div
                                                         class="flex-1 border-r border-sidebar-border/10 last:border-r-0 h-full"
                                                     ></div>
                                                 {/each}
                                             </div>
+
+                                            <!-- Current date indicator vertical line for sub-activities -->
+                                            {#if currentLineLeft !== null}
+                                                <div
+                                                    class="absolute top-0 bottom-0 w-0.5 bg-rose-500/50 z-20 pointer-events-none"
+                                                    style="left: {currentLineLeft}%;"
+                                                ></div>
+                                            {/if}
 
                                             <!-- Sub-activity Bar -->
                                             {#if subCoords.width > 0}

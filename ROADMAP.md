@@ -162,6 +162,21 @@ Guna menyelaraskan sistem dengan kebutuhan administrasi Pejabat Pembuat Komitmen
 
 ---
 
+## Extension Phase 5 — Fitur Tambahan & Interaktivitas UI (In Progress)
+
+**Goal**: Meningkatkan interaktivitas dan monitoring real-time pada sistem anggaran.
+
+### Deliverables
+
+- **Feature 1: Live Activity Feed (Notifikasi & Dashboard Real-time)**:
+    - Integrasi EventStream/SSE `/notifications/stream` ke dalam Dashboard untuk umpan aktivitas real-time (realisasi masuk, verifikasi, perubahan pagu).
+- **Feature 2: Interactive Gantt Chart / Timeline Refinement**:
+    - Menyempurnakan halaman `/reports/gantt` agar lebih interaktif dengan tooltip detail, highlight progress, dan navigasi timeline.
+- **Feature 3: Quick Budget Revision Wizard**:
+    - Modal interaktif multi-step untuk memindahkan alokasi pagu antar kegiatan dengan validasi audit sisa pagu.
+
+---
+
 ## Technical Refactoring & Improvements (To Do)
 
 **Goal**: Standardize controller architecture using the Action Pattern and implement database transactions for complex operations.

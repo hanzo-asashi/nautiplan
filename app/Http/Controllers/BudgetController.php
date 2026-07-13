@@ -9,7 +9,10 @@ use App\Http\Requests\Budget\StoreBudgetRequest;
 use App\Http\Requests\Budget\StoreRealizationRequest;
 use App\Http\Requests\Budget\UpdateBudgetRequest;
 use App\Models\ActivityBudget;
+use App\Models\BudgetItem;
 use App\Models\BudgetRealization;
+use App\Models\BudgetRevision;
+use App\Models\BudgetRevisionDetail;
 use App\Models\FiscalYear;
 use App\Models\RealizationItem;
 use App\Models\Unit;
@@ -18,6 +21,7 @@ use App\Models\Vendor;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -209,5 +213,104 @@ class BudgetController extends Controller
         $realization->delete();
 
         return back()->with('success', 'Realisasi anggaran berhasil dihapus.');
+    }
+
+    public function transferBudget(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'source_budget_item_id' => 'required|exists:budget_items,id',
+            'destination_budget_item_id' => 'required|exists:budget_items,id|different:source_budget_item_id',
+            'amount' => 'required|numeric|min:0.01',
+            'reason' => 'required|string|max:255',
+        ]);
+
+        $amount = (float) $validated['amount'];
+
+        /** @var BudgetItem $sourceItem */
+        $sourceItem = BudgetItem::findOrFail($validated['source_budget_item_id']);
+
+        /** @var BudgetItem $destItem */
+        $destItem = BudgetItem::findOrFail($validated['destination_budget_item_id']);
+
+        // Check source item remaining amount (pagu - realizations)
+        $realizedVolume = RealizationItem::where('budget_item_id', $sourceItem->id)->sum('volume');
+        $realizedTotal = $realizedVolume * $sourceItem->unit_price;
+        $availableAmount = $sourceItem->total - $realizedTotal;
+
+        if ($amount > $availableAmount) {
+            return back()->with('error', 'Jumlah pemindahan dana melebihi sisa dana yang tersedia pada item sumber.');
+        }
+
+        DB::transaction(function () use ($sourceItem, $destItem, $amount, $validated) {
+            /** @var ActivityBudget $sourceBudget */
+            $sourceBudget = $sourceItem->activityBudget;
+
+            /** @var ActivityBudget $destBudget */
+            $destBudget = $destItem->activityBudget;
+
+            // 1. Create Revision for Source Budget
+            $sourceRev = BudgetRevision::create([
+                'activity_budget_id' => $sourceBudget->id,
+                'revision_number' => $sourceBudget->version,
+                'description' => "Pemindahan dana ke [{$destBudget->account_code}] {$destItem->name}: {$validated['reason']}",
+                'amount_semula' => $sourceBudget->amount,
+                'amount_menjadi' => $sourceBudget->amount - $amount,
+                'revised_by' => Auth::id(),
+            ]);
+
+            BudgetRevisionDetail::create([
+                'budget_revision_id' => $sourceRev->id,
+                'budget_item_id' => $sourceItem->id,
+                'name_semula' => $sourceItem->name,
+                'volume_semula' => $sourceItem->volume,
+                'unit_semula' => $sourceItem->unit,
+                'unit_price_semula' => $sourceItem->unit_price,
+                'total_semula' => $sourceItem->total,
+                'name_menjadi' => $sourceItem->name,
+                'volume_menjadi' => ($sourceItem->total - $amount) / $sourceItem->unit_price,
+                'unit_menjadi' => $sourceItem->unit,
+                'unit_price_menjadi' => $sourceItem->unit_price,
+                'total_menjadi' => $sourceItem->total - $amount,
+            ]);
+
+            // Deduct from source item
+            $sourceItem->decrement('total', $amount);
+            $sourceItem->update(['volume' => $sourceItem->total / $sourceItem->unit_price]);
+            $sourceBudget->decrement('amount', $amount);
+            $sourceBudget->increment('version');
+
+            // 2. Create Revision for Destination Budget
+            $destRev = BudgetRevision::create([
+                'activity_budget_id' => $destBudget->id,
+                'revision_number' => $destBudget->version,
+                'description' => "Penerimaan pemindahan dana dari [{$sourceBudget->account_code}] {$sourceItem->name}: {$validated['reason']}",
+                'amount_semula' => $destBudget->amount,
+                'amount_menjadi' => $destBudget->amount + $amount,
+                'revised_by' => Auth::id(),
+            ]);
+
+            BudgetRevisionDetail::create([
+                'budget_revision_id' => $destRev->id,
+                'budget_item_id' => $destItem->id,
+                'name_semula' => $destItem->name,
+                'volume_semula' => $destItem->volume,
+                'unit_semula' => $destItem->unit,
+                'unit_price_semula' => $destItem->unit_price,
+                'total_semula' => $destItem->total,
+                'name_menjadi' => $destItem->name,
+                'volume_menjadi' => ($destItem->total + $amount) / $destItem->unit_price,
+                'unit_menjadi' => $destItem->unit,
+                'unit_price_menjadi' => $destItem->unit_price,
+                'total_menjadi' => $destItem->total + $amount,
+            ]);
+
+            // Add to destination item
+            $destItem->increment('total', $amount);
+            $destItem->update(['volume' => $destItem->total / $destItem->unit_price]);
+            $destBudget->increment('amount', $amount);
+            $destBudget->increment('version');
+        });
+
+        return back()->with('success', 'Dana alokasi anggaran berhasil dipindahkan.');
     }
 }

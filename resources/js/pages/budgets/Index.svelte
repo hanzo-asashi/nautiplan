@@ -63,6 +63,14 @@
                     unit?: { name: string; code: string } | null;
                 } | null;
                 realizations: Array<any>;
+                budgetItems?: Array<{
+                    id: number;
+                    name: string;
+                    volume: number;
+                    unit: string;
+                    unit_price: number;
+                    total: number;
+                }>;
             }>;
             links: Array<{
                 url: string | null;
@@ -147,32 +155,127 @@
         selectedBudgetForHistory = budget;
         revisionHistoryModalOpen = true;
     }
+
+    // Quick Budget Revision/Transfer Wizard state
+    let transferWizardModalOpen = $state(false);
+    let transferStep = $state(1); // 1 = Select Source/Dest, 2 = Enter Amount/Reason, 3 = Confirmation
+
+    // Form fields
+    let selectedSourceBudgetId = $state('');
+    let selectedSourceItemId = $state('');
+    let selectedDestBudgetId = $state('');
+    let selectedDestItemId = $state('');
+    let transferAmount = $state<number>(0);
+    let transferReason = $state('');
+
+    // Derived helpers
+    const selectedSourceBudget = $derived(
+        budgets.data.find((b) => b.id.toString() === selectedSourceBudgetId),
+    );
+    const selectedDestBudget = $derived(
+        budgets.data.find((b) => b.id.toString() === selectedDestBudgetId),
+    );
+
+    const sourceItems = $derived(selectedSourceBudget?.budgetItems || []);
+    const destItems = $derived(selectedDestBudget?.budgetItems || []);
+
+    const selectedSourceItem = $derived(
+        sourceItems.find((i: any) => i.id.toString() === selectedSourceItemId),
+    );
+    const selectedDestItem = $derived(
+        destItems.find((i: any) => i.id.toString() === selectedDestItemId),
+    );
+
+    // Calculate source item's available amount
+    const sourceItemAvailableAmount = $derived.by(() => {
+        if (!selectedSourceItem) {
+            return 0;
+        }
+
+        // Realized total is calculated from realizations
+        const realizations = selectedSourceBudget?.realizations || [];
+        const realizedTotal = realizations.reduce((sum: number, r: any) => {
+            const itemTotal =
+                r.items
+                    ?.filter(
+                        (ri: any) =>
+                            ri.budget_item_id === selectedSourceItem.id,
+                    )
+                    .reduce(
+                        (s: number, ri: any) => s + ri.volume * ri.unit_price,
+                        0,
+                    ) || 0;
+
+            return sum + itemTotal;
+        }, 0);
+
+        return Math.max(0, selectedSourceItem.total - realizedTotal);
+    });
+
+    function resetWizard() {
+        transferWizardModalOpen = false;
+        transferStep = 1;
+        selectedSourceBudgetId = '';
+        selectedSourceItemId = '';
+        selectedDestBudgetId = '';
+        selectedDestItemId = '';
+        transferAmount = 0;
+        transferReason = '';
+    }
+
+    function handleTransferSubmit() {
+        if (transferAmount <= 0 || transferAmount > sourceItemAvailableAmount) {
+            return;
+        }
+
+        router.post(
+            '/budgets/transfer',
+            {
+                source_budget_item_id: selectedSourceItemId,
+                destination_budget_item_id: selectedDestItemId,
+                amount: transferAmount,
+                reason: transferReason,
+            },
+            {
+                onSuccess: () => {
+                    resetWizard();
+                },
+            },
+        );
+    }
 </script>
 
 <svelte:window onclick={() => (activeDropdownRealId = null)} />
 
 <AppHead title="Pagu & Realisasi" />
 
-<div class="p-6 space-y-6">
-    {#snippet actions()}
-        <div class="flex flex-wrap items-center gap-2">
-            <a
-                href="/reports/non-procurement/pdf"
-                target="_blank"
-                class="inline-flex h-9 items-center justify-center rounded-md border border-zinc-200 dark:border-zinc-800 bg-background hover:bg-accent px-3 py-1.5 text-xs font-semibold text-foreground cursor-pointer transition-colors"
-            >
-                Cetak Non-Pengadaan
-            </a>
-            <a
-                href="/reports/vendor/pdf"
-                target="_blank"
-                class="inline-flex h-9 items-center justify-center rounded-md border border-zinc-200 dark:border-zinc-800 bg-background hover:bg-accent px-3 py-1.5 text-xs font-semibold text-foreground cursor-pointer transition-colors"
-            >
-                Cetak Realisasi Vendor
-            </a>
-        </div>
-    {/snippet}
+{#snippet actions()}
+    <div class="flex flex-wrap items-center gap-2">
+        <button
+            type="button"
+            onclick={() => (transferWizardModalOpen = true)}
+            class="inline-flex h-9 items-center justify-center rounded-md bg-primary hover:bg-primary/90 px-3.5 py-1.5 text-xs font-semibold text-white shadow-sm cursor-pointer transition-colors"
+        >
+            🔄 Transfer Anggaran
+        </button>
+        <a
+            href="/reports/non-procurement/pdf"
+            target="_blank"
+            class="inline-flex h-9 items-center justify-center rounded-md border border-zinc-200 dark:border-zinc-800 bg-background hover:bg-accent px-3 py-1.5 text-xs font-semibold text-foreground cursor-pointer transition-colors"
+        >
+            Cetak Non-Pengadaan
+        </a>
+        <a
+            href="/reports/vendor/pdf"
+            target="_blank"
+            class="inline-flex h-9 items-center justify-center rounded-md border border-zinc-200 dark:border-zinc-800 bg-background hover:bg-accent px-3 py-1.5 text-xs font-semibold text-foreground cursor-pointer transition-colors"
+        >
+            Cetak Realisasi Vendor
+        </a>
+    </div>
+{/snippet}
 
+<div class="p-6 space-y-6">
     <PageHeader
         title="Pagu & Realisasi Anggaran"
         description="Kelola anggaran DIPA BLU dan pantau realisasi belanja operasional"
@@ -1040,6 +1143,345 @@
                 >
                     Tutup
                 </button>
+            </div>
+        </div>
+    </div>
+{/if}
+
+{#if transferWizardModalOpen}
+    <div
+        class="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/30 backdrop-blur-sm p-4 overflow-y-auto"
+    >
+        <div
+            class="bg-card/95 border border-sidebar-border/50 p-6 rounded-xl shadow-xl w-full max-w-2xl space-y-4 text-foreground max-h-[90vh] overflow-y-auto flex flex-col"
+        >
+            <div
+                class="flex justify-between items-start border-b border-sidebar-border/20 pb-3"
+            >
+                <div>
+                    <h3 class="text-lg font-bold">
+                        Wizard Transfer / Revisi Anggaran POK
+                    </h3>
+                    <p class="text-xs text-muted-foreground mt-0.5">
+                        Pindahkan sisa alokasi pagu antar kegiatan dengan aman.
+                    </p>
+                </div>
+                <button
+                    type="button"
+                    onclick={resetWizard}
+                    class="text-zinc-450 hover:text-zinc-600 dark:text-zinc-550 dark:hover:text-zinc-400 p-1 rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer"
+                >
+                    ✕
+                </button>
+            </div>
+
+            <!-- Wizard Steps Progress Bar -->
+            <div
+                class="flex items-center justify-between text-xs px-2 py-2 bg-zinc-50 dark:bg-zinc-900/35 rounded-lg border border-sidebar-border/30"
+            >
+                <span
+                    class="font-bold {transferStep === 1
+                        ? 'text-primary'
+                        : 'text-muted-foreground'}">1. Sumber & Tujuan</span
+                >
+                <span class="text-muted-foreground">&rarr;</span>
+                <span
+                    class="font-bold {transferStep === 2
+                        ? 'text-primary'
+                        : 'text-muted-foreground'}">2. Jumlah & Alasan</span
+                >
+                <span class="text-muted-foreground">&rarr;</span>
+                <span
+                    class="font-bold {transferStep === 3
+                        ? 'text-primary'
+                        : 'text-muted-foreground'}">3. Konfirmasi</span
+                >
+            </div>
+
+            <div class="flex-1 space-y-4 pt-2">
+                {#if transferStep === 1}
+                    <div class="space-y-4">
+                        <div class="space-y-1.5">
+                            <label class="text-xs font-bold text-foreground"
+                                >1. Kegiatan Sumber (Didebet)</label
+                            >
+                            <select
+                                bind:value={selectedSourceBudgetId}
+                                class="w-full px-3 py-2 text-xs bg-background border border-zinc-200/80 dark:border-zinc-800 rounded-lg outline-none focus:border-primary cursor-pointer"
+                            >
+                                <option value=""
+                                    >-- Pilih Kegiatan Sumber --</option
+                                >
+                                {#each budgets.data as b}
+                                    <option value={b.id.toString()}>
+                                        [{b.account_code}] {b.activity?.name ||
+                                            b.description} ({formatRupiah(
+                                            b.amount,
+                                            true,
+                                        )})
+                                    </option>
+                                {/each}
+                            </select>
+                        </div>
+
+                        {#if selectedSourceBudgetId}
+                            <div
+                                class="space-y-1.5 animate-in fade-in duration-200"
+                            >
+                                <label class="text-xs font-bold text-foreground"
+                                    >Detail Item Sumber</label
+                                >
+                                <select
+                                    bind:value={selectedSourceItemId}
+                                    class="w-full px-3 py-2 text-xs bg-background border border-zinc-200/80 dark:border-zinc-800 rounded-lg outline-none focus:border-primary cursor-pointer"
+                                >
+                                    <option value=""
+                                        >-- Pilih Rincian Belanja Sumber --</option
+                                    >
+                                    {#each sourceItems as item}
+                                        <option value={item.id.toString()}>
+                                            {item.name} ({item.volume}
+                                            {item.unit} @ {formatRupiah(
+                                                item.unit_price,
+                                            )}) - Total: {formatRupiah(
+                                                item.total,
+                                            )}
+                                        </option>
+                                    {/each}
+                                </select>
+                            </div>
+                        {/if}
+
+                        <hr class="border-sidebar-border/20 my-4" />
+
+                        <div class="space-y-1.5">
+                            <label class="text-xs font-bold text-foreground"
+                                >2. Kegiatan Tujuan (Dikredit)</label
+                            >
+                            <select
+                                bind:value={selectedDestBudgetId}
+                                class="w-full px-3 py-2 text-xs bg-background border border-zinc-200/80 dark:border-zinc-800 rounded-lg outline-none focus:border-primary cursor-pointer"
+                            >
+                                <option value=""
+                                    >-- Pilih Kegiatan Tujuan --</option
+                                >
+                                {#each budgets.data.filter((b) => b.id.toString() !== selectedSourceBudgetId) as b}
+                                    <option value={b.id.toString()}>
+                                        [{b.account_code}] {b.activity?.name ||
+                                            b.description} ({formatRupiah(
+                                            b.amount,
+                                            true,
+                                        )})
+                                    </option>
+                                {/each}
+                            </select>
+                        </div>
+
+                        {#if selectedDestBudgetId}
+                            <div
+                                class="space-y-1.5 animate-in fade-in duration-200"
+                            >
+                                <label class="text-xs font-bold text-foreground"
+                                    >Detail Item Tujuan</label
+                                >
+                                <select
+                                    bind:value={selectedDestItemId}
+                                    class="w-full px-3 py-2 text-xs bg-background border border-zinc-200/80 dark:border-zinc-800 rounded-lg outline-none focus:border-primary cursor-pointer"
+                                >
+                                    <option value=""
+                                        >-- Pilih Rincian Belanja Tujuan --</option
+                                    >
+                                    {#each destItems as item}
+                                        <option value={item.id.toString()}>
+                                            {item.name} ({item.volume}
+                                            {item.unit} @ {formatRupiah(
+                                                item.unit_price,
+                                            )}) - Total: {formatRupiah(
+                                                item.total,
+                                            )}
+                                        </option>
+                                    {/each}
+                                </select>
+                            </div>
+                        {/if}
+                    </div>
+                {:else if transferStep === 2}
+                    <div class="space-y-4 animate-in fade-in duration-200">
+                        <div
+                            class="p-3 bg-zinc-50 dark:bg-zinc-900/35 rounded-lg border border-sidebar-border/30 text-xs space-y-1"
+                        >
+                            <p class="font-medium text-foreground">
+                                Dana Tersedia untuk Ditransfer:
+                            </p>
+                            <p class="text-base font-extrabold text-primary">
+                                {formatRupiah(sourceItemAvailableAmount, true)}
+                            </p>
+                            <p class="text-[10px] text-muted-foreground">
+                                Berdasarkan total pagu rincian dikurangi
+                                realisasi transaksi belanja.
+                            </p>
+                        </div>
+
+                        <div class="space-y-1.5">
+                            <label class="text-xs font-bold text-foreground"
+                                >Jumlah Transfer (IDR)</label
+                            >
+                            <input
+                                type="number"
+                                bind:value={transferAmount}
+                                min="1000"
+                                max={sourceItemAvailableAmount}
+                                placeholder="Masukkan nominal dana..."
+                                class="w-full px-3 py-2 text-xs bg-background border border-zinc-200/80 dark:border-zinc-800 rounded-lg outline-none focus:border-primary"
+                            />
+                        </div>
+
+                        <div class="space-y-1.5">
+                            <label class="text-xs font-bold text-foreground"
+                                >Alasan Perubahan / Pemindahan Pagu</label
+                            >
+                            <textarea
+                                bind:value={transferReason}
+                                rows="3"
+                                placeholder="Contoh: Pergeseran sisa pagu operasional rapat ke belanja perjalanan dinas..."
+                                class="w-full px-3 py-2 text-xs bg-background border border-zinc-200/80 dark:border-zinc-800 rounded-lg outline-none focus:border-primary"
+                            ></textarea>
+                        </div>
+                    </div>
+                {:else if transferStep === 3}
+                    <div
+                        class="space-y-4 animate-in fade-in duration-200 text-xs"
+                    >
+                        <div
+                            class="p-4 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/50 rounded-xl space-y-2"
+                        >
+                            <h4
+                                class="font-bold text-amber-800 dark:text-amber-300"
+                            >
+                                Mohon periksa kembali detail pemindahan dana
+                                berikut:
+                            </h4>
+
+                            <div
+                                class="grid grid-cols-2 gap-4 mt-2 text-foreground"
+                            >
+                                <div>
+                                    <span
+                                        class="text-muted-foreground block text-[10px]"
+                                        >Dari Item Belanja (Didebet):</span
+                                    >
+                                    <strong
+                                        class="text-rose-600 dark:text-rose-400"
+                                        >{selectedSourceItem?.name}</strong
+                                    >
+                                    <span
+                                        class="block text-[10px] text-muted-foreground"
+                                        >Pagu Awal: {formatRupiah(
+                                            selectedSourceItem?.total,
+                                        )}</span
+                                    >
+                                    <span class="block text-[10px] font-bold"
+                                        >Pagu Baru: {formatRupiah(
+                                            (selectedSourceItem?.total || 0) -
+                                                transferAmount,
+                                        )}</span
+                                    >
+                                </div>
+                                <div>
+                                    <span
+                                        class="text-muted-foreground block text-[10px]"
+                                        >Ke Item Belanja (Dikredit):</span
+                                    >
+                                    <strong
+                                        class="text-emerald-600 dark:text-emerald-400"
+                                        >{selectedDestItem?.name}</strong
+                                    >
+                                    <span
+                                        class="block text-[10px] text-muted-foreground"
+                                        >Pagu Awal: {formatRupiah(
+                                            selectedDestItem?.total,
+                                        )}</span
+                                    >
+                                    <span class="block text-[10px] font-bold"
+                                        >Pagu Baru: {formatRupiah(
+                                            (selectedDestItem?.total || 0) +
+                                                transferAmount,
+                                        )}</span
+                                    >
+                                </div>
+                            </div>
+
+                            <div class="border-t border-amber-200/40 pt-2 mt-2">
+                                <span
+                                    class="text-muted-foreground block text-[10px]"
+                                    >Nominal Pemindahan:</span
+                                >
+                                <strong class="text-lg text-primary"
+                                    >{formatRupiah(
+                                        transferAmount,
+                                        true,
+                                    )}</strong
+                                >
+                            </div>
+
+                            {#if transferReason}
+                                <div class="mt-2 text-muted-foreground italic">
+                                    " {transferReason} "
+                                </div>
+                            {/if}
+                        </div>
+                    </div>
+                {/if}
+            </div>
+
+            <div
+                class="flex justify-between items-center pt-4 border-t border-sidebar-border/20 mt-4"
+            >
+                <button
+                    type="button"
+                    onclick={resetWizard}
+                    class="px-4 py-2 text-xs font-semibold rounded-lg border border-zinc-200/60 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-foreground cursor-pointer transition-colors"
+                >
+                    Batalkan
+                </button>
+
+                <div class="flex gap-2">
+                    {#if transferStep > 1}
+                        <button
+                            type="button"
+                            onclick={() => transferStep--}
+                            class="px-4 py-2 text-xs font-semibold rounded-lg border border-zinc-200/60 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-foreground cursor-pointer transition-colors"
+                        >
+                            Sebelumnya
+                        </button>
+                    {/if}
+
+                    {#if transferStep < 3}
+                        <button
+                            type="button"
+                            disabled={(transferStep === 1 &&
+                                (!selectedSourceItemId ||
+                                    !selectedDestItemId)) ||
+                                (transferStep === 2 &&
+                                    (transferAmount <= 0 ||
+                                        transferAmount >
+                                            sourceItemAvailableAmount ||
+                                        !transferReason))}
+                            onclick={() => transferStep++}
+                            class="px-5 py-2 text-xs font-bold rounded-lg bg-zinc-900 hover:bg-zinc-800 dark:bg-zinc-100 dark:hover:bg-zinc-200 text-background cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        >
+                            Berikutnya
+                        </button>
+                    {:else}
+                        <button
+                            type="button"
+                            onclick={handleTransferSubmit}
+                            class="px-6 py-2 text-xs font-extrabold rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white shadow cursor-pointer transition-colors"
+                        >
+                            Proses Transfer Anggaran
+                        </button>
+                    {/if}
+                </div>
             </div>
         </div>
     </div>
