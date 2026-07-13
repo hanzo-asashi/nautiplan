@@ -157,7 +157,7 @@
         <table class="kop-table">
             <tr>
                 <td class="kop-logo">
-                    <span style="font-size: 24px;">⚓</span>
+                    <img src="{{ public_path("images/logo-poltekpel.png") }}" height="50" alt="Logo Kemenhub">
                 </td>
                 <td class="kop-text">
                     <div class="kop-title-1">KEMENTERIAN PERHUBUNGAN</div>

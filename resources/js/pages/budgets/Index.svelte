@@ -754,6 +754,30 @@
                                                                             >🤝</span
                                                                         > Cetak SPTJB
                                                                     </a>
+                                                                    <a
+                                                                        href={`/reports/realization/${real.id}/sp2d`}
+                                                                        target="_blank"
+                                                                        onclick={() =>
+                                                                            (activeDropdownRealId =
+                                                                                null)}
+                                                                        class="flex items-center gap-2 px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-foreground transition-colors font-medium"
+                                                                    >
+                                                                        <span
+                                                                            >📄</span
+                                                                        > Cetak SP2D
+                                                                    </a>
+                                                                    <a
+                                                                        href={`/reports/realization/${real.id}/bast-internal`}
+                                                                        target="_blank"
+                                                                        onclick={() =>
+                                                                            (activeDropdownRealId =
+                                                                                null)}
+                                                                        class="flex items-center gap-2 px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-foreground transition-colors font-medium"
+                                                                    >
+                                                                        <span
+                                                                            >🤝</span
+                                                                        > BAST Internal
+                                                                    </a>
                                                                     {#if real.items && real.items.some((i) => Number(i.tax_ppn) > 0)}
                                                                         <a
                                                                             href={`/reports/realization/${real.id}/ssp?type=ppn`}

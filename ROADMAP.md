@@ -162,7 +162,7 @@ Guna menyelaraskan sistem dengan kebutuhan administrasi Pejabat Pembuat Komitmen
 
 ---
 
-## Extension Phase 5 — Fitur Tambahan & Interaktivitas UI (In Progress)
+## Extension Phase 5 — Fitur Tambahan & Interaktivitas UI ✅ Complete
 
 **Goal**: Meningkatkan interaktivitas dan monitoring real-time pada sistem anggaran.
 
@@ -174,6 +174,23 @@ Guna menyelaraskan sistem dengan kebutuhan administrasi Pejabat Pembuat Komitmen
     - Menyempurnakan halaman `/reports/gantt` agar lebih interaktif dengan tooltip detail, highlight progress, dan navigasi timeline.
 - **Feature 3: Quick Budget Revision Wizard**:
     - Modal interaktif multi-step untuk memindahkan alokasi pagu antar kegiatan dengan validasi audit sisa pagu.
+
+---
+
+## Extension Phase 6 — Resolusi Celah Administrasi Pencairan & Pelaporan DIPA (In Progress)
+
+**Goal**: Menyelesaikan kesenjangan fungsional (gaps) dalam dokumen administrasi pencairan PPK dan rekapitulasi pelaporan DIPA.
+
+### Deliverables
+
+- **Feature 1: Surat Perintah Pencairan Dana (SP2D) PDF**:
+    - Tambahkan modul pencetakan PDF resmi untuk berkas SP2D berdasarkan data `sp2d_number` dan `sp2d_date` transaksi realisasi.
+- **Feature 2: BAST Internal PDF**:
+    - Tambahkan modul cetak BAST Internal untuk serah terima barang/jasa internal antar-unit di Poltekpel Barombong.
+- **Feature 3: Laporan Realisasi per Jenis Belanja PDF**:
+    - Tambahkan ekspor PDF laporan rekapitulasi realisasi belanja yang dikelompokkan berdasarkan kategori jenis belanja.
+- **Feature 4: Laporan Realisasi per Sub Output PDF**:
+    - Tambahkan ekspor PDF laporan rekapitulasi realisasi belanja terperinci untuk tingkat Sub Output hirarki DIPA.
 
 ---
 

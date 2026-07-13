@@ -170,10 +170,10 @@
             $vendorName = $realization->procurement?->vendor?->name ?? 'CV. TEKSAS JAYA PERKASA';
 
             $spNumber = $realization->procurement?->document_number ?? 'PL.107/67/7/POLTEKPEL.B/2024';
-            $spDate = ($realization->procurement?->document_date) ? \Carbon\Carbon::parse($realization->procurement->document_date)->format('d December Y') : '12 Desember 2024';
+            $spDate = ($realization->procurement?->document_date) ? App\Helpers\FormatHelper::tanggal($realization->procurement->document_date) : '12 Desember 2024';
 
             $bastNumber = $realization->bast_number ?? 'PL.109/57/22/POLTEKPEL.B-2024';
-            $bastDate = $realization->bast_date ? \Carbon\Carbon::parse($realization->bast_date)->format('d December Y') : '16 Desember 2024';
+            $bastDate = $realization->bast_date ? App\Helpers\FormatHelper::tanggal($realization->bast_date) : '16 Desember 2024';
 
             // Format MAK based on reference
             $accountCode = $realization->activityBudget->account_code ?? '525112';

@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Surat Permintaan Pembayaran - SPP</title>
+    <title>Surat Perintah Pencairan Dana - SP2D</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -60,17 +60,14 @@
         .subtitle {
             font-size: 10px;
         }
-        .content-table {
+        .info-table {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 15px;
         }
-        .content-table td {
+        .info-table td {
             padding: 3px 5px;
             vertical-align: top;
-        }
-        .border-all {
-            border: 1px solid #000;
         }
         .border-table {
             width: 100%;
@@ -107,14 +104,12 @@
         }
         .signature-table td {
             width: 50%;
-            text-align: center;
             vertical-align: top;
+            text-align: center;
         }
     </style>
 </head>
 <body>
-
-    <!-- Kop Surat -->
     <div class="header">
         <table class="kop-table">
             <tr>
@@ -124,105 +119,106 @@
                 <td class="kop-text">
                     <div class="kop-title-1">KEMENTERIAN PERHUBUNGAN</div>
                     <div class="kop-title-2">BADAN PENGEMBANGAN SUMBER DAYA MANUSIA PERHUBUNGAN</div>
-                    <div class="kop-title-2">BADAN LAYANAN UMUM</div>
                     <div class="kop-title-3">POLITEKNIK PELAYARAN BAROMBONG</div>
-                    <div class="kop-subtitle">
-                        Jln. Permandian Alam No. 1 Barombong - Makassar 90225 | Telp: (0411) 8216999 | Fax: (0411) 8217157 | Email: poltekpelbrb@gmail.com
-                    </div>
+                    <div class="kop-subtitle">Jl. Permandian Alam No. 1, Barombong, Kec. Tamalate, Kota Makassar 90224</div>
                 </td>
             </tr>
         </table>
     </div>
 
-    <!-- Title -->
     <div class="title-block">
-        <div class="title">SURAT PERMINTAAN PEMBAYARAN (SPP)</div>
-        <div class="subtitle">Nomor: {{ $realization->spp_number ?? '-' }}</div>
-        <div class="subtitle">Tanggal: {{ $realization->spp_date ? \Carbon\Carbon::parse($realization->spp_date)->translatedFormat('d F Y') : '-' }}</div>
+        <div class="title">SURAT PERINTAH PENCAIRAN DANA (SP2D)</div>
+        <div class="subtitle">Nomor: {{ $realization->sp2d_number ?? '.........................................' }}</div>
+        <div class="subtitle">Tanggal: {{ $realization->sp2d_date ? App\Helpers\FormatHelper::tanggal($realization->sp2d_date) : '.........................................' }}</div>
     </div>
 
-    <!-- Kepada -->
-    <p>Kepada Yth.<br>
-    <strong>Pejabat Penandatangan SPM (PPSPM)</strong><br>
-    Satker Politeknik Pelayaran Barombong<br>
-    Makassar</p>
-
-    <p>Dengan ini kami mengajukan permintaan agar Saudara menerbitkan SPM sebesar <strong>Rp {{ number_format($realization->amount, 2, ',', '.') }}</strong> (<em>{{ $terbilang }}</em>) untuk pembayaran keperluan berikut:</p>
-
-    <table class="content-table">
+    <table class="info-table">
         <tr>
-            <td style="width: 25%;"><strong>Untuk Keperluan</strong></td>
+            <td style="width: 25%;">Dari</td>
             <td style="width: 2%;">:</td>
+            <td>Kuasa Bendahara Umum Negara (BUN) / KPA Politeknik Pelayaran Barombong</td>
+        </tr>
+        <tr>
+            <td>Tahun Anggaran</td>
+            <td>:</td>
+            <td>{{ $realization->activityBudget->activity->fiscalYear->year ?? '-' }}</td>
+        </tr>
+        <tr>
+            <td>Dasar Pembayaran (SPM)</td>
+            <td>:</td>
+            <td>SPM Nomor: {{ $realization->spm_number ?? '......................' }} tanggal {{ $realization->created_at ? App\Helpers\FormatHelper::tanggal($realization->created_at) : '......................' }}</td>
+        </tr>
+        <tr>
+            <td>Nilai Tagihan</td>
+            <td>:</td>
+            <td class="font-bold">Rp {{ number_format($realization->amount, 2, ',', '.') }}</td>
+        </tr>
+        <tr>
+            <td>Terbilang</td>
+            <td>:</td>
+            <td style="font-style: italic;">{{ $terbilang }}</td>
+        </tr>
+        <tr>
+            <td>Kepada (Penyedia)</td>
+            <td>:</td>
+            <td>{{ $realization->procurement->vendor->name ?? 'Pihak Internal / Swakelola' }}</td>
+        </tr>
+        <tr>
+            <td>Nomor Rekening</td>
+            <td>:</td>
+            <td>{{ $realization->procurement->vendor->bank_account ?? '......................' }} ({{ $realization->procurement->vendor->bank_name ?? '......................' }})</td>
+        </tr>
+        <tr>
+            <td>Keperluan</td>
+            <td>:</td>
             <td>{{ $realization->description }}</td>
         </tr>
-        @if($realization->procurement)
-        <tr>
-            <td><strong>Pihak Ketiga (Vendor)</strong></td>
-            <td>:</td>
-            <td>{{ $realization->procurement->vendor?->name ?? $realization->vendor_name }}</td>
-        </tr>
-        <tr>
-            <td><strong>Nomor Kontrak/SPK</strong></td>
-            <td>:</td>
-            <td>{{ $realization->procurement->document_number }} tanggal {{ \Carbon\Carbon::parse($realization->procurement->document_date)->translatedFormat('d F Y') }}</td>
-        </tr>
-        @endif
     </table>
 
-    <div class="font-bold" style="margin-bottom: 5px;">Rincian Pembebanan Anggaran (MAK):</div>
     <table class="border-table">
         <thead>
             <tr>
-                <th>No</th>
-                <th>Kode MAK / DIPA</th>
-                <th>Uraian Anggaran</th>
-                <th>Jumlah Anggaran</th>
-                <th>Realisasi Ini</th>
+                <th style="width: 5%;">No</th>
+                <th style="width: 20%;">Kode Akun</th>
+                <th>Uraian Akun / Rincian Belanja</th>
+                <th style="width: 25%; text-align: right;">Jumlah (Rp)</th>
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <td class="text-center">1</td>
-                <td>
-                    {{ $realization->activityBudget?->activity?->program?->code }}.{{ $realization->activityBudget?->activity?->code }}
-                    @if($realization->activityBudget?->subComponent)
-                        .{{ $realization->activityBudget->subComponent->component?->code }}.{{ $realization->activityBudget->subComponent->code }}
-                    @endif
-                    .{{ $realization->activityBudget?->account_code }}
-                </td>
-                <td>
-                    {{ $realization->activityBudget?->account_name }}<br>
-                    <small style="color: #666;">
-                        Sub-Komponen: {{ $realization->activityBudget?->subComponent?->name ?? 'Default' }}
-                    </small>
-                </td>
-                <td class="text-right">Rp {{ number_format($realization->activityBudget?->amount ?? 0, 2, ',', '.') }}</td>
-                <td class="text-right">Rp {{ number_format($realization->amount, 2, ',', '.') }}</td>
-            </tr>
+            @foreach($realization->items as $index => $item)
+                <tr>
+                    <td class="text-center">{{ $index + 1 }}</td>
+                    <td class="text-center">{{ $realization->activityBudget->account_code ?? '-' }}</td>
+                    <td>{{ $item->budgetItem->name ?? 'Detail Belanja' }} (Vol: {{ $item->volume }})</td>
+                    <td class="text-right">Rp {{ number_format($item->volume * $item->unit_price, 2, ',', '.') }}</td>
+                </tr>
+            @endforeach
             <tr class="font-bold">
-                <td colspan="4" class="text-right">TOTAL</td>
+                <td colspan="3" class="text-right">Total Transaksi</td>
                 <td class="text-right">Rp {{ number_format($realization->amount, 2, ',', '.') }}</td>
             </tr>
         </tbody>
     </table>
 
-    <!-- Tanda Tangan -->
     <div class="signature-container">
         <table class="signature-table">
             <tr>
                 <td>
-                    &nbsp;
+                    <br>
+                    <strong>Pejabat Pembuat Komitmen</strong>
+                    <br><br><br><br>
+                    <u>{{ $realization->procurement->ppk->name ?? '.........................................' }}</u><br>
+                    NIP. {{ $realization->procurement->ppk->employee_id ?? '.........................................' }}
                 </td>
                 <td>
-                    Barombong, {{ $realization->spp_date ? \Carbon\Carbon::parse($realization->spp_date)->translatedFormat('d F Y') : \Carbon\Carbon::now()->translatedFormat('d F Y') }}<br>
-                    <strong>Pejabat Pembuat Komitmen (PPK)</strong>
-                    <br><br><br><br><br>
-                    <u>{{ $realization->procurement?->ppk?->name ?? 'Arnaldy Achmadita, M.T.' }}</u><br>
-                    NIP. {{ $realization->procurement?->ppk?->nip ?? '19870425 201012 1 002' }}
+                    Makassar, {{ $realization->sp2d_date ? App\Helpers\FormatHelper::tanggal($realization->sp2d_date) : App\Helpers\FormatHelper::tanggal(date('Y-m-d')) }}<br>
+                    <strong>Kuasa Pengguna Anggaran (KPA)</strong>
+                    <br><br><br><br>
+                    <u>{{ $realization->procurement->kpa->name ?? '.........................................' }}</u><br>
+                    NIP. {{ $realization->procurement->kpa->employee_id ?? '.........................................' }}
                 </td>
             </tr>
         </table>
     </div>
-
 </body>
 </html>

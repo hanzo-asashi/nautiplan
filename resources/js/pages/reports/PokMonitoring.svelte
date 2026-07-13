@@ -70,6 +70,20 @@
         window.open(url, '_blank');
     }
 
+    function handleExportRekapSubOutput() {
+        window.open(
+            `/reports/export/rekap-sub-output?fiscal_year_id=${filters.fiscal_year_id || ''}`,
+            '_blank',
+        );
+    }
+
+    function handleExportRekapJenisBelanja() {
+        window.open(
+            `/reports/export/rekap-jenis-belanja?fiscal_year_id=${filters.fiscal_year_id || ''}`,
+            '_blank',
+        );
+    }
+
     function handleExportRekapKomponen() {
         const url = rekapKomponen.url({
             query: { fiscal_year_id: filters.fiscal_year_id },
@@ -155,6 +169,22 @@
             >
                 <FileText class="w-3.5 h-3.5" />
                 Rekap Output (PDF)
+            </button>
+
+            <button
+                onclick={handleExportRekapSubOutput}
+                class="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-white bg-sky-600 hover:bg-sky-700 rounded-lg shadow-sm transition-colors cursor-pointer"
+            >
+                <FileText class="w-3.5 h-3.5" />
+                Rekap Sub Output (PDF)
+            </button>
+
+            <button
+                onclick={handleExportRekapJenisBelanja}
+                class="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-white bg-teal-600 hover:bg-teal-700 rounded-lg shadow-sm transition-colors cursor-pointer"
+            >
+                <FileText class="w-3.5 h-3.5" />
+                Rekap Jenis Belanja (PDF)
             </button>
 
             <button
