@@ -1,3 +1,16 @@
+## [v2.5.0] - 2026-07-13
+
+### 🚀 Features
+- feat: implement extension phase 5 (live activity feed, interactive gantt chart, quick budget revision wizard) (e3b56db)
+
+### 🔧 Maintenance
+- chore: update changelog for v0.18.8 [skip ci] (175b54d)
+
+### 📦 Other
+- Merge pull request #28 from hanzo-asashi/fix/activity-dates-gantt (5cc8d09)
+
+[v2.5.0]: https://github.com/hanzo-asashi/nautiplan/compare/v0.18.8...v2.5.0
+
 ## [v0.18.8] - 2026-07-06
 
 ### 🐛 Bug Fixes
